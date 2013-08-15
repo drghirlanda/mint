@@ -1,0 +1,7 @@
+d <- data.frame(read.table("output/sigmoid.dat"))
+names(d) <- c("x","n1")
+attach(d)
+pdf( "output/sigmoid.pdf", height=5, width=5 )
+plot( x, n1, type="l", xlab="input", ylab="output", ylim=c(0,1) )
+grid( col="black" )
+dev.off()

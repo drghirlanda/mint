@@ -1,0 +1,2 @@
+env = Environment( parse_flags = '-lmint -lm -lfreeimage' )
+program = env.Program( 'deltarule', env.Object('deltarule.c') )

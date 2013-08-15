@@ -1,0 +1,681 @@
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls   s/call   s/call  name    
+ 29.86     13.43    13.43     4000     0.00     0.00  mint_weights_mult_sparse
+ 27.32     25.72    12.29 1002580916     0.00     0.00  mint_random
+ 15.94     32.89     7.17    26000     0.00     0.00  mint_random_permutation
+ 13.94     39.17     6.27 905526378     0.00     0.00  mint_random_uniform
+  5.94     41.84     2.67 901084227     0.00     0.00  mint_random_int
+  2.69     43.05     1.21   100000     0.00     0.00  mint_random_normal
+  2.49     44.17     1.12        1     1.12     1.12  mint_random_seed
+  0.53     44.41     0.24    26000     0.00     0.00  mint_random_binomial
+  0.38     44.58     0.17     2000     0.00     0.00  mint_node_izzy
+  0.31     44.72     0.14 26000000     0.00     0.00  mint_weights_sparse_colind
+  0.31     44.86     0.14 26000000     0.00     0.00  mint_weights_sparse_rowlen
+  0.09     44.90     0.04     4002     0.00     0.00  mint_nodes_set
+  0.09     44.94     0.04     1000     0.00     0.00  mint_nodes_save_var
+  0.07     44.97     0.03                             mint_intcmp
+  0.04     44.99     0.02     1000     0.00     0.02  mint_network_operate
+  0.02     45.00     0.01    26000     0.00     0.00  mint_weights_set_row
+  0.00     45.00     0.00    26000     0.00     0.00  mint_random_subset
+  0.00     45.00     0.00     8012     0.00     0.00  mint_weights_get_ops
+  0.00     45.00     0.00     8009     0.00     0.00  mint_weights_rows
+  0.00     45.00     0.00     8005     0.00     0.00  mint_weights_get_to
+  0.00     45.00     0.00     8000     0.00     0.00  mint_weights_get_target
+  0.00     45.00     0.00     8000     0.00     0.00  mint_weights_set
+  0.00     45.00     0.00     7007     0.00     0.00  mint_spread_get_nodes
+  0.00     45.00     0.00     7007     0.00     0.00  mint_spread_get_weights
+  0.00     45.00     0.00     4013     0.00     0.00  mint_weights_get_from
+  0.00     45.00     0.00     4000     0.00     0.00  mint_weights_operate
+  0.00     45.00     0.00     4000     0.00     0.00  mint_weights_update
+  0.00     45.00     0.00     3004     0.00     0.00  mint_nodes_get_ops
+  0.00     45.00     0.00     3003     0.00     0.00  mint_nodes_size
+  0.00     45.00     0.00     3000     0.00     0.00  mint_nodes_update
+  0.00     45.00     0.00     1006     0.00     0.00  mint_network_nodes
+  0.00     45.00     0.00     1001     0.00     0.00  mint_network_get_ops
+  0.00     45.00     0.00     1001     0.00     0.00  mint_spread_len
+  0.00     45.00     0.00     1000     0.00     0.02  mint_network_spread
+  0.00     45.00     0.00     1000     0.00     0.00  mint_node_tonic
+  0.00     45.00     0.00       44     0.00     0.00  mint_op_id
+  0.00     45.00     0.00       44     0.00     0.00  mint_op_new
+  0.00     45.00     0.00       43     0.00     0.00  mint_skip_space
+  0.00     45.00     0.00       40     0.00     0.00  mint_values_waiting
+  0.00     45.00     0.00       24     0.00     0.00  mint_keyword
+  0.00     45.00     0.00       24     0.00     0.00  mint_op_load
+  0.00     45.00     0.00       22     0.00     0.00  mint_op_dup
+  0.00     45.00     0.00       22     0.00     0.00  mint_ops_append
+  0.00     45.00     0.00       21     0.00     0.00  mint_op_del
+  0.00     45.00     0.00       20     0.00     0.00  mint_default
+  0.00     45.00     0.00       16     0.00     0.00  mint_op_save
+  0.00     45.00     0.00       16     0.00     0.00  mint_ops_new
+  0.00     45.00     0.00        9     0.00     0.00  mint_weights_cols
+  0.00     45.00     0.00        8     0.00     0.00  mint_ops_find
+  0.00     45.00     0.00        8     0.00     0.00  mint_ops_load
+  0.00     45.00     0.00        7     0.00     0.00  mint_ops_save
+  0.00     45.00     0.00        5     0.00     0.00  mint_ops_count
+  0.00     45.00     0.00        4     0.00     0.00  mint_network_weights
+  0.00     45.00     0.00        4     0.00     0.00  mint_weights_alloc
+  0.00     45.00     0.00        4     0.00     0.00  mint_weights_connect
+  0.00     45.00     0.00        4     0.00     7.16  mint_weights_init
+  0.00     45.00     0.00        4     0.00     0.00  mint_weights_init_from
+  0.00     45.00     0.00        4     0.00     0.00  mint_weights_init_random
+  0.00     45.00     0.00        4     0.00     7.16  mint_weights_init_random_sparse
+  0.00     45.00     0.00        4     0.00     0.00  mint_weights_init_to
+  0.00     45.00     0.00        4     0.00     0.00  mint_weights_is_sparse
+  0.00     45.00     0.00        4     0.00     7.16  mint_weights_load
+  0.00     45.00     0.00        4     0.00     0.00  mint_weights_load_values
+  0.00     45.00     0.00        4     0.00     0.00  mint_weights_set_from
+  0.00     45.00     0.00        4     0.00     0.00  mint_weights_set_to
+  0.00     45.00     0.00        4     0.00     0.00  mint_weights_sparse_new
+  0.00     45.00     0.00        4     0.00     0.00  mint_weights_states
+  0.00     45.00     0.00        3     0.00     0.00  mint_nodes_load
+  0.00     45.00     0.00        3     0.00     0.00  mint_nodes_new
+  0.00     45.00     0.00        3     0.00     0.00  mint_nodes_states
+  0.00     45.00     0.00        2     0.00     0.00  mint_op_get_param
+  0.00     45.00     0.00        2     0.00     0.00  mint_op_set_param
+  0.00     45.00     0.00        2     0.00     0.00  mint_set_file
+  0.00     45.00     0.00        2     0.00     0.00  mint_spread_del
+  0.00     45.00     0.00        2     0.00     0.00  mint_spread_new
+  0.00     45.00     0.00        1     0.00     0.00  mint_network_alloc
+  0.00     45.00     0.00        1     0.00     0.00  mint_network_graph
+  0.00     45.00     0.00        1     0.00     0.00  mint_network_groups
+  0.00     45.00     0.00        1     0.00     0.00  mint_network_init
+  0.00     45.00     0.00        1     0.00     0.00  mint_network_init_synchronous
+  0.00     45.00     0.00        1     0.00    28.65  mint_network_load
+  0.00     45.00     0.00        1     0.00     0.00  mint_network_matrices
+  0.00     45.00     0.00        1     0.00     0.00  mint_network_set_spread
+  0.00     45.00     0.00        1     0.00     0.00  mint_op_run
+  0.00     45.00     0.00        1     0.00     0.00  mint_ops_get
+  0.00     45.00     0.00        1     0.00     0.00  mint_spread_dup
+  0.00     45.00     0.00        1     0.00     0.00  mint_weights_init_diagonal
+
+ %         the percentage of the total running time of the
+time       program used by this function.
+
+cumulative a running sum of the number of seconds accounted
+ seconds   for by this function and those listed above it.
+
+ self      the number of seconds accounted for by this
+seconds    function alone.  This is the major sort for this
+           listing.
+
+calls      the number of times this function was invoked, if
+           this function is profiled, else blank.
+ 
+ self      the average number of milliseconds spent in this
+ms/call    function per call, if this function is profiled,
+	   else blank.
+
+ total     the average number of milliseconds spent in this
+ms/call    function and its descendents per call, if this 
+	   function is profiled, else blank.
+
+name       the name of the function.  This is the minor sort
+           for this listing. The index shows the location of
+	   the function in the gprof listing. If the index is
+	   in parenthesis it shows where it would appear in
+	   the gprof listing if it were to be printed.
+
+		     Call graph (explanation follows)
+
+
+granularity: each sample hit covers 2 byte(s) for 0.02% of 45.00 seconds
+
+index % time    self  children    called     name
+                                                 <spontaneous>
+[1]     99.9    0.00   44.97                 main [1]
+                0.00   28.65       1/1           mint_network_load [5]
+                0.02   15.14    1000/1000        mint_network_operate [10]
+                1.12    0.00       1/1           mint_random_seed [19]
+                0.04    0.00    1000/1000        mint_nodes_save_var [24]
+                0.00    0.00       2/4002        mint_nodes_set [23]
+                0.00    0.00    1003/1006        mint_network_nodes [38]
+                0.00    0.00       2/2           mint_op_get_param [73]
+                0.00    0.00       2/2           mint_op_set_param [74]
+                0.00    0.00       1/1           mint_ops_get [86]
+                0.00    0.00       1/3004        mint_nodes_get_ops [36]
+                0.00    0.00       1/1           mint_network_graph [79]
+-----------------------------------------------
+                0.00   28.65       4/4           mint_weights_load [4]
+[2]     63.7    0.00   28.65       4         mint_weights_init [2]
+                0.00   28.65       4/4           mint_weights_init_random_sparse [3]
+                0.00    0.00       4/8012        mint_weights_get_ops [27]
+                0.00    0.00       4/4           mint_weights_init_random [62]
+                0.00    0.00       4/4           mint_weights_set_to [67]
+                0.00    0.00       4/4           mint_weights_init_to [63]
+                0.00    0.00       4/4           mint_weights_set_from [66]
+                0.00    0.00       4/4           mint_weights_init_from [61]
+                0.00    0.00       1/1           mint_weights_init_diagonal [88]
+-----------------------------------------------
+                0.00   28.65       4/4           mint_weights_init [2]
+[3]     63.7    0.00   28.65       4         mint_weights_init_random_sparse [3]
+                0.00   27.13   26000/26000       mint_random_subset [7]
+                0.24    1.19   26000/26000       mint_random_binomial [15]
+                0.03    0.05 4442151/905526378     mint_random_uniform [9]
+                0.01    0.00   26000/26000       mint_weights_set_row [26]
+                0.00    0.00       4/9           mint_weights_cols [53]
+-----------------------------------------------
+                0.00   28.65       4/4           mint_network_load [5]
+[4]     63.7    0.00   28.65       4         mint_weights_load [4]
+                0.00   28.65       4/4           mint_weights_init [2]
+                0.00    0.00       8/8           mint_ops_find [54]
+                0.00    0.00       4/8           mint_ops_load [55]
+                0.00    0.00       4/5           mint_ops_count [57]
+                0.00    0.00       4/4           mint_weights_load_values [65]
+                0.00    0.00       4/44          mint_op_new [42]
+                0.00    0.00       4/21          mint_op_del [49]
+                0.00    0.00       4/22          mint_ops_append [48]
+                0.00    0.00       4/4           mint_weights_sparse_new [68]
+-----------------------------------------------
+                0.00   28.65       1/1           main [1]
+[5]     63.7    0.00   28.65       1         mint_network_load [5]
+                0.00   28.65       4/4           mint_weights_load [4]
+                0.00    0.00       8/4013        mint_weights_get_from [34]
+                0.00    0.00       4/8009        mint_weights_rows [28]
+                0.00    0.00       4/4           mint_weights_connect [60]
+                0.00    0.00       3/3           mint_nodes_load [70]
+                0.00    0.00       2/2           mint_set_file [75]
+                0.00    0.00       2/44          mint_op_new [42]
+                0.00    0.00       2/22          mint_ops_append [48]
+                0.00    0.00       1/1           mint_network_alloc [78]
+                0.00    0.00       1/8           mint_ops_load [55]
+                0.00    0.00       1/1           mint_network_init [81]
+                0.00    0.00       1/5           mint_ops_count [57]
+                0.00    0.00       1/21          mint_op_del [49]
+                0.00    0.00       1/1           mint_op_run [85]
+-----------------------------------------------
+                7.17   19.96   26000/26000       mint_random_subset [7]
+[6]     60.3    7.17   19.96   26000         mint_random_permutation [6]
+                2.67   17.29 901084227/901084227     mint_random_int [8]
+-----------------------------------------------
+                0.00   27.13   26000/26000       mint_weights_init_random_sparse [3]
+[7]     60.3    0.00   27.13   26000         mint_random_subset [7]
+                7.17   19.96   26000/26000       mint_random_permutation [6]
+-----------------------------------------------
+                2.67   17.29 901084227/901084227     mint_random_permutation [6]
+[8]     44.4    2.67   17.29 901084227         mint_random_int [8]
+                6.24   11.05 901084227/905526378     mint_random_uniform [9]
+-----------------------------------------------
+                0.03    0.05 4442151/905526378     mint_weights_init_random_sparse [3]
+                6.24   11.05 901084227/905526378     mint_random_int [8]
+[9]     38.6    6.27   11.10 905526378         mint_random_uniform [9]
+               11.10    0.00 905526378/1002580916     mint_random [14]
+-----------------------------------------------
+                0.02   15.14    1000/1000        main [1]
+[10]    33.7    0.02   15.14    1000         mint_network_operate [10]
+                0.00   15.14    1000/1000        mint_network_spread [11]
+                0.00    0.00    1000/1001        mint_network_get_ops [39]
+-----------------------------------------------
+                0.00   15.14    1000/1000        mint_network_operate [10]
+[11]    33.6    0.00   15.14    1000         mint_network_spread [11]
+                0.00   13.71    4000/4000        mint_weights_operate [13]
+                0.00    1.38    3000/3000        mint_nodes_update [16]
+                0.04    0.00    4000/4002        mint_nodes_set [23]
+                0.00    0.00    8000/8005        mint_weights_get_to [29]
+                0.00    0.00    8000/8009        mint_weights_rows [28]
+                0.00    0.00    7000/7007        mint_spread_get_weights [33]
+                0.00    0.00    7000/7007        mint_spread_get_nodes [32]
+                0.00    0.00    4000/8000        mint_weights_get_target [30]
+                0.00    0.00    4000/4013        mint_weights_get_from [34]
+                0.00    0.00    4000/4000        mint_weights_update [35]
+                0.00    0.00    3000/3003        mint_nodes_size [37]
+                0.00    0.00    1000/1001        mint_spread_len [40]
+-----------------------------------------------
+               13.43    0.28    4000/4000        mint_weights_operate [13]
+[12]    30.5   13.43    0.28    4000         mint_weights_mult_sparse [12]
+                0.14    0.00 26000000/26000000     mint_weights_sparse_colind [21]
+                0.14    0.00 26000000/26000000     mint_weights_sparse_rowlen [22]
+                0.00    0.00    4000/8000        mint_weights_get_target [30]
+-----------------------------------------------
+                0.00   13.71    4000/4000        mint_network_spread [11]
+[13]    30.5    0.00   13.71    4000         mint_weights_operate [13]
+               13.43    0.28    4000/4000        mint_weights_mult_sparse [12]
+                0.00    0.00    4000/8012        mint_weights_get_ops [27]
+-----------------------------------------------
+                0.00    0.00  254538/1002580916     mint_random_normal [17]
+                1.19    0.00 96800000/1002580916     mint_random_binomial [15]
+               11.10    0.00 905526378/1002580916     mint_random_uniform [9]
+[14]    27.3   12.29    0.00 1002580916         mint_random [14]
+-----------------------------------------------
+                0.24    1.19   26000/26000       mint_weights_init_random_sparse [3]
+[15]     3.2    0.24    1.19   26000         mint_random_binomial [15]
+                1.19    0.00 96800000/1002580916     mint_random [14]
+-----------------------------------------------
+                0.00    1.38    3000/3000        mint_network_spread [11]
+[16]     3.1    0.00    1.38    3000         mint_nodes_update [16]
+                0.00    1.21    1000/1000        mint_node_tonic [18]
+                0.17    0.00    2000/2000        mint_node_izzy [20]
+                0.00    0.00    3000/3004        mint_nodes_get_ops [36]
+-----------------------------------------------
+                1.21    0.00  100000/100000      mint_node_tonic [18]
+[17]     2.7    1.21    0.00  100000         mint_random_normal [17]
+                0.00    0.00  254538/1002580916     mint_random [14]
+-----------------------------------------------
+                0.00    1.21    1000/1000        mint_nodes_update [16]
+[18]     2.7    0.00    1.21    1000         mint_node_tonic [18]
+                1.21    0.00  100000/100000      mint_random_normal [17]
+-----------------------------------------------
+                1.12    0.00       1/1           main [1]
+[19]     2.5    1.12    0.00       1         mint_random_seed [19]
+-----------------------------------------------
+                0.17    0.00    2000/2000        mint_nodes_update [16]
+[20]     0.4    0.17    0.00    2000         mint_node_izzy [20]
+-----------------------------------------------
+                0.14    0.00 26000000/26000000     mint_weights_mult_sparse [12]
+[21]     0.3    0.14    0.00 26000000         mint_weights_sparse_colind [21]
+-----------------------------------------------
+                0.14    0.00 26000000/26000000     mint_weights_mult_sparse [12]
+[22]     0.3    0.14    0.00 26000000         mint_weights_sparse_rowlen [22]
+-----------------------------------------------
+                0.00    0.00       2/4002        main [1]
+                0.04    0.00    4000/4002        mint_network_spread [11]
+[23]     0.1    0.04    0.00    4002         mint_nodes_set [23]
+-----------------------------------------------
+                0.04    0.00    1000/1000        main [1]
+[24]     0.1    0.04    0.00    1000         mint_nodes_save_var [24]
+-----------------------------------------------
+                                                 <spontaneous>
+[25]     0.1    0.03    0.00                 mint_intcmp [25]
+-----------------------------------------------
+                0.01    0.00   26000/26000       mint_weights_init_random_sparse [3]
+[26]     0.0    0.01    0.00   26000         mint_weights_set_row [26]
+-----------------------------------------------
+                0.00    0.00       4/8012        mint_network_graph [79]
+                0.00    0.00       4/8012        mint_weights_connect [60]
+                0.00    0.00       4/8012        mint_weights_init [2]
+                0.00    0.00    4000/8012        mint_weights_operate [13]
+                0.00    0.00    4000/8012        mint_weights_update [35]
+[27]     0.0    0.00    0.00    8012         mint_weights_get_ops [27]
+-----------------------------------------------
+                0.00    0.00       1/8009        mint_weights_init_diagonal [88]
+                0.00    0.00       4/8009        mint_network_load [5]
+                0.00    0.00       4/8009        mint_network_graph [79]
+                0.00    0.00    8000/8009        mint_network_spread [11]
+[28]     0.0    0.00    0.00    8009         mint_weights_rows [28]
+-----------------------------------------------
+                0.00    0.00       1/8005        mint_weights_init_diagonal [88]
+                0.00    0.00       4/8005        mint_network_graph [79]
+                0.00    0.00    8000/8005        mint_network_spread [11]
+[29]     0.0    0.00    0.00    8005         mint_weights_get_to [29]
+-----------------------------------------------
+                0.00    0.00    4000/8000        mint_network_spread [11]
+                0.00    0.00    4000/8000        mint_weights_mult_sparse [12]
+[30]     0.0    0.00    0.00    8000         mint_weights_get_target [30]
+-----------------------------------------------
+                0.00    0.00    8000/8000        mint_weights_init_diagonal [88]
+[31]     0.0    0.00    0.00    8000         mint_weights_set [31]
+-----------------------------------------------
+                0.00    0.00       7/7007        mint_network_graph [79]
+                0.00    0.00    7000/7007        mint_network_spread [11]
+[32]     0.0    0.00    0.00    7007         mint_spread_get_nodes [32]
+-----------------------------------------------
+                0.00    0.00       7/7007        mint_network_graph [79]
+                0.00    0.00    7000/7007        mint_network_spread [11]
+[33]     0.0    0.00    0.00    7007         mint_spread_get_weights [33]
+-----------------------------------------------
+                0.00    0.00       1/4013        mint_weights_init_diagonal [88]
+                0.00    0.00       4/4013        mint_network_graph [79]
+                0.00    0.00       8/4013        mint_network_load [5]
+                0.00    0.00    4000/4013        mint_network_spread [11]
+[34]     0.0    0.00    0.00    4013         mint_weights_get_from [34]
+-----------------------------------------------
+                0.00    0.00    4000/4000        mint_network_spread [11]
+[35]     0.0    0.00    0.00    4000         mint_weights_update [35]
+                0.00    0.00    4000/8012        mint_weights_get_ops [27]
+-----------------------------------------------
+                0.00    0.00       1/3004        main [1]
+                0.00    0.00       3/3004        mint_network_graph [79]
+                0.00    0.00    3000/3004        mint_nodes_update [16]
+[36]     0.0    0.00    0.00    3004         mint_nodes_get_ops [36]
+-----------------------------------------------
+                0.00    0.00       3/3003        mint_network_graph [79]
+                0.00    0.00    3000/3003        mint_network_spread [11]
+[37]     0.0    0.00    0.00    3003         mint_nodes_size [37]
+-----------------------------------------------
+                0.00    0.00       3/1006        mint_network_graph [79]
+                0.00    0.00    1003/1006        main [1]
+[38]     0.0    0.00    0.00    1006         mint_network_nodes [38]
+-----------------------------------------------
+                0.00    0.00       1/1001        mint_network_init [81]
+                0.00    0.00    1000/1001        mint_network_operate [10]
+[39]     0.0    0.00    0.00    1001         mint_network_get_ops [39]
+-----------------------------------------------
+                0.00    0.00       1/1001        mint_network_graph [79]
+                0.00    0.00    1000/1001        mint_network_spread [11]
+[40]     0.0    0.00    0.00    1001         mint_spread_len [40]
+-----------------------------------------------
+                0.00    0.00      44/44          mint_op_new [42]
+[41]     0.0    0.00    0.00      44         mint_op_id [41]
+-----------------------------------------------
+                0.00    0.00       2/44          mint_network_load [5]
+                0.00    0.00       4/44          mint_weights_load [4]
+                0.00    0.00      16/44          mint_op_load [46]
+                0.00    0.00      22/44          mint_op_dup [47]
+[42]     0.0    0.00    0.00      44         mint_op_new [42]
+                0.00    0.00      44/44          mint_op_id [41]
+-----------------------------------------------
+                0.00    0.00       3/43          mint_nodes_load [70]
+                0.00    0.00      40/43          mint_values_waiting [44]
+[43]     0.0    0.00    0.00      43         mint_skip_space [43]
+-----------------------------------------------
+                0.00    0.00       3/40          mint_nodes_load [70]
+                0.00    0.00       4/40          mint_weights_load_values [65]
+                0.00    0.00      33/40          mint_op_load [46]
+[44]     0.0    0.00    0.00      40         mint_values_waiting [44]
+                0.00    0.00      40/43          mint_skip_space [43]
+-----------------------------------------------
+                0.00    0.00      24/24          mint_op_load [46]
+[45]     0.0    0.00    0.00      24         mint_keyword [45]
+-----------------------------------------------
+                0.00    0.00      24/24          mint_ops_load [55]
+[46]     0.0    0.00    0.00      24         mint_op_load [46]
+                0.00    0.00      33/40          mint_values_waiting [44]
+                0.00    0.00      24/24          mint_keyword [45]
+                0.00    0.00      16/44          mint_op_new [42]
+-----------------------------------------------
+                0.00    0.00      22/22          mint_ops_append [48]
+[47]     0.0    0.00    0.00      22         mint_op_dup [47]
+                0.00    0.00      22/44          mint_op_new [42]
+-----------------------------------------------
+                0.00    0.00       2/22          mint_network_load [5]
+                0.00    0.00       4/22          mint_weights_load [4]
+                0.00    0.00      16/22          mint_ops_load [55]
+[48]     0.0    0.00    0.00      22         mint_ops_append [48]
+                0.00    0.00      22/22          mint_op_dup [47]
+-----------------------------------------------
+                0.00    0.00       1/21          mint_network_load [5]
+                0.00    0.00       4/21          mint_weights_load [4]
+                0.00    0.00      16/21          mint_ops_load [55]
+[49]     0.0    0.00    0.00      21         mint_op_del [49]
+-----------------------------------------------
+                0.00    0.00      20/20          mint_ops_save [56]
+[50]     0.0    0.00    0.00      20         mint_default [50]
+-----------------------------------------------
+                0.00    0.00      16/16          mint_ops_save [56]
+[51]     0.0    0.00    0.00      16         mint_op_save [51]
+-----------------------------------------------
+                0.00    0.00       1/16          mint_network_alloc [78]
+                0.00    0.00       3/16          mint_nodes_new [71]
+                0.00    0.00       4/16          mint_weights_alloc [59]
+                0.00    0.00       8/16          mint_ops_load [55]
+[52]     0.0    0.00    0.00      16         mint_ops_new [52]
+-----------------------------------------------
+                0.00    0.00       1/9           mint_weights_init_diagonal [88]
+                0.00    0.00       4/9           mint_network_graph [79]
+                0.00    0.00       4/9           mint_weights_init_random_sparse [3]
+[53]     0.0    0.00    0.00       9         mint_weights_cols [53]
+-----------------------------------------------
+                0.00    0.00       8/8           mint_weights_load [4]
+[54]     0.0    0.00    0.00       8         mint_ops_find [54]
+-----------------------------------------------
+                0.00    0.00       1/8           mint_network_load [5]
+                0.00    0.00       3/8           mint_nodes_load [70]
+                0.00    0.00       4/8           mint_weights_load [4]
+[55]     0.0    0.00    0.00       8         mint_ops_load [55]
+                0.00    0.00      24/24          mint_op_load [46]
+                0.00    0.00      16/22          mint_ops_append [48]
+                0.00    0.00      16/21          mint_op_del [49]
+                0.00    0.00       8/16          mint_ops_new [52]
+-----------------------------------------------
+                0.00    0.00       7/7           mint_network_graph [79]
+[56]     0.0    0.00    0.00       7         mint_ops_save [56]
+                0.00    0.00      20/20          mint_default [50]
+                0.00    0.00      16/16          mint_op_save [51]
+-----------------------------------------------
+                0.00    0.00       1/5           mint_network_load [5]
+                0.00    0.00       4/5           mint_weights_load [4]
+[57]     0.0    0.00    0.00       5         mint_ops_count [57]
+-----------------------------------------------
+                0.00    0.00       4/4           mint_network_graph [79]
+[58]     0.0    0.00    0.00       4         mint_network_weights [58]
+-----------------------------------------------
+                0.00    0.00       4/4           mint_weights_sparse_new [68]
+[59]     0.0    0.00    0.00       4         mint_weights_alloc [59]
+                0.00    0.00       4/16          mint_ops_new [52]
+-----------------------------------------------
+                0.00    0.00       4/4           mint_network_load [5]
+[60]     0.0    0.00    0.00       4         mint_weights_connect [60]
+                0.00    0.00       4/8012        mint_weights_get_ops [27]
+-----------------------------------------------
+                0.00    0.00       4/4           mint_weights_init [2]
+[61]     0.0    0.00    0.00       4         mint_weights_init_from [61]
+-----------------------------------------------
+                0.00    0.00       4/4           mint_weights_init [2]
+[62]     0.0    0.00    0.00       4         mint_weights_init_random [62]
+                0.00    0.00       4/4           mint_weights_is_sparse [64]
+-----------------------------------------------
+                0.00    0.00       4/4           mint_weights_init [2]
+[63]     0.0    0.00    0.00       4         mint_weights_init_to [63]
+-----------------------------------------------
+                0.00    0.00       4/4           mint_weights_init_random [62]
+[64]     0.0    0.00    0.00       4         mint_weights_is_sparse [64]
+-----------------------------------------------
+                0.00    0.00       4/4           mint_weights_load [4]
+[65]     0.0    0.00    0.00       4         mint_weights_load_values [65]
+                0.00    0.00       4/40          mint_values_waiting [44]
+-----------------------------------------------
+                0.00    0.00       4/4           mint_weights_init [2]
+[66]     0.0    0.00    0.00       4         mint_weights_set_from [66]
+-----------------------------------------------
+                0.00    0.00       4/4           mint_weights_init [2]
+[67]     0.0    0.00    0.00       4         mint_weights_set_to [67]
+-----------------------------------------------
+                0.00    0.00       4/4           mint_weights_load [4]
+[68]     0.0    0.00    0.00       4         mint_weights_sparse_new [68]
+                0.00    0.00       4/4           mint_weights_alloc [59]
+-----------------------------------------------
+                0.00    0.00       4/4           mint_network_graph [79]
+[69]     0.0    0.00    0.00       4         mint_weights_states [69]
+-----------------------------------------------
+                0.00    0.00       3/3           mint_network_load [5]
+[70]     0.0    0.00    0.00       3         mint_nodes_load [70]
+                0.00    0.00       3/43          mint_skip_space [43]
+                0.00    0.00       3/3           mint_nodes_new [71]
+                0.00    0.00       3/8           mint_ops_load [55]
+                0.00    0.00       3/40          mint_values_waiting [44]
+-----------------------------------------------
+                0.00    0.00       3/3           mint_nodes_load [70]
+[71]     0.0    0.00    0.00       3         mint_nodes_new [71]
+                0.00    0.00       3/16          mint_ops_new [52]
+-----------------------------------------------
+                0.00    0.00       3/3           mint_network_graph [79]
+[72]     0.0    0.00    0.00       3         mint_nodes_states [72]
+-----------------------------------------------
+                0.00    0.00       2/2           main [1]
+[73]     0.0    0.00    0.00       2         mint_op_get_param [73]
+-----------------------------------------------
+                0.00    0.00       2/2           main [1]
+[74]     0.0    0.00    0.00       2         mint_op_set_param [74]
+-----------------------------------------------
+                0.00    0.00       2/2           mint_network_load [5]
+[75]     0.0    0.00    0.00       2         mint_set_file [75]
+-----------------------------------------------
+                0.00    0.00       1/2           mint_network_set_spread [84]
+                0.00    0.00       1/2           mint_op_run [85]
+[76]     0.0    0.00    0.00       2         mint_spread_del [76]
+-----------------------------------------------
+                0.00    0.00       1/2           mint_network_init_synchronous [82]
+                0.00    0.00       1/2           mint_spread_dup [87]
+[77]     0.0    0.00    0.00       2         mint_spread_new [77]
+-----------------------------------------------
+                0.00    0.00       1/1           mint_network_load [5]
+[78]     0.0    0.00    0.00       1         mint_network_alloc [78]
+                0.00    0.00       1/16          mint_ops_new [52]
+-----------------------------------------------
+                0.00    0.00       1/1           main [1]
+[79]     0.0    0.00    0.00       1         mint_network_graph [79]
+                0.00    0.00       7/7007        mint_spread_get_weights [33]
+                0.00    0.00       7/7007        mint_spread_get_nodes [32]
+                0.00    0.00       7/7           mint_ops_save [56]
+                0.00    0.00       4/4           mint_network_weights [58]
+                0.00    0.00       4/4           mint_weights_states [69]
+                0.00    0.00       4/8009        mint_weights_rows [28]
+                0.00    0.00       4/9           mint_weights_cols [53]
+                0.00    0.00       4/8005        mint_weights_get_to [29]
+                0.00    0.00       4/4013        mint_weights_get_from [34]
+                0.00    0.00       4/8012        mint_weights_get_ops [27]
+                0.00    0.00       3/1006        mint_network_nodes [38]
+                0.00    0.00       3/3           mint_nodes_states [72]
+                0.00    0.00       3/3003        mint_nodes_size [37]
+                0.00    0.00       3/3004        mint_nodes_get_ops [36]
+                0.00    0.00       1/1001        mint_spread_len [40]
+-----------------------------------------------
+                0.00    0.00       1/1           mint_network_init_synchronous [82]
+[80]     0.0    0.00    0.00       1         mint_network_groups [80]
+-----------------------------------------------
+                0.00    0.00       1/1           mint_network_load [5]
+[81]     0.0    0.00    0.00       1         mint_network_init [81]
+                0.00    0.00       1/1001        mint_network_get_ops [39]
+-----------------------------------------------
+                0.00    0.00       1/1           mint_op_run [85]
+[82]     0.0    0.00    0.00       1         mint_network_init_synchronous [82]
+                0.00    0.00       1/1           mint_network_groups [80]
+                0.00    0.00       1/1           mint_network_matrices [83]
+                0.00    0.00       1/2           mint_spread_new [77]
+                0.00    0.00       1/1           mint_network_set_spread [84]
+-----------------------------------------------
+                0.00    0.00       1/1           mint_network_init_synchronous [82]
+[83]     0.0    0.00    0.00       1         mint_network_matrices [83]
+-----------------------------------------------
+                0.00    0.00       1/1           mint_network_init_synchronous [82]
+[84]     0.0    0.00    0.00       1         mint_network_set_spread [84]
+                0.00    0.00       1/1           mint_spread_dup [87]
+                0.00    0.00       1/2           mint_spread_del [76]
+-----------------------------------------------
+                0.00    0.00       1/1           mint_network_load [5]
+[85]     0.0    0.00    0.00       1         mint_op_run [85]
+                0.00    0.00       1/2           mint_spread_del [76]
+                0.00    0.00       1/1           mint_network_init_synchronous [82]
+-----------------------------------------------
+                0.00    0.00       1/1           main [1]
+[86]     0.0    0.00    0.00       1         mint_ops_get [86]
+-----------------------------------------------
+                0.00    0.00       1/1           mint_network_set_spread [84]
+[87]     0.0    0.00    0.00       1         mint_spread_dup [87]
+                0.00    0.00       1/2           mint_spread_new [77]
+-----------------------------------------------
+                0.00    0.00       1/1           mint_weights_init [2]
+[88]     0.0    0.00    0.00       1         mint_weights_init_diagonal [88]
+                0.00    0.00    8000/8000        mint_weights_set [31]
+                0.00    0.00       1/4013        mint_weights_get_from [34]
+                0.00    0.00       1/8005        mint_weights_get_to [29]
+                0.00    0.00       1/9           mint_weights_cols [53]
+                0.00    0.00       1/8009        mint_weights_rows [28]
+-----------------------------------------------
+
+ This table describes the call tree of the program, and was sorted by
+ the total amount of time spent in each function and its children.
+
+ Each entry in this table consists of several lines.  The line with the
+ index number at the left hand margin lists the current function.
+ The lines above it list the functions that called this function,
+ and the lines below it list the functions this one called.
+ This line lists:
+     index	A unique number given to each element of the table.
+		Index numbers are sorted numerically.
+		The index number is printed next to every function name so
+		it is easier to look up where the function in the table.
+
+     % time	This is the percentage of the `total' time that was spent
+		in this function and its children.  Note that due to
+		different viewpoints, functions excluded by options, etc,
+		these numbers will NOT add up to 100%.
+
+     self	This is the total amount of time spent in this function.
+
+     children	This is the total amount of time propagated into this
+		function by its children.
+
+     called	This is the number of times the function was called.
+		If the function called itself recursively, the number
+		only includes non-recursive calls, and is followed by
+		a `+' and the number of recursive calls.
+
+     name	The name of the current function.  The index number is
+		printed after it.  If the function is a member of a
+		cycle, the cycle number is printed between the
+		function's name and the index number.
+
+
+ For the function's parents, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the function into this parent.
+
+     children	This is the amount of time that was propagated from
+		the function's children into this parent.
+
+     called	This is the number of times this parent called the
+		function `/' the total number of times the function
+		was called.  Recursive calls to the function are not
+		included in the number after the `/'.
+
+     name	This is the name of the parent.  The parent's index
+		number is printed after it.  If the parent is a
+		member of a cycle, the cycle number is printed between
+		the name and the index number.
+
+ If the parents of the function cannot be determined, the word
+ `<spontaneous>' is printed in the `name' field, and all the other
+ fields are blank.
+
+ For the function's children, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the child into the function.
+
+     children	This is the amount of time that was propagated from the
+		child's children to the function.
+
+     called	This is the number of times the function called
+		this child `/' the total number of times the child
+		was called.  Recursive calls by the child are not
+		listed in the number after the `/'.
+
+     name	This is the name of the child.  The child's index
+		number is printed after it.  If the child is a
+		member of a cycle, the cycle number is printed
+		between the name and the index number.
+
+ If there are any cycles (circles) in the call graph, there is an
+ entry for the cycle-as-a-whole.  This entry shows who called the
+ cycle (as parents) and the members of the cycle (as children.)
+ The `+' recursive calls entry shows the number of function calls that
+ were internal to the cycle, and the calls entry for each member shows,
+ for that member, how many times it was called from other members of
+ the cycle.
+
+
+Index by function name
+
+  [50] mint_default           [41] mint_op_id             [44] mint_values_waiting
+  [25] mint_intcmp            [46] mint_op_load           [59] mint_weights_alloc
+  [45] mint_keyword           [42] mint_op_new            [53] mint_weights_cols
+  [78] mint_network_alloc     [85] mint_op_run            [60] mint_weights_connect
+  [39] mint_network_get_ops   [51] mint_op_save           [34] mint_weights_get_from
+  [79] mint_network_graph     [74] mint_op_set_param      [27] mint_weights_get_ops
+  [80] mint_network_groups    [48] mint_ops_append        [30] mint_weights_get_target
+  [81] mint_network_init      [57] mint_ops_count         [29] mint_weights_get_to
+  [82] mint_network_init_synchronous [54] mint_ops_find    [2] mint_weights_init
+   [5] mint_network_load      [86] mint_ops_get           [88] mint_weights_init_diagonal
+  [83] mint_network_matrices  [55] mint_ops_load          [61] mint_weights_init_from
+  [38] mint_network_nodes     [52] mint_ops_new           [62] mint_weights_init_random
+  [10] mint_network_operate   [56] mint_ops_save           [3] mint_weights_init_random_sparse
+  [84] mint_network_set_spread [14] mint_random           [63] mint_weights_init_to
+  [11] mint_network_spread    [15] mint_random_binomial   [64] mint_weights_is_sparse
+  [58] mint_network_weights    [8] mint_random_int         [4] mint_weights_load
+  [20] mint_node_izzy         [17] mint_random_normal     [65] mint_weights_load_values
+  [18] mint_node_tonic         [6] mint_random_permutation [12] mint_weights_mult_sparse
+  [36] mint_nodes_get_ops     [19] mint_random_seed       [13] mint_weights_operate
+  [70] mint_nodes_load         [7] mint_random_subset     [28] mint_weights_rows
+  [71] mint_nodes_new          [9] mint_random_uniform    [31] mint_weights_set
+  [24] mint_nodes_save_var    [75] mint_set_file          [66] mint_weights_set_from
+  [23] mint_nodes_set         [43] mint_skip_space        [26] mint_weights_set_row
+  [37] mint_nodes_size        [76] mint_spread_del        [67] mint_weights_set_to
+  [72] mint_nodes_states      [87] mint_spread_dup        [21] mint_weights_sparse_colind
+  [16] mint_nodes_update      [32] mint_spread_get_nodes  [68] mint_weights_sparse_new
+  [49] mint_op_del            [33] mint_spread_get_weights [22] mint_weights_sparse_rowlen
+  [47] mint_op_dup            [40] mint_spread_len        [69] mint_weights_states
+  [73] mint_op_get_param      [77] mint_spread_new        [35] mint_weights_update

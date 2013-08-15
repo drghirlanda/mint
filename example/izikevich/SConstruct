@@ -1,0 +1,4 @@
+env = Environment( parse_flags = '-lmint -lm -lfreeimage -lpthread',
+    CFLAGS=['-O2', ''], LINKFLAGS=[''] )
+
+program = env.Program( 'izzy', env.Object('izzy.c') )

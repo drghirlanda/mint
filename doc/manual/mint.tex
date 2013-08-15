@@ -1,0 +1,572 @@
+\documentclass[11pt,letterpaper]{memoir}
+\usepackage[T1]{fontenc}
+\usepackage[latin1]{inputenc}
+\usepackage{courier}
+\usepackage[scaled=0.92]{helvet}
+\usepackage{mathptmx,array,graphicx,xspace}
+\usepackage{microtype}
+\usepackage{hyperref}
+\usepackage{url}
+\urlstyle{rm}
+
+\renewcommand{\familydefault}{\sfdefault}
+
+\chapterstyle{ell}
+\setsecheadstyle{\Large\sffamily\raggedright}
+\setsubsecheadstyle{\large\sffamily\raggedright}
+
+\usepackage{listings}
+\lstset{language=C,basicstyle=\ttfamily,
+  numbers=left,numberstyle=\tiny\sffamily,morekeywords={FILE}}
+
+\let\fref\relax% memoir defines  \fref
+\usepackage[plain]{fancyref}
+
+\captiontitlefont{\small}
+\setsecnumdepth{subsection}
+\tightlists
+
+\renewcommand{\thesection}{\arabic{chapter}.\arabic{section}}
+
+\newcommand{\mint}{{\scshape\sffamily mint}\xspace}
+\newcommand{\mintversion}{0.1\xspace}
+
+\renewcommand{\vec}[1]{\ensuremath{\mathbf#1}\xspace}
+
+\title{\bfseries The \mint cookbook}
+\author{Stefano Ghirlanda}
+\date{\footnotesize Version \mintversion of \today}
+
+\makeindex
+
+\newcommand{\note}[2]{\footnote{\textbf{#1:} #2}}
+
+\begin{document}
+\pagestyle{plain}
+
+\maketitle
+
+\renewcommand{\printtoctitle}[1]{%
+  \large\bfseries\contentsname}
+\renewcommand{\cftsectionfont}{}
+\renewcommand{\cftsectionpagefont}{}
+\renewcommand{\cftchapterfont}{}
+\renewcommand{\cftchapterpagefont}{}
+\tableofcontents*
+
+\renewcommand{\foottextfont}{\sffamily\footnotesize}
+
+\renewcommand{\thepage}{\sffamily\arabic{page}}
+
+\clearpage
+
+\chapter{Is this for me?}
+\label{chap:intro}
+
+This short chapter provides a bird's eye view of the principal
+features of \mint to help you decide whether it fits your needs.
+\mint is a library for neural network simulations written in the C
+programming language (specifically, ANSI C). Using it will require
+writing C programs (possibly very short ones) and simple text files to
+describe your networks.
+
+\section{\mint philosophy}
+\label{sec:mint-philosophy}
+
+\mint takes a ``natural scientist'' approach to neural network
+simulations. These are viewed as a means to gain insight into the
+operation of nervous systems, not as mathematical tools for
+statistics, curve fitting, and so on. This perspective has affected
+the design of \mint in a number of ways. If you are an engineer
+looking for sophisticated supervised learning or network optimization
+algorithms, \mint may not be the best tool for you.  If you are
+interested in how biological nervous systems process inputs and
+generate behavior, \mint is potentially for you.
+
+In addition to a good number of built-in capabilities (which you can
+discover reading this manual), \mint provides you with a uniform
+representation of neural networks (through the data structures
+introduced in \fref{sec:the-very-basics} below) that enables you to
+focus on the specifics of your particular neural network without
+worrying about such things as memory management, data input and
+output, and other administration of general properties of neural
+networks (e.g., that neural networks are made of nodes wired
+together). What \mint can do, moreover, can be extended easily.  With
+a few lines of code you can add a new neuron model to \mint and use it
+as if it were one of those already in the library. Ditto for weight
+models and learning algorithms. In many cases you will be able to
+write a small C program once and for all, and do a lot of work simply
+by changing a text file that describes your network.
+
+\section{What \mint does, and what it does not}
+\label{sec:what-mint-does}
+
+\mint is good at description neural network compactly in small text
+files. You can also add your own node and weight models while using
+all of the other \mint functions, and specify in detail what
+operations are to be performed to update a network.  \mint is less
+good for simulations of a very small number of very detailed neurons
+(e.g., detailed 3D models of neurons). These are possible, but you
+would end up doing most of the coding yourself with little benefit of
+the \mint infrastructure.  More specifically here are lists of
+currently available and unavailable features:\footnote{If you think
+  that something should be added to either list, please contact
+  us. REF}
+\begin{description}
+\item[Available:] general network topology, i.e., any number of node
+  groups and weight matrices connected in any way (e.g., many weight
+  matrices between two node groups), synchronous and asynchronous
+  dynamics, arbitrary node and weight models (e.g., spiking or
+  non-spiking neurons), ``global'' influences on neurons and weights
+  (e.g., extracellular neurotransmitter concentrations), use images as
+  input (requires the FreeImage library, see REF), use usb camera as
+  input (on Linux, see REF).
+\item[Unavailable:] explicit positioning of neurons in 2D or 3D space,
+  event-driven simulations and time delays in synaptic transmission.
+\end{description}
+The currently unavailable features may be implemented in the future.
+
+\section{Space and speed}
+
+From a technical point of view, \mint has a small footprint. It
+compiles to under 100 KB on x86-64 (PC) and ARM processors and wastes
+little memory. For example, the memory overhead of a weight matrix is
+only 6 integer variables and 3 pointers.\footnote{By memory overhead
+  we mean variables that \mint uses to keep track of things, rather
+  than to hold information that is strictly part of the neural
+  network, such as weight values.}  Some optimization also make \mint
+a good choice if you need speed. REF Multi-threaded execution and
+sparse matrix storage are also available. REF
+
+\section{The very basics}
+\label{sec:the-very-basics}
+
+\mint describes neural networks in terms of five fundamental data
+structures. The first three should be intuitive to anyone interested
+in neural network simulations:
+\begin{itemize}
+\item \textit{Node groups}: Groups of simulated neurons
+\item \textit{Weight matrices}: Simulated synaptic connections between
+  or within nodes
+\item \textit{Networks}: Collections of node groups and weight
+  matrices
+\end{itemize}
+The last two data structures are specific to \mint and are used to
+describe aspects of neural network operation:
+\begin{itemize}
+\item \textit{Operations} (``ops'' for short): Anything that can be
+  done to a node group, a weight matrix, or a network
+\item\textit{Spread schemes}: Representations of how the network
+  is updated (how neural activation ``spreads'' through the network)
+\end{itemize}
+Examples of operations are initialization of weight matrices (e.g.,
+setting weights at random), updates of node state based on received
+input, changes in weight matrices (``learning''), and so on. Using
+these five data structures many kinds of neural networks can be set up
+relatively simply and efficiently. The rest of this manual introduces
+you to the data structures in some detail and walks you through many
+examples of how \mint can be used in practice.
+
+\section{Your first \mint network}
+\label{sec:first-mint}
+
+The easiest way to specify a network architecture in \mint is to write
+a specially formatted text file. We use the file suffix
+\lstinline{.arc} (for ``architecture file''), but you can use anything
+you like.  A simple network with 10 input units connected to one
+output unit with sigmoid nonlinearity is described as follows:
+\begin{lstlisting}
+network 2 1
+nodes 10 0 
+nodes 1 0 sigmoid 0.1 1
+weights 1 10 0 from 0 to 1 random -1 1
+\end{lstlisting}
+Line 1 says that the network has 2 groups of nodes (``layers'') and 1
+weight matrix. Line 2 says that the first group of nodes contains 10
+nodes, with 0 internal state variables each (see WHERE for an
+explanation of state variables). Line 3 says that the second group of
+nodes is made of 1 node, also with 0 state variables. It also
+identifies this node as having a sigmoid transfer function; the
+following two numbers are parameters for the sigmoid function (see
+SIGMOID PARAMETERS). Lastly, line 4 says that there is one weight
+matrix with 1 row and 10 columns; each weight has 0 internal states.
+The ``from'' and ``to'' parts specify that the output of node group 0
+is sent as input to node group 1.\footnote{Rows and columns could be
+  determined by knowing the ``from'' and ``to'' parameters, but
+  repeating them here keeps the library simpler to maintain and easier
+  to use in a number of ways.}  The ``random'' part initializes
+weights from a uniform distribution between -1 and 1.
+
+Assuming the file is called \lstinline{network.arc}, the following
+program creates a network reading with the specified architecture:
+\begin{lstlisting}
+#include "mint.h"
+#include <stdio.h>
+
+int main( void ) {
+  FILE *f; 
+  struct mint_network *net;
+  f = fopen( "network.arc", "r" );
+  net = mint_network_load( f );        /* load net from file */
+  fclose( f );
+  mint_network_save( net, stdout );    /* display the network */
+  mint_network_del( net );             /* free memory */
+  return 0;
+}
+\end{lstlisting}
+There are only five lines here that are specific to \mint:
+\begin{itemize}
+\item Line 1 reads the \lstinline{mint.h} header file.
+\item Line 6 declares a pointer to a variable of type
+  \lstinline{struct mint_network *}, which holds all the information
+  pertaining to the network.
+\item Line 8 loads the network from file. Loading performs error
+  checks that ensure you end up with a valid network (e.g., that
+  weight matrices have dimensions that match the node groups they
+  connect).
+\item Line 10 displays the network to the C standard output (e.g.,
+  terminal window).
+\item Line 11 deletes the network (frees up the memory the network is
+  using).
+\end{itemize}
+You can find this program and the architecture file above in
+\lstinline{example/minimal} in the \mint source distribution.
+
+The \lstinline{mint_network_save} function can be used to save to a
+regular file, rather than standard output, resulting in an exact copy
+of the network, complete of weight values and node activation values
+that were not explicitly given in the architecture file above. Such a
+file can be read by \lstinline{mint_network_load} to create an exact
+copy of the network.
+
+
+\chapter{How to get \mint, and what you get}
+\label{sec:install}
+
+\section{How}
+
+---EMPTY UNTIL FIRST PUBLIC RELEASE--- 
+
+\section{What}
+
+The \mint distribution contains the following files and folders:
+\begin{itemize}
+\item \lstinline{doc/}: Documentation, consisting of this manual and a
+  set of HTML pages that document the \mint source code.
+\item \lstinline{src/}: The C source for \mint.
+\item \lstinline{examples/}: Numerous examples of various features.
+\item \lstinline{SConstruct}: This is a file used by the installation system.
+\item \lstinline{README}: A file pointing you to this document. 
+\end{itemize}
+
+\section{Installation}
+
+
+\chapter{\mint data structures}
+\label{cha:mint-data-structures}
+
+\mint is organized around five variable types:
+\begin{enumerate}
+\item \lstinline{mint_nodes} represent groups of neurons.
+\item \lstinline{mint_weights} represent synaptic connections between
+  groups of neurons.
+\item A \lstinline{struct mint_network} represents a neural networks.
+\item A \lstinline{mint_op} represent an operation that can be
+  performed on the previous three types.
+\item A \lstinline{mint_spread} holds information on how a network is
+  updated.
+\end{enumerate}
+You will usually deal with nodes, weights, and networks. Occasionally
+you will want to work with ops, very rarely you will have to use
+spreads in your C code.
+
+Neural network computations are implemented as operations on nodes,
+weights, and networks. Once a network is set up, there are three kinds
+of operations that are most typical.
+\begin{description}
+\item[Node input calculations]  
+\end{description}
+
+
+A typical operation is, for instance, to
+calculate the output of neurons based on their current input (and
+possibly internal state variables). This is called a ``node update'' 
+
+An explanation of operations is
+provided WHERE.
+
+
+The building blocks of a \mint network are:
+\begin{description}
+\item[Node groups:] They model groups of neurons. They are variables
+  of type \lstinline{mint_nodes} and look to the user as
+  two-dimensional arrays of \lstinline{float}s. The first index refers
+  to a \textit{state variable} of the nodes, the second is the node
+  index. Two state variables are automatically created for each node
+  group: input and output. Thus, if that \lstinline{n} is a node
+  group, \lstinline{n[0][i]} is the input received by the $i$-th node
+  and \lstinline{n[1][i]} is its output. Other state variables can be
+  created as needed, see typically to endow the nodes with specific
+  properties (\fref{sec:transfer-functions}.
+\item[Weight matrices:] They model synapses between neurons and other
+  ways neurons interact (see \fref{sec:hormones-etc},
+  \fref{sec:body-states}). They are variables of type
+  \lstinline{mint_weights} and look to the user as three-dimensional
+  arrays of \lstinline{float}s. The first index refers to a state
+  variable of the weights, the second the row index and the third the
+  column index in the weight matrix. One state variable is
+  automatically created and represents the weight value. Thus, if
+  \lstinline{w} is a weight matrix, \lstinline{w[0][r][c]} is the
+  value of the weight in row $r$ and column $c$ of the matrix. Other
+  state variables can be created as needed.
+\item[Update functions] determine how nodes change their activity in
+  response to input, and how weights change their values (how they
+  \textit{learn}). Each node group and each weight matrix is given an
+  update function, unless we do not need to update them (e.g., fixed
+  weights).
+\item[Networks] are composed of node groups connected by weight
+  matrices, linked together by a \textit{spread scheme}, which is a
+  description of the operations that are performed when the network is
+  updated. They are variables of type \lstinline{struct mint_network}.
+\end{description}
+
+Typically, you will create one or more \mint networks by specifying
+the properties of a number of node groups (their size, number of
+states, activation function, etc.) and how they are connected via
+weight matrices. You may also specify how the network is updated
+(synchronouse or asynchronous dynamics, feed-forward spreading of
+activation, etc.).
+
+
+\chapter{Cookbook}
+\label{chap:cookbook}
+
+\section{How do i create a feed-forward network?}
+\label{sec:feed-forward}
+
+\section{How do I create a recurrent network?}
+\label{sec:recurrent}
+
+\section{How do I run a network?}
+\label{sec:running-network}
+
+\section{How can a network learn?}
+\label{sec:learning}
+
+\section{How do I choose node transfer functions?}
+\label{sec:transfer-functions}
+
+\section{How do I set learning rules?}
+\label{sec:learning-rules}
+
+\section{How do I set up how a network is updated?}
+\label{sec:spreading}
+
+\section{How do I use images as network stimuli?}
+\label{sec:images}
+
+\section{How do I simulate a sense organ?}
+\label{sec:sense-organ}
+
+\section{How do I simulate hormones, neuromodulators, etc.?}
+\label{sec:hormones-etc}
+
+\section{How do I simulate  hunger, thirst, and other body states?}
+\label{sec:body-states}
+
+\section{How do I simulate spiking neurons?}
+\label{sec:spiking}
+
+\section{How do I simulate continuous time?}
+\label{sec:continuous-time}
+
+\section{How do I control a robot or some kind of hardware with a network?}
+\label{sec:hardware-control}
+
+\section{How do I visualize networks, node groups and weight
+  matrices?}
+\label{sec:network-analysis}
+
+\section{Input file syntax}
+
+\subsection{Node model}
+\label{sec:nodemodel}
+A \mint node is characterized by an input $y$, an output $z$ and
+optionally a state vector $\vec s$, with any number of components.
+Node inputs may be set by the user (e.g.\ to simulate the reception of
+a stimulus) or arise from the weighted outputs of other nodes (via
+weight matrices). Node output is determined from node input and node
+state by an arbitrary function:
+\begin{equation}
+  \label{eq:node-model}
+  z = f( y, \vec s, \vec g )
+\end{equation}
+This operation is a called a \textit{node update}, and is typically
+performed as part of the \textit{spreading scheme}. The spreading
+scheme is the sequence of matrix-vector multiplications and node
+update operations whereby network state is updated (see
+\fref{sec:spreading}). In addition to affecting node output, an update
+may have other effects such as modifying node state.
+
+\subsection{Weight model}
+\label{sec:weightmodel}
+A weight is characterized by a value $w$ and a state vector $\vec s$,
+with 0 or more components. A weight can be updated in much the same
+way as a node, though weight update is usually called ``learning.''
+In \mint, an arbitrary function can be supplied to update weights
+based on current value, current state and the current input, output
+and state variables of the nodes joined by a weight.
+
+\section{Node update functions}
+\label{sec:nupdate}
+
+\subsection{Using update functions provided with \mint}
+\label{sec:update-using}
+
+See \lstinline{update.h} and \lstinline{nlib.h}.
+
+\subsection{Adding update functions}
+\label{sec:update-adding}
+
+Adding an update function to \mint requires two steps:
+\begin{enumerate}
+\item writing the update function itself;
+\item letting \mint know about the function.
+\end{enumerate}
+These operations do not require modifications to the \mint source.
+The prototype of a node update function is
+\begin{lstlisting}
+void function( mint_nodes n, int min, int max );
+\end{lstlisting}
+where
+\begin{itemize}
+\item \lstinline{n} is the node object to update;
+\item \lstinline{min}-\lstinline{max} is the range of nodes that the
+  function should update;
+\end{itemize}
+The basic structure of an  update rule is very simple:\footnote{The
+  \lstinline{for} loop assumes that the same operation is performed to
+update all nodes. Different operations, however, may be performed if
+desired.}
+\begin{lstlisting}
+void function( mint_nodes n, int min, int max ) {
+  int i;
+  /* retrieve update function parameters from node object */
+  for( i=min; i<max; i++ ) {
+    /* update node i */
+  }
+}  
+\end{lstlisting}
+For instance, imagine we want to update nodes as follows: if the input
+is above a threshold, the output should be set to 1, otherwise it
+should be set to 0. We store the threshold value as parameter 0 of the
+rule (we will see below how to tell \mint about the number of
+parameters taken by a rule). The implementation of the rule would be:
+\begin{lstlisting}
+void threshold_node( mint_nodes n, int min, int max, float *p ) {
+  int i;
+  float threshold;
+  threshold = mint_update_get_param( mint_nodes_get_update(n), 0 );
+  for( i=min; i<max; i++ ) {
+    if( n[0][i] > threshold )
+      n[1][i] = 1.;
+    else
+      n[1][i] = 0.;
+  }
+}  
+\end{lstlisting}
+Note that the function specifies an update mechanism (the threshold
+mechanism), but does not determine the threshold value itself, which
+is stored as a parameter in the node object.  Note also that the
+function need not check that \lstinline{min} and \lstinline{max} are
+sensible values for this node object, \mint checks this (in debug
+mode, see \fref{sec:debugging}).
+
+To be used with \mint, the function must be registered with a call
+like:
+\begin{lstlisting}
+void mint_update_nadd( void (*function)(mint_nodes, int, int, float *),
+                       int nstates, int nparam, float *param );
+\end{lstlisting}
+Thus for the above function:
+\begin{lstlisting}
+  float p[1] = { 1. };
+  mint_update_nadd( threshold_node, 0, 1, p );
+\end{lstlisting}
+The values provided for the parameter(s) become the default values for
+the function, but can be changed as needed (see \lstinline{update.h}).
+
+\section{Spreading schemes}
+\label{sec:spreading}
+
+A spreading scheme defines a sequence of matrix-vector multiplications
+and node updates.
+
+
+\section{Debugging}
+\label{sec:debugging}
+
+Compiling \mint the \lstinline{DEBUG} flag turns on a number of
+checks, ensuring for instance that indices supplied as function
+parameters are in the proper range, and that object copies operate on
+objects with the same ``geometry'' (e.g.\ node groups with the same
+size and number of states).  If a check fails, the program displays a
+hopefully informative message and calls \lstinline{abort()}.
+\Fref{sec:install} explains how to compile a debugging version of
+\mint.
+
+
+\section{Replacing the stock matrix-vector multiplication}
+\label{sec:mvm}
+
+\chapter{Space and speed}
+\label{chap:details}
+
+The major efficiency consideration is not having data structures for
+single nodes and weights, but rather for node groups and weight
+matrices directly, and caring for the memory layout of data. The
+benefits are seen mostly in the function that performs matrix-vector
+multiplication, which looks sort of:
+\begin{lstlisting}
+void mint_weights_mult( mint_weights w, mint_nodes from, mint_nodes to ) {
+  int i, j, r, c;
+  c = mint_weights_cols( w );
+  r = mint_weights_rows( w );
+  for( i=0; i<r; i++ ) for( j=0; j<c; j++ ) 
+    to[0][i] += w[0][i][j] * from[1][j];
+}  
+\end{lstlisting}
+Due to the memory layout of nodes and weights, all memory accesses are
+sequential in the above \lstinline{for} loop.
+
+Efficiency considerations have also influenced the design of node and
+weight update functions. The approach that first comes to mind to
+update a node group is something like (pseudo-code):
+\begin{lstlisting}
+for( i=0; i<n; i++ )
+  update_the_node( node_group_object, i );
+\end{lstlisting}
+where the function call updates node $i$ of the node group. The
+drawback is that there are $n$ function calls. In \mint, an update
+function takes a \textit{range} as argument, telling it which nodes to
+update. Thus the loop is inside the update function, saving $n-1$
+function calls. In other words, in \mint we have 
+(pseudo-code):
+\begin{lstlisting}
+  update_node_range( node_group_object, imin, imax );
+\end{lstlisting}
+where \lstinline{update_node_range()} does both the looping and the
+node updating. Note that it is not possible to inline the function in
+the simple-minded approach, because if the function can be configured
+by the user the compiler cannot know which function to inline. The
+same approach is taken for weight updates.
+
+
+BENCHMARK RESULTS
+
+\clearpage
+
+\printindex
+
+\end{document}
+

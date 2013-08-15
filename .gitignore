@@ -1,0 +1,17 @@
+*.o
+*.a
+*~
+*.aux
+*.log
+*.bbl
+*.blg
+example/pi/pi
+example/clocked/clocked
+example/sigmoid/sigmoid
+example/network-add/network-add
+example/izikevich/izzy
+example/camera/camera
+example/threads/threads
+example/sparse/sparse
+example/integrator/integrator
+example/speed/speed

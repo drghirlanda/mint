@@ -1,0 +1,14 @@
+To install: 
+
+On a POSIX system (Linux, Mac OSX) you can run the /install.sh script
+and follow the directions.
+
+On a Windows system you have two options:
+
+  1. Turn Windows into a POSIX system by installing Cygwin
+  (www.cygwin.org), then run install.sh as above.
+
+  2. Compile the source files in src/ yourself into a library (if you
+  write a project file for a Windows development environment, please
+  send it to me). The files are ANSI C89 (ISO C90) and should compile
+  in any decent environment.

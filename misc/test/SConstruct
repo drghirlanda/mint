@@ -1,0 +1,12 @@
+env = Environment( LIBS=['m','freeimage','mint','pthread'],
+                   CCFLAGS=Split('-O2 -Wall -Werror -ansi -DMINT_USE_THREADS') )
+
+env.Program( 'threads_test', env.Object('threads_test') )
+env.Program( 'graph_test', env.Object('graph_test') )
+env.Program( 'weights_test', env.Object('weights_test') )
+env.Program( 'nodes_test', env.Object('nodes_test') )
+env.Program( 'mult_speed_test', env.Object('mult_speed_test') )
+env.Program( 'network_test', env.Object('network_test') )
+env.Program( 'sparse_test', env.Object('sparse_test') )
+
+env.Program( 'basic_test', env.Object('basic_test') )

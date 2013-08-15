@@ -1,0 +1,116 @@
+- packaging: 
+
+  - uninstall
+
+
+- known bugs:
+
+
+- to be tested:
+
+  - freezing/unfreezing of weight matrices and networks
+  - mint_pi functions
+  - multi-threaded spread
+  - network acalc
+
+
+- threads:
+
+  - in weights_mult_threads, would it be noticeably faster to send all
+    work to nthread slaves and leave the master thread only as
+    monitor?
+
+  - multithread mint_nodes_set?
+
+  - spread threading is suboptimal, see FIX at threads.c:156
+
+
+- ops system:
+
+  - add node init op?
+
+  - add node operate op? can be used to turn on multi-threading on
+    nodes
+
+  - can direct-output nodes be set through an op? yes: by setting n[1]
+    to the same as n[0]... carefully
+
+  - more convenient ways to manipulate ops lists? like add op of a
+    given type and params by name?
+
+
+- dot output: print each nodes and weights op on a separate line?
+  maybe with record nodes?
+
+
+- weights init functions that build receptive fields and topographic
+  mappings
+
+
+- make it possible to set inputs by "shallow copy" (pointer
+  assignment)? would make things much faster when presenting many
+  different stimuli repeatedly, especially large stimuli like
+  realistic images.
+
+
+- sense organs   
+
+  - human cone system (cone data in egs-devel/physiology)
+
+  - generic rearrangement-intensity scheme
+
+mint_nodes mint_2d_stim( int size, float x, float h, float d ) {
+  int i;
+  mint_nodes n;
+  float aux;
+  n = mint_nodes_new( size, 0 );
+  for( i=0; i<size; i++ ) {
+    aux = (i-x)/d;
+    n[1][i] += h * exp( -aux*aux );
+  }
+  return n;
+}
+
+
+- worth it? 
+
+  - make it possible to set spread len if async spread EASY
+
+  - add count array to spread to allow steps to be repeated EASY
+
+  - grow/shrink node arrays and weight matrices (cf. nodes_resize)
+    MEDIUM
+
+  - population and mutation for genetic algorithms MEDIUM
+
+  - dynamic network visualization MEDIUM
+
+  - virtual environment COMPLEX
+
+
+- minor tweaks:
+  
+  - when resize is done for nodes, rename it to mint_nodes_set_size,
+    and rename mint_nodes_size to mint_nodes_get_size, for consistency
+    with other objects
+
+
+- improve error management: 
+
+  - specify also num states for from and to in weight update rules?
+
+  - go through all mint_check and separate fatal errors from
+    recoverable errors; the latter should return a status code
+
+
+- examples:
+
+  - make sure all examples work, have same file layout, and have a
+    README.txt file
+
+
+- MPI: 
+
+  - think about it!
+
+ 

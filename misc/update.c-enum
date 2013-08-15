@@ -1,0 +1,246 @@
+/* $Id: update.c,v 1.16 2009/06/26 14:38:09 stefano Exp stefano $ */
+
+#include "update.h"
+#include "nupdate_lib.h"
+#include "wupdate_lib.h"
+#include "utils.h"
+#include <stdlib.h>
+#include <string.h>
+
+struct mint_update {
+  int id;
+  char type;
+  /* FIX replace following two members with union */
+  void (*nfunc)( mint_nodes, int, int );
+  void (*wfunc)( mint_weights, mint_nodes, mint_nodes );
+  int states;
+  int nparam;
+  float *param;
+  int nglobal;
+  float **global;
+};
+
+/* default parameter values for rules that need them */
+static float default_bounded_linear_param[2] = { 0., 1. };
+static float default_sigmoid_param[2] = { 0.1, 1. };
+static float default_integrator_param[2] = { 1., 0. };
+static float default_correlation_param[2] = { 0., 1. };
+static float default_delta_param[2] = { 0.05, 0. };
+static float default_perceptual_param[2] = { 0.001, 0.0001 };
+
+/* FIX ugly max number of update rules... */
+enum { nupdate_max = 50 };
+
+/* table of update rules that can be used */
+static struct mint_update mint_update_table[ nupdate_max+1 ] = {
+  { 0, 0, 0, 0, 0, 0, 0, 0, 0 }, /* null rule */
+  { 1, 'n', mint_node_linear, 0, 0, 0, 0, 0, 0 },
+  { 2, 'n', mint_node_bounded_linear, 0, 0, 2, default_bounded_linear_param,
+    0, 0 },
+  { 3, 'n', mint_node_sigmoid, 0, 0, 2, default_sigmoid_param, 0,  },
+  { 4, 'n', mint_node_binary, 0, 0, 0, 0, 0, 0 },
+  { 5, 'n', mint_node_integrator, 0, 1, 2, default_integrator_param, 0, 0 },
+  { 6, 'w', 0, mint_correlationrule, 0, 2, default_correlation_param, 0, 0 },
+  { 7, 'w', 0, mint_deltarule, 0, 2, default_delta_param, 1, 0 },
+  { 8, 'w', 0, mint_perceptualrule, 0, 2, default_perceptual_param, 0, 0 }
+};
+
+/* initial number of update rules, see mint_update_atexit */
+enum { nupdate_start = 9 };
+
+/* current number of update rules */
+static int nupdate = nupdate_start;
+
+/* frees storage for parameter vectors in user-defined update
+   rules */
+static void mint_update_atexit( void ) {
+  int i;
+  for( i=nupdate_start; i<nupdate; i++ )
+    free( mint_update_table[i].param );
+}
+
+static struct mint_update *mint_update_alloc( int nparam, int nglobal ) {
+  struct mint_update *u = malloc( sizeof(struct mint_update) );
+  if( nparam>0 ) u->param = malloc( nparam*sizeof(float) );
+  else u->param = 0;
+  u->nparam = nparam;
+  if( nglobal>0 ) u->global = malloc( nglobal*sizeof(float *) );
+  else u->global = 0;
+  u->nglobal = nglobal;
+  return u;
+}
+
+struct mint_update *mint_update_new( int id ) {
+  struct mint_update *u;
+  mint_check( id>=0 && id<nupdate, "rule id out of range" ); 
+  u = mint_update_alloc( mint_update_table[id].nparam,
+			 mint_update_table[id].nglobal );
+  mint_update_cpy( u, mint_update_table + id );
+  return u;
+}
+
+void mint_update_del( struct mint_update *u ) {
+  mint_check( u!=0, "null 1st arg" );
+  free( u->param );
+  free( u->global );
+  free( u );
+}
+
+struct mint_update *mint_update_dup( const struct mint_update *u1 ) {
+  struct mint_update *u2;
+  mint_check( u1!=0, "argument is null" );
+  u2 = mint_update_alloc( u1->nparam, u1->nglobal );
+  mint_update_cpy( u2, u1 );
+  return u2;
+}
+
+void mint_update_cpy( struct mint_update *u1, 
+		      const struct mint_update *u2 ) {
+  float *p, **g;
+  mint_check( u1!=0, "null 1st arg" );
+  mint_check( u2!=0, "null 2nd arg" );
+  if( u1==u2 ) return;
+  p = u1->param;
+  g = u1->global;
+  memcpy( u1, u2, sizeof(struct mint_update) );
+  if( u1->nparam ) {
+    u1->param = realloc( p, u1->nparam * sizeof(float) );
+    memcpy( u1->param, u2->param, u1->nparam * sizeof(float) );
+  } else {
+    u1->param = 0;
+  }
+  if( u1->global ) {
+    u1->global = realloc( g, u1->nglobal * sizeof(float) );
+    memcpy( u1->global, u2->global, u1->nglobal * sizeof(float) );
+  } else {
+    u1->global = 0;
+  }
+}
+
+void mint_update_save( const struct mint_update *u, FILE *dest ) {
+  int i;
+  mint_check( u!=0, "null 1st arg" );
+  if( u->id == 0 ) return; 
+  fprintf( dest, "update %d %c ", u->id, u->type );
+  for( i=0; i<u->nparam; i++ ) fprintf( dest, "%f ", u->param[i] );
+  fprintf( dest, "\n" );
+  /* globals are transient hence not saved */
+}
+
+struct mint_update *mint_update_load( FILE *file ) {
+  int i, j, id;
+  struct mint_update *u;
+  if( mint_skip_space(file) != 'u' )
+    return mint_update_new(0);
+  i = fscanf( file, "update %d ", &id );
+  mint_check( i==1, "can't load id" );
+  mint_check( id>0 && id<nupdate, "id out of range" );
+  u = mint_update_new( id );
+  i = fscanf( file, " %c", &u->type );
+  mint_check( i==1, "can't read type" );
+  mint_check( (u->type=='n' || u->type=='w'), "type is not 'w' or 'n'" );
+  for( j=0; j<u->nparam; j++ ) {
+    i = fscanf( file, " %f", u->param+j );
+    mint_check( i==1, "can't load parameters" );
+  }
+  /* globals are transient hence not loaded */
+  return u;
+}
+
+int mint_update_id( const struct mint_update *u ) {
+  return u->id;
+}
+
+int mint_update_states( const struct mint_update *u ) {
+  return u->states;
+}
+
+int mint_update_nparam( const struct mint_update *u ) {
+  return u->nparam;
+}
+
+float mint_update_get_param( struct mint_update *u, int i ) {
+  mint_check( i>=0 && i<u->nparam, "index out of range" );
+  return u->param[i];
+}
+
+void mint_update_set_param( struct mint_update *u, int i, float x ) {
+  mint_check( i>=0 && i<u->nparam, "index out of range" );
+  u->param[i] = x;
+}
+
+int mint_update_nglobal( const struct mint_update *u ) {
+  return u->nglobal;
+}
+
+float mint_update_get_global( struct mint_update *u, int i ) {
+  mint_check( i>=0 && i<u->nglobal, "index out of range" );
+  return *u->global[i];
+}
+
+void mint_update_napply( mint_nodes n, int min, int max ) {
+  const struct mint_update *u = mint_nodes_get_update( n );
+  if( u->id != 0 ) {
+    mint_check( u->type == 'n', "wrong type" );
+    u->nfunc( n, min, max );
+  }
+}
+
+void mint_update_wapply( mint_weights w, mint_nodes pre, mint_nodes post ) {
+  const struct mint_update *u = mint_weights_get_update( w );
+  if( u->id != 0 ) {
+    mint_check( u->type == 'w', "wrong type" );
+    u->wfunc( w, pre, post );
+  }
+}
+
+int mint_update_nadd( void(*function)( mint_nodes, int, int ),
+		      int states, int nparam, float *param,
+		      int nglobal, float **global ) {
+  int i;
+  struct mint_update *u;
+  mint_check( nupdate<nupdate_max, "no space to add rule" );
+  u = mint_update_table + nupdate;
+  u->id = nupdate;
+  u->type = 'n';
+  u->nfunc = function;
+  u->wfunc = 0;
+  u->states = states;
+  u->nparam = nparam;
+  u->param = malloc( nparam*sizeof(float) );
+  for( i=0; i<nparam; i++ ) u->param[i] = param[i];
+  u->nglobal = nglobal;
+  u->global = malloc( nglobal*sizeof(float *) );
+  for( i=0; i<nglobal; i++ ) u->global[i] = global[i];
+
+  /* register deallocation routine, only 1st time a rule is added */
+  if( nupdate == nupdate_start ) atexit( mint_update_atexit );
+
+  return nupdate++;
+}
+
+int mint_update_wadd( void(*function)( mint_weights, mint_nodes,
+				       mint_nodes ),
+		      int states, int nparam, float *param,
+		      int nglobal, float **global ) {
+  int i;
+  struct mint_update *u;
+  mint_check( nupdate<nupdate_max, "no space to add rule" );
+  u = mint_update_table + nupdate;
+  u->id = nupdate;
+  u->type = 'w';
+  u->nfunc = 0;
+  u->wfunc = function;
+  u->states = states;
+  u->nparam = nparam;
+  u->param = malloc( nparam*sizeof(float) );
+  for( i=0; i<nparam; i++ ) u->param[i] = param[i];
+  u->nglobal = nglobal;
+  u->global = malloc( nglobal*sizeof(float *) );
+  for( i=0; i<nglobal; i++ ) u->global[i] = global[i];
+
+  /* register deallocation routine, only 1st time a rule is added */
+  if( nupdate == nupdate_start ) atexit( mint_update_atexit );
+
+  return nupdate++;
+}

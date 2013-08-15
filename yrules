@@ -1,0 +1,261 @@
+# list of c files 
+FILES="netop network nodes nop op random random_search spread threads utils weights wop"
+
+# list of dependencies of the libmint task (updated in several places)
+DEPS=""
+
+# installation directory
+INSTALL=${install:="/usr/local/"}
+
+# test whether a given feature is compiled in a libmint*.a file
+hasfeature() {
+    case $2 in
+	"threads")
+	    feature=pthread;;
+	"image")
+	    feature="FreeImage";;
+	"pi")
+	    feature="mint_pi";;
+	"camera")
+	    feature="mint_camera_init"
+    esac
+    N=$(nm -a $1 | grep $feature | wc -l)
+    [[ $N -gt 0 ]]
+}
+
+# figure out additional libraries required to link a program with a
+# given libmint*.a
+getlibs() {
+    LIBS=""
+    if hasfeature $1 "threads"; then
+	LIBS="$LIBS -lpthread"
+    fi
+    if hasfeature $1 "image"; then
+	LIBS="$LIBS -lfreeimage"
+    fi
+    if hasfeature $1 "pi"; then
+	LIBS="$LIBS -lpigpio -lrt -lpthread"
+    fi
+    echo $LIBS
+}
+
+# set CFLAGS according to production, debug, or profile mode
+CFLAGS="-ansi -Wall -Werror"
+if [[ $debug -eq 1 ]]; then
+    LIBRARY=libmint-debug.a
+    CFLAGS="-g -O0 $CFLAGS"
+    BUILD=build/debug
+elif [[ $profile -eq 1 ]]; then
+    LIBRARY=libmint-profile.a
+    CFLAGS="-O2 -pg $CFLAGS"
+    BUILD=build/profile
+else
+    LIBRARY=libmint.a
+    CFLAGS="-O2 -fomit-frame-pointer $CFLAGS"
+    BUILD=build/production
+fi
+
+# process mint features and give some feedback to user. the camera and
+# threads features need some additional work which is handled by the
+# case statement. note that camera is processed before image by the
+# for loop, so it can enable image, which it needs.
+#echo "mint features:"
+for FEATURE in camera image threads pi; do 
+    VARIABLE=${!FEATURE}
+    if [[ $VARIABLE -eq 1 ]]; then
+	BUILD="${BUILD}1"
+#	echo -e "\t$FEATURE enabled"
+	FILES="$FILES $FEATURE"
+	case $FEATURE in
+	    "camera")
+		CFLAGS="$CFLAGS -DCAMSHOT=\"$INSTALL/bin/camshot\""
+		DEPS="$DEPS camshot"
+		image=1 # enable image here
+		;;
+	    "threads")
+		CFLAGS="$CFLAGS -DMINT_USE_THREADS"
+		;;
+	esac
+    else
+	BUILD="${BUILD}0"
+	# delete the object file from library (threads feature
+	# requires more work)
+	if [ $FEATURE != "threads" ]; then
+	    ar d $LIBRARY $FEATURE.o
+	fi
+#	echo -e "\t$FEATURE disabled"
+    fi
+done
+
+echo -e "compilation options:\n$CFLAGS"
+
+# make sure build directory exists
+mkdir -p $BUILD
+
+# yruba rules from now on ##############################################
+
+
+# compile a generic C file
+
+mapTarget '*.o' compileC
+
+dep_compileC() {
+    local C=src/$(basename $1 .o).c
+    echo $C
+}
+
+test_compileC() {
+    old $1 -d $2
+}
+
+cmd_compileC() {
+    local C=src/$(basename $1 .o).c
+    cc $CFLAGS -o $1 -c $C
+}
+
+
+# build mint library
+
+dep_mint() {
+    for F in $FILES; do
+	DEPS="$DEPS $BUILD/$F.o"
+    done
+    echo $DEPS
+}
+
+test_mint() {
+    old $1 -d $2
+}
+
+cmd_mint() {
+    for F in $FILES; do
+	ar crs $LIBRARY $BUILD/$F.o
+    done 
+}
+
+
+# install mint
+
+dep_install() {
+    D=$LIBRARY
+    if hasfeature $LIBRARY "image"; then
+	D="$D camshot"
+    fi
+    echo $D
+}
+
+cmd_install() {
+    if hasfeature $LIBRARY "image"; then
+	install camshot/camshot "$INSTALL/bin"
+    fi
+    install -d "$INSTALL/lib"
+    install -m 0644 libmint*.a "$INSTALL/lib"
+    /bin/rm -f "$INSTALL/include/mint.h"
+    install -d "$INSTALL/include/mint"
+    for F in $FILES; do 
+	install -m 0644 src/$F.h "$INSTALL/include/mint"
+	echo "#include \"$F.h\"" >> "$INSTALL/include/mint.h" 
+    done
+}
+
+
+# remove all build and library files, and built docs
+
+cmd_clean() {
+    /bin/rm -rf ./libmint* build/* doc/manual/mint.pdf doc/html/*
+}
+
+
+# create a mint distribution
+
+dep_package() {
+    echo "doc"
+}
+
+cmd_package() {
+    PKG=mint-$(date -I)
+    /bin/rm -f $PKG.zip
+    mkdir -p $PKG/src
+    mkdir -p $PKG/doc/manual 
+    cp -r README yruba yrules camshot install.sh $PKG
+    cp -r src/*.h src/*.c $PKG/src
+    cp doc/manual/mint.pdf $PKG/doc/manual
+    cp -r doc/html $PKG
+    find example -type d -exec mkdir -p $PKG/{} \;
+    for SFX in c arc R sh; do
+	for F in $(find example -name '*.'$SFX); do
+	    cp $F $PKG/$(dirname $F)
+	done
+    done
+    zip -r $PKG.zip $PKG
+    /bin/rm -rf $PKG
+}
+
+
+# build docs
+
+#test_doc() {
+#    MAN=doc/manual/mint.pdf
+#    OLDMAN=old $MAN -d doc/manual/mint.tex
+#    HTML=doc/html/index.html
+#    OLDHTML=old $HTML  -d src/*.h
+#    [[ ! -e $MAN || ! -e $HTML || $OLDMAN || $OLDHTML ]]
+#}
+
+cmd_doc() {
+    cd doc/manual
+    for i in 1 2 3; do
+	pdflatex mint.tex
+    done
+    cd -
+    doxygen doc/Doxyfile
+}
+
+
+# build camshot
+
+test_camshot() {
+    ! make -q -C camshot
+}
+
+cmd_camshot() {
+    cd camshot
+    make
+    cd -
+}
+
+
+# build examples: ######################################################
+
+EXAMPLES="clocked pi deltarule integrator izikevich sigmoid sparse"
+
+mapTarget 'example/*' compileEx
+
+dep_compileEx() {
+    echo mint
+}
+
+cmd_compileEx() {
+    E=$(basename $1)
+    local C=example/$E/$E.c
+    LIBS=$(getlibs $LIBRARY)
+    cc $CFLAGS -o example/$E/$E $C -Isrc $LIBRARY -lm $LIBS
+}
+
+dep_example() {
+    EXDEPS=$LIBRARY
+    for F in $EXAMPLES; do
+	EXDEPS="$EXDEPS example/$F"
+    done
+    echo $EXDEPS
+}
+
+cmd_example() {
+    echo "examples built"
+}
+
+# documentation strings: ###############################################
+
+ydoc mint "build libmint (see README for optional features)"
+ydoc package "build tgz distribution archive"
+ydoc doc     "build MINT documentation"
