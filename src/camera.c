@@ -24,21 +24,21 @@ void mint_camera_close( void ) {
 
   if( unlink( mint_camera_pipe ) == -1 )
     fprintf( stderr, 
-	     "mint_camera_close: cannot remove '%s', please remove it yourself\n", 
+	     "mint_camera_close: cannot remove '%s'\n", 
 	     mint_camera_pipe );
 
   sprintf( cmd, "kill -15 %u", (unsigned int)mint_camera_pid );
   if( system( cmd ) == -1 ) {
     fprintf( stderr, 
-	     "mint_camera_close: cannot stop camshot, try with '%s'\n", 
-	     cmd );
+	     "mint_camera_close: cannot stop camshot, pid=%u\n", 
+	     (unsigned int)mint_camera_pid );
   }
 
   mint_camera_pid = 0;
 }
 
 /* this function initializes the camera by forking off an instance of
-   camshot, set to write image data to a pipe, aborting on failure */
+   camshot, set to write image data to a pipe. it aborts on failure */
 void mint_camera_init( void ) {
   char *camarg[] = { CAMSHOT, "-p", 0, 0 };
   char cmd[256];
@@ -54,7 +54,7 @@ void mint_camera_init( void ) {
   pid = fork();
 
   if( pid == -1 ) { /* parent, failed fork */
-    fprintf( stderr, "cannot fork to  create camshot process" );
+    fprintf( stderr, "cannot fork to create camshot process" );
     abort();
   } else if( pid==0 ) { /* child */
 #ifndef NDEBUG
@@ -69,12 +69,11 @@ void mint_camera_init( void ) {
     fprintf( stderr, "camera master pid=%u\n waiting 5s for pid=%u to start camera\n", getpid(), pid );
 #endif
     mint_camera_pid = pid;
-    sleep( 5 );
     atexit( mint_camera_close );
 
-    /* we grab a dummy image because camshot has a bug: the first two
-       images ever read from the pipe are identical! since we are
-       here, we check that we can cat from the pipe */
+    /* we grab an image because camshot has a bug: the first two
+       images ever read from the pipe are identical! this also serves
+       to wait until the camera is ready. */
     sprintf( cmd, "cat %s > /dev/null", mint_camera_pipe );
     if( system( cmd ) == -1 ) {
       fprintf( stderr, "mint_camera_init: cannot read from '%s'\n", 
