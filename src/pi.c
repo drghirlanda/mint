@@ -28,7 +28,7 @@ void mint_pi_close( void ) {
   if( !mint_pi ) 
     return;
 
-  /* set all GPIOs used as output to 0 */
+  /* set all GPIOs used as output to 0 to avoid leaving stuff running */
   for( i = 0; i<31; i++ ) {
     if( mint_pi_gpio_used & (1 << i) )
       gpioWrite( i, 0 );
@@ -145,20 +145,17 @@ void mint_pi_dcmotor( mint_nodes n, int min, int max, float *p ) {
   i = gpioSetMode( output_pin2, PI_OUTPUT );
   mint_check( i==0, "cannot set output pin 2 mode to output" );
 
-  /* the following rescales activity in [0,1] taking into account
-     whether it is above or below the zero point. furthermore, if
-     activity is below the zero point we swap output_pin1 and
-     output_pin2 to drive the motor in reverse */
-  if( activity>zero_point ) {
-    activity /= 1-(zero_point+threshold);
-  } else { 
-    activity /= zero_point - threshold;
-    i = output_pin1 ;
+  /* if activity is below the zero point, we turn it around so that it
+     is above it by the same amount, and we swap the output pins to
+     drive the motor in reverse */
+  if( activity<zero_point ) {
+    activity = 2*zero_point - activity;
+    i = output_pin2;
     output_pin2 = output_pin1;
     output_pin1 = i;
   }
 
-  /* now we scale activity from [0, 1] to the pin range */
+  /* scale activity from [0, 1] to the pin range */
   i = gpioGetPWMrange( output_pin1 );
   mint_check( i != PI_BAD_USER_GPIO, "cannot get output pin range" );
   activity *= i; 

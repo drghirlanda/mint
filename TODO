@@ -9,10 +9,15 @@
 - to be tested:
 
   - freezing/unfreezing of weight matrices and networks
-  - mint_pi functions
   - multi-threaded spread
   - network acalc
 
+
+-mint_pi:
+
+  - rescale dcmotor activity from [threshold+zero_point, 1] to [0, 1]
+  - test servo motor and sensor functions (no pull resistor on sensor
+    yet)
 
 - threads:
 

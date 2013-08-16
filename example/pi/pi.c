@@ -8,6 +8,7 @@
 int main( void ) {
   FILE *file;
   struct mint_network *net;
+  mint_nodes n;
 
   mint_pi_init();
 
@@ -18,6 +19,15 @@ int main( void ) {
 
   mint_network_save( net, stdout );
 
+  n = mint_network_nodes( net, 0 );
+
+  printf( "driving motor in one direction for 5s\n" );
+  n[0][0] = 1;
+  mint_network_operate( net ); 
+  sleep( 5 );
+
+  printf( "driving motor in the other direction for 5s\n" );
+  n[0][0] = 0;
   mint_network_operate( net ); 
   sleep( 5 );
 
