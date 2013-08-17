@@ -3,15 +3,12 @@
 #include "utils.h"
 #include <math.h>
 #include <stdlib.h>
+#include <string.h>
 
 struct mint_nodes_str;
 
 void mint_node_identity( mint_nodes n, int min, int max, float *p ) {
-  int i;
-  float *in, *out;
-  in = n[0];
-  out = n[1];
-  for( i=min; i<max; i++ ) *(out+i) = *(in+i);
+  memcpy( n[1]+min, n[0]+min, (max-min)*sizeof(float) );
 }
 
 void mint_node_sigmoid( mint_nodes n, int min, int max, float *p ) {

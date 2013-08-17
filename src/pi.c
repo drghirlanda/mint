@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <string.h>
 
 /*** default parameters for mint_pi_* functions ***/
 
@@ -17,7 +18,7 @@ static float mint_pi_servomotor_default[4] = {-1, 1500, 1500, -1};
    storing the init status */
 static float mint_pi_dcmotor_default[7] = { -1, -1, -1, 0.5, 0.1, 0, 0 };
 
-static float mint_pi_gpiosensor_default[2] = { -1, 1 };
+static float mint_pi_gpiosensor_default[4] = { -1, 1, 0, 0 };
 
 /*** end default parameters ***/
 
@@ -108,7 +109,6 @@ void mint_pi_servomotor( mint_nodes n, int min, int max, float *p ) {
   mint_check( i==0, "cannot set output pin" ); 
 }
 
-
 void mint_pi_dcmotor( mint_nodes n, int min, int max, float *p ) {
   int i, size;
   float activity;
@@ -186,27 +186,60 @@ void mint_pi_dcmotor( mint_nodes n, int min, int max, float *p ) {
   mint_check( i==0, "cannot turn on output pin" );
 }
 
+/* getting input from GPIOs is a bit harder because they can be
+   triggered at any time, even when the network is not being
+   updated. what we do is to set up a callback (courtesy pigpio
+   library) to invoke a function everytime the GPIO level changes. the
+   function translates the value read on the GPIO into input to
+   nodes. */
+ 
+void mint_pi_gpiosensor_callback( unsigned int gpio, unsigned int level, 
+				  uint32_t tick, void *userdata ) {
+  mint_nodes n;
+  mint_ops *ops;
+  mint_op *op;
+  int i, size;
+  float increment, *state;
 
-void mint_pi_gpiosensor( mint_nodes n, int min, int max, float *p ) {
-  int input_pin, i, size;
-  float increment;
+  /* get nodes object and retrieve increment param from gpiosensor op */
+  n = (mint_nodes) userdata;
+  ops = mint_nodes_get_ops( n );
+  i = mint_ops_find( ops, "gpiosensor" );
+  mint_check( i>-1, "no gpiosensor op in nodes" );
+  op = mint_ops_get( ops, i );
+  increment = mint_op_get_param( op, 1 );
 
-  input_pin = p[0];
-  increment = p[1];
-
-  mint_check( input_pin != -1, "input_pin not set (1st op parameter)" );
-
-  i = gpioSetMode( input_pin, PI_INPUT );
-  mint_check( i==0, "cannot set read mode on input_pin" );
-
-  input_pin = gpioRead( input_pin );
-  mint_check( input_pin==0, "cannot read from input_pin" );
-
-  if( !input_pin )
-    return;
+  state = n[ mint_op_get_param( 2 ) ];
 
   size = mint_nodes_size( n );
   for( i=0; i<size; i++ )
-    n[0][i] += increment;
-  
+    *(state + i) += increment * level;
+}
+
+/* here we first arranges for pigpio to call the function above, which
+   stores GPIO level values in a state variable, then we copy these
+   values as input when called. the first step is performed only once
+   (ensured by storing a flag value into param 3 of the op). */
+void mint_pi_gpiosensor( mint_nodes n, int min, int max, float *p ) {
+  int input_pin, i;
+  float increment, *in, *state;
+
+  if( !p[3] ) { /* we still have to set things up */
+    input_pin = p[0];
+    mint_check( input_pin != -1, "input_pin not set (1st op parameter)" );
+
+    i = gpioSetMode( input_pin, PI_INPUT );
+    mint_check( i==0, "cannot set read mode on input_pin" );
+
+    gpioSetAlertFuncEx( input_pin, mint_pi_gpiosensor_callback, (void *)n );
+
+    p[3] = 1; /* setup done */
+  }
+
+  state = n[ p[2] ];
+  in = n[0];
+  for( i=min; i<max; i++ ) {
+    *(in+i) += *(state+i);
+    *(state+i) = 0;
+  }
 }

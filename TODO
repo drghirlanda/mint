@@ -3,8 +3,13 @@
   - uninstall
 
 
-- known bugs:
+- known bugs or poorly designed features:
 
+  - all ops that need state should allow the user to configure which
+    state variables are used, so that multiple ops can coexist without
+    clashing! the state variables will have reasonable defaults so
+    that they need not be set explicitly when the op has no potential
+    for clashing with others.
 
 - to be tested:
 

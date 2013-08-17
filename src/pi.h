@@ -40,8 +40,13 @@ void mint_pi_dcmotor( mint_nodes n, int, int, float * );
 
 /** An op to read from a sensor attached to a GPIO pin. If the pin is
     on, the input to all nodes is incremented by an amount specified
-    by the second op parameter( default = 1). The first parameter is
-    the pin number.
+    by the second op parameter (default = 1), times the value read
+    from the pin. The first parameter is the pin number.
+
+    NOTE: A GPIO might change level at a time when the network is not
+    being updated. This is taken care of (read pi.c if you want the
+    details), so whenever the nodes are updated they will see in input
+    all increments accrued since the last time they have been updated.
  */  
 void mint_pi_gpiosensor( mint_nodes n, int, int, float * );
 
