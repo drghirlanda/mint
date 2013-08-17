@@ -15,9 +15,8 @@
 
 -mint_pi:
 
-  - rescale dcmotor activity from [threshold+zero_point, 1] to [0, 1]
   - test servo motor and sensor functions (no pull resistor on sensor
-    yet)
+    yet, sensor should probably be done through a callback)
 
 - threads:
 

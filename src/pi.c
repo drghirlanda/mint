@@ -155,6 +155,10 @@ void mint_pi_dcmotor( mint_nodes n, int min, int max, float *p ) {
     output_pin1 = i;
   }
 
+  /* scale activity from [zero_point+threshold, 1] to [0, 1] */
+  activity += zero_point + threshold;
+  activity /= 1 - zero_point - threshold;
+
   /* scale activity from [0, 1] to the pin range */
   i = gpioGetPWMrange( output_pin1 );
   mint_check( i != PI_BAD_USER_GPIO, "cannot get output pin range" );
