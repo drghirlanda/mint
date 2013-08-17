@@ -13,7 +13,9 @@
    by excessive rotation. the user is expected to set them */
 static float mint_pi_servomotor_default[4] = {-1, 1500, 1500, -1};
 
-static float mint_pi_dcmotor_default[5] = { -1, -1, -1, 0.5, 0.1 };
+/* the last parameter (undocumented in the user interface) is for
+   storing the init status */
+static float mint_pi_dcmotor_default[7] = { -1, -1, -1, 0.5, 0.1, 0, 0 };
 
 static float mint_pi_gpiosensor_default[2] = { -1, 1 };
 
@@ -111,6 +113,7 @@ void mint_pi_dcmotor( mint_nodes n, int min, int max, float *p ) {
   int i, size;
   float activity;
   int enable_pin, output_pin1, output_pin2;
+  int init_done, set_mode;
   float zero_point, threshold;
 
   enable_pin = p[0];
@@ -118,10 +121,32 @@ void mint_pi_dcmotor( mint_nodes n, int min, int max, float *p ) {
   output_pin2 = p[2];
   zero_point = p[3];
   threshold = p[4];
+  init_done = p[5];
+  set_mode = p[6];
 
-  mint_check( enable_pin != -1, "enable pin not set (1st op parameter)" );
-  mint_check( output_pin1 != -1, "output pin 1 not set (2nd op parameter)" );
-  mint_check( output_pin2 != -1, "output pin 1 not set (2nd op parameter)" );
+  /* pin initialization is performed only once, unless user asks
+     otherwise */
+  if( set_mode || !init_done ) {
+
+    mint_check( enable_pin != -1, "enable pin not set (1st op parameter)" );
+    mint_check( output_pin1 != -1, "output pin 1 not set (2nd op parameter)" );
+    mint_check( output_pin2 != -1, "output pin 1 not set (2nd op parameter)" );
+
+    /* register these pins as being used for output */
+    mint_pi_gpio_used |= 1 << enable_pin;
+    mint_pi_gpio_used |= 1 << output_pin1;
+    mint_pi_gpio_used |= 1 << output_pin2;
+
+    /* make sure pin mode is output */
+    i = gpioSetMode( enable_pin, PI_OUTPUT );
+    mint_check( i==0, "cannot set enable pin to output" );
+    i = gpioSetMode( output_pin1, PI_OUTPUT );
+    mint_check( i==0, "cannot set output pin 1 mode to output" );
+    i = gpioSetMode( output_pin2, PI_OUTPUT );
+    mint_check( i==0, "cannot set output pin 2 mode to output" );
+
+    p[5] = 1; /* initialization done */
+  }
 
   /* calculate average activity (see mint_pi_servo) */
   size = mint_nodes_size( n );
@@ -132,18 +157,6 @@ void mint_pi_dcmotor( mint_nodes n, int min, int max, float *p ) {
 
   if( fabs( activity - zero_point ) < threshold )
     return;
-
-  mint_pi_gpio_used |= 1 << enable_pin;
-  mint_pi_gpio_used |= 1 << output_pin1;
-  mint_pi_gpio_used |= 1 << output_pin2;
-
-  /* make sure pin mode is output */
-  i = gpioSetMode( enable_pin, PI_OUTPUT );
-  mint_check( i==0, "cannot set enable pin to output" );
-  i = gpioSetMode( output_pin1, PI_OUTPUT );
-  mint_check( i==0, "cannot set output pin 1 mode to output" );
-  i = gpioSetMode( output_pin2, PI_OUTPUT );
-  mint_check( i==0, "cannot set output pin 2 mode to output" );
 
   /* if activity is below the zero point, we turn it around so that it
      is above it by the same amount, and we swap the output pins to

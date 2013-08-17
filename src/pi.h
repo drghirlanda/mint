@@ -22,16 +22,20 @@ void mint_pi_servomotor( mint_nodes n, int, int, float * );
 
 /** An op to have mint nodes control a dc motor on the Raspberry Pi,
    using a motor controller such as the L293D or SN754410. The op
-   takes five parameters: GPIO pin number to enable the motor
+   takes six parameters: GPIO pin number to enable the motor
    controller, two GPIO pin numbers for the output pins, a value
-   denoting the zero point (activity above or below this value will
-   drive the motor in one or ther other direction), activity threshold
-   (departures from the zero point below threshold are ignored). The
-   defaults are zero point = 0.5 and threshold = 0.1. Thus node
-   activity between 0.6 and 1 will drive the motor in one direction
-   (at increasing speed), activity below 0.4 will drive it in the
-   other direction (at increasing speed), and activity between 0.4 and
-   0.6 will leave the motor off. */
+   denoting the zero point (node activity above or below this value
+   will drive the motor in one or ther other direction), activity
+   threshold (departures from the zero point below threshold are
+   ignored). The defaults are zero point = 0.5 and threshold =
+   0.1. Thus node activity between 0.6 and 1 will drive the motor in
+   one direction (at increasing speed), activity below 0.4 will drive
+   it in the other direction (at increasing speed), and activity
+   between 0.4 and 0.6 will leave the motor off. The sixth parameter
+   (optional) denotes whether the mode of gpio pins should be set once
+   for all (parameter value of 0), or every time the op is called
+   (parameter value of 1). Setting the output mode once for all should
+   be safe unless someoene is also reading from the same pin. */
 void mint_pi_dcmotor( mint_nodes n, int, int, float * );
 
 /** An op to read from a sensor attached to a GPIO pin. If the pin is

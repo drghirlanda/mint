@@ -17,6 +17,7 @@
 
   - test servo motor and sensor functions (no pull resistor on sensor
     yet, sensor should probably be done through a callback)
+  - test init_done and set_mode params in dcmotor op
 
 - threads:
 
@@ -26,18 +27,29 @@
 
   - multithread mint_nodes_set?
 
+  - multi thread mint_node update: could be done in the network rather
+    than in the nodes, given that node updates already take a range of
+    nodes, and given that the diversity of node updates prevents the
+    approach used for weights.
+
   - spread threading is suboptimal, see FIX at threads.c:156
 
 
 - ops system:
 
-  - add node init op?
+  - add node init op? could be used for one-time set up of update
+    ops. the init op would do such setup and then install a
+    complementary node update function for the update proper. perhaps
+    the same can be achieved by having a flag in the op parameters
+    flagging to do/skip the setup.
 
   - add node operate op? can be used to turn on multi-threading on
-    nodes
+    nodes. (is a dedicated update op enough? if first, it could call
+    all other ops, but how to avoid that the others are also called?)
 
   - can direct-output nodes be set through an op? yes: by setting n[1]
-    to the same as n[0]... carefully
+    to the same as n[0]... carefully. is this safe? how to prevent
+    memory to be wasted? 
 
   - more convenient ways to manipulate ops lists? like add op of a
     given type and params by name?
