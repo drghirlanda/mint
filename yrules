@@ -59,12 +59,10 @@ fi
 # threads features need some additional work which is handled by the
 # case statement. note that camera is processed before image by the
 # for loop, so it can enable image, which it needs.
-#echo "mint features:"
 for FEATURE in camera image threads pi; do 
     VARIABLE=${!FEATURE}
     if [[ $VARIABLE -eq 1 ]]; then
 	BUILD="${BUILD}1"
-#	echo -e "\t$FEATURE enabled"
 	FILES="$FILES $FEATURE"
 	case $FEATURE in
 	    "camera")
@@ -83,7 +81,6 @@ for FEATURE in camera image threads pi; do
 	if [ $FEATURE != "threads" ]; then
 	    ar d $LIBRARY $FEATURE.o
 	fi
-#	echo -e "\t$FEATURE disabled"
     fi
 done
 
@@ -172,6 +169,10 @@ dep_package() {
     echo "doc"
 }
 
+test_package() {
+    old $1 -d $2
+}
+
 cmd_package() {
     PKG=mint-$(date -I)
     /bin/rm -f $PKG.zip
@@ -194,13 +195,13 @@ cmd_package() {
 
 # build docs
 
-#test_doc() {
-#    MAN=doc/manual/mint.pdf
-#    OLDMAN=old $MAN -d doc/manual/mint.tex
-#    HTML=doc/html/index.html
-#    OLDHTML=old $HTML  -d src/*.h
-#    [[ ! -e $MAN || ! -e $HTML || $OLDMAN || $OLDHTML ]]
-#}
+dep_doc() {
+    echo "src/*.h doc/manual/mint.tex"
+}
+
+test_doc() {
+    old $1 -d $2
+}
 
 cmd_doc() {
     cd doc/manual
