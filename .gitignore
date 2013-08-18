@@ -17,4 +17,5 @@ example/sparse/sparse
 example/integrator/integrator
 example/speed/speed
 mint-*.zip
+doc/html
 
