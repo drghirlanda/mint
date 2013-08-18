@@ -24,12 +24,11 @@ struct mint_ops {
 
 /* default parameter values for ops that need them */
 static float node_sigmoid_param[2] = { 0.1, 1. };
-static float node_integrator_param[2] = { 1., 0. };
-static float node_izzy_param[4] = { 0.02, 0.2, -65., 8.};
-static float node_tonic_param[2] = { 0.1, 0.01 };
+static float node_integrator_param[3] = { 1., 0., 2 };
+static float node_izzy_param[6] = { 0.02, 0.2, -65., 8., 2, 3};
 static float node_noise_param[3] = { 0, 0, 0.01 };
 static float node_bounded_param[3] = { 1, 0, 1 };
-static float node_counter_param[2] = { 1, 2 };
+static float node_counter_param[3] = { 1, 1, 2 };
 static float node_spikes_param[1] = { 5 };
 
 static float weights_hebbian_param[4] = { 0., 0., 0., 0. };
@@ -54,7 +53,7 @@ static float network_clocked_param[2] = { 10, 1 };
 
     NOTE: change this whenever adding or removing from the table
     above, otherwise crashes can occur when adding ops! */
-#define mint_nop_builtin 29
+#define mint_nop_builtin 28
 
 /* built-in ops */
 static struct mint_op mint_op_static_table[ mint_nop_builtin+1 ] = {
@@ -66,12 +65,10 @@ static struct mint_op mint_op_static_table[ mint_nop_builtin+1 ] = {
   { "sigmoid",mint_op_nodes_update,mint_node_sigmoid,2,
     node_sigmoid_param },
 
-  { "integrator",mint_op_nodes_update,mint_node_integrator,2,
+  { "integrator",mint_op_nodes_update,mint_node_integrator,3,
     node_integrator_param },
 
-  { "izzy",mint_op_nodes_update,mint_node_izzy,4,node_izzy_param },
-
-  { "tonic",mint_op_nodes_update,mint_node_tonic,2,node_tonic_param },
+  { "izzy",mint_op_nodes_update,mint_node_izzy,6,node_izzy_param },
 
   { "noise",mint_op_nodes_update,mint_node_noise,
     3,node_noise_param },
@@ -80,7 +77,7 @@ static struct mint_op mint_op_static_table[ mint_nop_builtin+1 ] = {
     3,node_bounded_param },
 
   { "counter",mint_op_nodes_update,mint_node_counter,
-    2,node_counter_param },
+    3,node_counter_param },
 
   { "spikes",mint_op_nodes_update,mint_node_spikes,
     1,node_spikes_param },
