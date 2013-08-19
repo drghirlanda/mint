@@ -1,4 +1,11 @@
-To install: 
+The MINT neural network simulation library
+
+Welcome. The MINT manual is in doc/manual/mint.pdf. The reference
+manual can be accessed opening doc/html/index.html in a web browser.
+
+In a nutshell: MINT is a C library for neural netwrok simulation,
+meant to be flexible yet economic in resources. You find some examples
+of how it can be used inthe example/ directory. To install:
 
 On a POSIX system (Linux, Mac OSX) you can run the /install.sh script
 and follow the directions.
@@ -10,5 +17,5 @@ On a Windows system you have two options:
 
   2. Compile the source files in src/ yourself into a library (if you
   write a project file for a Windows development environment, please
-  send it to me). The files are ANSI C89 (ISO C90) and should compile
-  in any decent environment.
+  send it to drghirlanda@gmail.com). The files are ANSI C89 (ISO C90)
+  and should compile in any decent environment.

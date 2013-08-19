@@ -441,6 +441,13 @@ void mint_network_asynchronous( struct mint_network *net, float *p ) {
       net->size += mint_nodes_size( net->n[i] );
   }
 
+  /* this sets the number of updates to the number of nodes the first
+     time the op executes, and unless the user has specified a number
+     of updates already (this hinges on the fact that the default p[0]
+     value is 0). */
+  if( !p[0] )
+    p[0] = net->size;
+
   steps = p[0];
   while( steps-- ) {
     /* pick node group at random, weighing by size */

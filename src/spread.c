@@ -108,6 +108,10 @@ void mint_network_init_synchronous( struct mint_network *net,
   mint_spread_del( s );
 }
 
+/* Set up a custom update sequence for network nodes by reading a
+    spread structure from an open architecture file (this is managed
+    by MINT internally through the mint_*_file functions---the user
+    should never need to know about this. */
 void mint_network_init_spread( struct mint_network *net, float *p ) {
   struct mint_spread *s;
   int i, g, m, len;

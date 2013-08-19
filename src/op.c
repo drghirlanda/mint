@@ -44,7 +44,7 @@ static float weights_init_to_param[1] = { -1 };
 
 static float network_init_spread_param[1] = { 0 };
 static float network_init_threads_param[2] = { 1, 0 };
-static float network_asynchronous_param[1] = { 1 };
+static float network_asynchronous_param[1] = { 0 };
 static float network_clocked_param[2] = { 10, 1 };
 
 /*  number of built-in ops, see mint_op_atexit. it is a #define

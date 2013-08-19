@@ -6,22 +6,27 @@
 /** Set feedforward network dynamics: a single call to
    mint_network_nupdate fully propagates the input to the output
    group(s). Aborts if the network is actually recurrent rather than
-   feedforward. */
+   feedforward. 
+
+   Parameters: none. */
 void mint_network_init_feedforward( struct mint_network *, float *p );
 
-/** Set synchronous network dynamics: all matrix-vector
-    multiplications are calculated, then all node groups are
-    updated  */
+/** Set synchronous network dynamics: all matrix operations are
+    performed (default: matrix-vector multiplications), then all node
+    groups are updated.
+
+    Parameters: none. */
 void mint_network_init_synchronous( struct mint_network *, float * );
 
-/** Set asynchronous network dynamics: seqlen randomly picked nodes
-   are updated at each call of mint_network_nupdate */
+/** Set asynchronous network dynamics: a number of randomly picked
+   nodes are updated at each call of mint_network_nupdate.
+
+   Parameters: 0: The number of node updates to make per network
+                  update (defaults to the number of nodes).  */
 void mint_network_asynchronous( struct mint_network *, float *param );
 
-/** Set up a custom update sequence for network nodes; len is the
-    sequence length and the variable arguments are a list of 2*len
-    integers that specify the weight matrix and node groups sequences,
-    according to the meaning explained in mint_spread_load above.  */
+/* This is an undocumented library function that should not be called
+    by users. */
 void mint_network_init_spread( struct mint_network *, float *p );
 
 void mint_network_spread( struct mint_network *, float *p );
