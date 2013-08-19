@@ -6,7 +6,8 @@
 *.bbl
 *.blg
 camshot/camshot
-example/pi/pi
+example/dcmotor/dcmotor
+example/servomotor/servomotor
 example/clocked/clocked
 example/sigmoid/sigmoid
 example/network-add/network-add
