@@ -6,13 +6,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <string.h>
 
 /*** default parameters for mint_pi_* functions ***/
 
 /* the second and third defaults ensure that the servo is not damaged
    by excessive rotation. the user is expected to set them */
-static float mint_pi_servomotor_default[4] = {-1, 1500, 1500, -1};
+static float mint_pi_servomotor_default[7] = {-1, 1500, 1500, 0, -1, -1, 0};
 
 /* the last parameter (undocumented in the user interface) is for
    storing the init status */
@@ -56,38 +55,48 @@ void mint_pi_init( void ) {
   /* now register node ops with mint */
 
   mint_op_add( "servomotor", mint_op_nodes_update, 
-	       mint_pi_servomotor, 4, mint_pi_servomotor_default );
+	       mint_pi_servomotor, 7, mint_pi_servomotor_default );
 
   mint_op_add( "dcmotor", mint_op_nodes_update, 
-	       mint_pi_dcmotor, 5, mint_pi_dcmotor_default );
+	       mint_pi_dcmotor, 7, mint_pi_dcmotor_default );
 
   mint_op_add( "gpiosensor", mint_op_nodes_update, 
-	       mint_pi_gpiosensor, 2, mint_pi_gpiosensor_default );
+	       mint_pi_gpiosensor, 4, mint_pi_gpiosensor_default );
 
 }
 
 void mint_pi_servomotor( mint_nodes n, int min, int max, float *p ) {
   int i, size;
   float activity;
-  int enable_pin, output_pin, rot_min, rot_max;
+  int control_pin, init_done, set_mode, enable_pin, output_pin,
+    rot_min, rot_max;
 
-  enable_pin = p[0];
-  output_pin = p[1];
-  rot_min = p[2];
-  rot_max = p[3];
+  control_pin = p[0];
+  rot_min = p[1];
+  rot_max = p[2];
+  set_mode = p[3];
+  enable_pin = p[4];
+  output_pin = p[5];
+  init_done = p[6];
 
-  mint_check( enable_pin != -1, "enable pin not set (1st op parameter)" );
-  mint_check( output_pin != -1, "output pin not set (2nd op parameter)" );
+  mint_check( control_pin != -1, "enable pin not set (1st op parameter)" );
 
-  mint_pi_gpio_used |= 1 << enable_pin;
-  mint_pi_gpio_used |= 1 << output_pin;
+  if( !init_done || set_mode ) {
+    /* make sure pin mode is output */
+    i = gpioSetMode( control_pin, PI_OUTPUT );
+    mint_check( i==0, "cannot set enable pin mode to output" );
 
-  /* make sure pin mode is output */
-  i = gpioSetMode( enable_pin, PI_OUTPUT );
-  mint_check( i==0, "cannot set enable pin mode to output" );
-  i = gpioSetMode( output_pin, PI_OUTPUT );
-  mint_check( i==0, "cannot set output pin mode to output" );
+    if( enable_pin != -1 && output_pin != -1 ) {
+      mint_pi_gpio_used |= 1 << enable_pin;
+      mint_pi_gpio_used |= 1 << output_pin;
+      i = gpioSetMode( enable_pin, PI_OUTPUT );
+      mint_check( i==0, "cannot set enable pin mode to output" );
+      i = gpioSetMode( output_pin, PI_OUTPUT );
+      mint_check( i==0, "cannot set output pin mode to output" );
+    }
 
+    p[6] = 1; /* init_done */
+  }
 
   /* calculate average activity: we disregard the min and max
      arguments to mint_pi_servomotor because servo motor activation
@@ -102,11 +111,17 @@ void mint_pi_servomotor( mint_nodes n, int min, int max, float *p ) {
   /* remap activity from [0,1] to [ rot_mint, rot_max ] */
   activity = (rot_max - rot_min) * activity + rot_min;
 
-  /* enable motor output and send servo pulse */ 
-  i = gpioWrite( enable_pin, 1 );
-  mint_check( i==0, "cannot set enable pin" ); 
-  i = gpioServo( output_pin, activity );
-  mint_check( i==0, "cannot set output pin" ); 
+  /* enable motor output */ 
+  if( enable_pin != -1 && output_pin != -1 ) {
+    i = gpioWrite( enable_pin, 1 );
+    mint_check( i==0, "cannot set enable pin" ); 
+    i = gpioWrite( output_pin, 1 );
+    mint_check( i==0, "cannot set output pin" ); 
+  }
+
+  /* send  servo pulses */ 
+  i = gpioServo( control_pin, activity );
+  mint_check( i==0, "cannot set control pin" ); 
 }
 
 void mint_pi_dcmotor( mint_nodes n, int min, int max, float *p ) {
@@ -193,11 +208,11 @@ void mint_pi_dcmotor( mint_nodes n, int min, int max, float *p ) {
    function translates the value read on the GPIO into input to
    nodes. */
  
-void mint_pi_gpiosensor_callback( unsigned int gpio, unsigned int level, 
+void mint_pi_gpiosensor_callback( int gpio, int level, 
 				  uint32_t tick, void *userdata ) {
   mint_nodes n;
-  mint_ops *ops;
-  mint_op *op;
+  struct mint_ops *ops;
+  struct mint_op *op;
   int i, size;
   float increment, *state;
 
@@ -209,7 +224,7 @@ void mint_pi_gpiosensor_callback( unsigned int gpio, unsigned int level,
   op = mint_ops_get( ops, i );
   increment = mint_op_get_param( op, 1 );
 
-  state = n[ mint_op_get_param( 2 ) ];
+  state = n[ (int) mint_op_get_param( op, 2 ) ];
 
   size = mint_nodes_size( n );
   for( i=0; i<size; i++ )
@@ -222,7 +237,7 @@ void mint_pi_gpiosensor_callback( unsigned int gpio, unsigned int level,
    (ensured by storing a flag value into param 3 of the op). */
 void mint_pi_gpiosensor( mint_nodes n, int min, int max, float *p ) {
   int input_pin, i;
-  float increment, *in, *state;
+  float *in, *state;
 
   if( !p[3] ) { /* we still have to set things up */
     input_pin = p[0];
@@ -231,12 +246,15 @@ void mint_pi_gpiosensor( mint_nodes n, int min, int max, float *p ) {
     i = gpioSetMode( input_pin, PI_INPUT );
     mint_check( i==0, "cannot set read mode on input_pin" );
 
+    i = gpioSetPullUpDown( input_pin, PI_PUD_DOWN );
+    mint_check( i==0, "cannot set pull down resistor on input_pin" );
+
     gpioSetAlertFuncEx( input_pin, mint_pi_gpiosensor_callback, (void *)n );
 
     p[3] = 1; /* setup done */
   }
 
-  state = n[ p[2] ];
+  state = n[ (int) p[2] ];
   in = n[0];
   for( i=min; i<max; i++ ) {
     *(in+i) += *(state+i);

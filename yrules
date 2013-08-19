@@ -199,9 +199,9 @@ dep_doc() {
     echo "src/*.h doc/manual/mint.tex"
 }
 
-test_doc() {
-    old $1 -d $2
-}
+#test_doc() {
+#    old $1 -d $2
+#}
 
 cmd_doc() {
     cd doc/manual
@@ -228,7 +228,7 @@ cmd_camshot() {
 
 # build examples: ######################################################
 
-EXAMPLES="clocked pi deltarule integrator izikevich sigmoid sparse"
+EXAMPLES="clocked dcmotor servomotor deltarule integrator izikevich sigmoid sparse"
 
 mapTarget 'example/*' compileEx
 
