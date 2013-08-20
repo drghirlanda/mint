@@ -87,28 +87,33 @@ void mint_weights_init_to( mint_weights w, int rmin, int rmax,
 			       float *p );
 
 /* A weights connect op to perform lateral processing of different
-   kinds. Every time the network is updated, these weights provide
-   input to each node according to the current output of neighboring
-   nodes and a gaussian kernel function. This op is aware of node
-   geometry: if node rows have been specified (see mint_node_rows),
-   neighbours are calculated in two dimensions. The effect of neighbor
-   output on the focal node is a normal function of distance, with the
-   configurable parameters detailed below. The parameters allow
+   kinds. The weights are set up so that nodes provide input to their
+   neighbors according to a configurable linear function of distance
+   (see parameters below). This op is aware of node geometry: if node
+   rows have been specified (see mint_node_rows), neighbours are
+   calculated in two dimensions. The configurable parameters allow
    several kinds of lateral processing, such as pure lateral
    inhibition and center-surround effects (Mexican hat or reversed
-   Mexican hat).
+   Mexican hat, see examples).
 
    State variables: none required.
 
-   Parameters: 0: Value at distance 0 (positive or negative).
+   Parameters: 0: Connection value for nearest neighbors (positive or
+                  negative).
 
-               1: Maximum distance. No input will be received from
-               nodes further than this.
+               1: Maximum distance. No input will be sent to nodes
+                  further than this.
 
-	       2: Value at maximum distance.
+	       2: Connection value at maximum distance (positive or
+	          negative).
 
    NOTE: Weights values that do not pertain to the lateral connections
-   are left unmodified. */
+   are left unmodified. 
+
+   EXAMPLES: Lateral inhibition of -1 sent to nearest neighbors only:
+   "lateral -1 1 0." Lateral excitation for close neighbors, but
+   inhibition for more distant ones (Mexican hat): "lateral 1 10
+   -1." */
 void mint_weights_lateral( mint_weights w, mint_nodes nfrom, mint_nodes nto, 
 			   int rmin, int rmax, float *p );
 
