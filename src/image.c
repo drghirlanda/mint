@@ -143,15 +143,19 @@ struct mint_image *mint_image_weights( const mint_weights w, int irows,
     bits = FreeImage_GetScanLine( image->ptr, y );
     for ( x=0; x<icols; x++ ) {
       intensity = 255 *  *( &w[var][0][0] + count ) / max;
-      if( intensity>0 ) {
+      if( intensity>0 )
 	bits[FI_RGBA_RED] = bits[FI_RGBA_GREEN] = intensity; 
-      } else {
+      else
 	bits[FI_RGBA_BLUE] = -intensity;
-      }
       bits += stride;
       count++;
     }
+    fprintf( stderr, "\n" );
   }
+
+  /* this sends cell 1,1 in the top left corner as it is customary in
+     math */
+  mint_image_flipv( image );
 
   return image; 
 }

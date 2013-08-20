@@ -227,7 +227,10 @@ void mint_weights_lateral( mint_weights w, mint_nodes nfrom, mint_nodes nto,
 			   int rmin, int rmax, float *p ) {
   int i, ri, rj, ci, cj, size, nrows, ncols;
   struct mint_ops *ops;
-  float val, val0, dmax, valmax, d, a;
+  float val, val0, dmax, valmax, d, a, b;
+
+  if( p[3] ) /* init done */
+    return;
 
   mint_check( nfrom == nto, "from and to nodes must be the same!" );
 
@@ -244,30 +247,34 @@ void mint_weights_lateral( mint_weights w, mint_nodes nfrom, mint_nodes nto,
   val0 = p[0];
   dmax = p[1];
   valmax = p[2];
-  
+
   mint_check( dmax>0, "distance must be positive (parameter 2)" );
 
   /* NOTE: because w might be sparse for memory rather than for speed
      reasons, we access weight values with the clunkier interface
      valid for both sparse and dense matrices */
 
-  a = (valmax - val0) / dmax; /* shortcut used below */
+  /* coefficients of linear transformation between distance and weight
+     value */ 
+  a = (val0 - valmax) / ( 1 - dmax ); /* shortcut used below */
+  b = val0 - a;
 
   for( ri=0; ri<nrows; ri++ ) {
     for( ci=0; ci<ncols; ci++ ) {
       for( rj=0; rj<nrows; rj++ ) {
 	for( cj=0; cj<ncols; cj++ ) {
 	  d = sqrt( (ri-rj)*(ri-rj) + (ci-cj)*(ci-cj) );
-	  if( d>0 && d<=dmax ) {
-	    val = a * d + val0;
+	  if( d>=1 && d<=dmax ) {
+	    val = a * d + b;
 	  } else 
 	    val = 0;
 	  /* now we set the value translating between 2-dim and 1-dim
 	     indexing */
-	  mint_weights_set( w, 0, ri+nrows*ci, rj+nrows*cj, 0 );
+	  mint_weights_set( w, 0, rj+nrows*cj, ri+nrows*ci, val );
 	}
       }
     }
   }
 
+  p[3] = 1; /* init done */
 }

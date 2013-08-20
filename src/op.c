@@ -35,6 +35,7 @@ static float node_rows_param[1] = { -1 };
 static float weights_hebbian_param[4] = { 0., 0., 0., 0. };
 static float weights_delta_param[2] = { 0.05, 2 };
 static float weights_stdp_param[5] = { 0.05, .1, -.12, -.1, .1 };
+static float weights_lateral_param[4] = {0, 0, 0, 0};
 
 static float weights_init_random_param[3] = { 0., 1., 1. };
 static float weights_init_normal_param[3] = { 0., 0.01, 1. };
@@ -54,7 +55,7 @@ static float network_clocked_param[2] = { 10, 1 };
 
     NOTE: change this whenever adding or removing from the table
     above, otherwise crashes can occur when adding ops! */
-#define mint_nop_builtin 29
+#define mint_nop_builtin 30
 
 /* built-in ops */
 static struct mint_op mint_op_static_table[ mint_nop_builtin+1 ] = {
@@ -131,6 +132,12 @@ static struct mint_op mint_op_static_table[ mint_nop_builtin+1 ] = {
 
   { "to",mint_op_weights_init,mint_weights_init_to,1,
     weights_init_to_param },
+
+
+  /* weights connect */
+
+  { "lateral",mint_op_weights_connect,mint_weights_lateral,4,
+    weights_lateral_param },
 
 
   /* network init */
