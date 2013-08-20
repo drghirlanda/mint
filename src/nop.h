@@ -120,4 +120,19 @@ void mint_node_counter( mint_nodes n, int min, int max, float *p );
                    Hz). */
 void mint_node_spikes( mint_nodes n, int min, int max, float *p );
 
+/** This is a geometry op that sets nodes geometry to a rectangular
+    array with a given number of rows.
+
+    State variables: none required.
+
+    Parameters: 0: Number of rows. Must divide node size exactly as
+                   the number of column is calculated as . There is no
+                   default, the parameter must be given.
+
+    NOTE: This op does not do anything per se but storing the number
+    of rows. It can be used by other ops that need geometry
+    information, such as those that interface nodes with images or the
+    camera, and those establishing weight matrices that take into
+    account the spatial arrangement of nodes. */
+void mint_node_rows( mint_nodes n, int min, int max, float *p );
 #endif

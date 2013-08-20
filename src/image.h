@@ -39,10 +39,13 @@ void mint_image_del( struct mint_image * );
 /** Build an image from one (grayscale image) or three (rgb color
     image) nodes objects. The grayscale image is built from the values
     of nred if ngreen and nblue are 0. The nodes objects must all have
-    the same size, which must be an exact multiple of rows as size/rows
-    will be the number of columns (width in pixels) of the image. var
-    is the nodes variable whose values are used, e.g., 0 for node input
-    and 1 for node output.  
+    the same size. The number of rows will be the height of the image
+    in pixels and will be taken from the first node group (see
+    mint_node_rows for how to specify rows). The number of columns
+    (image width in pixels) will be size/rows (some columns will be
+    discarded if this is not an integer). var is the nodes variable
+    whose values are used, e.g., 0 for node input and 1 for node
+    output.
 
     \param nred Nodes whose values will be the RED values of the image
     or, if ngreen == nblue == 0, the grayscale values. 
@@ -62,7 +65,7 @@ void mint_image_del( struct mint_image * );
 struct mint_image *mint_image_nodes( const mint_nodes nred, 
 				     const mint_nodes ngreen,
 				     const mint_nodes nblue,
-				     int rows, int var );
+				     int var );
 
 /** Build an image from a weight matrix. The weights are color coded
     so that yellow pixels represent positive weights and blue pixels
@@ -82,14 +85,15 @@ struct mint_image *mint_image_weights( const mint_weights w,
 /** Paste an image on the 'var' variable of 1 or 3 node objects (1
     node while treat the image as grayscale, 3 will paste the RGB
     components on different nodes. The nodes are interpreted as
-    rectangular artificial retinas with nrows rows and (node
-    size)/nrows columns (size must be a multiple of nrows). The image
-    can be translated by xpos and ypos pixels (can be negative). Any
-    parts of the image not falling on the retina are ignored.
-*/
+    rectangular artificial retinas, with a number of rows equal to
+    their row value (see mint_op_rows) and number of columns equal to
+    size)/nrows columns (if size is not an exact multiple of rows,
+    some columns will be unaffected by image pasting). The image can
+    be translated by xpos and ypos pixels (can be negative). Any parts
+    of the image not falling on the retina are ignored. */
 void mint_image_paste( const struct mint_image *, mint_nodes nred,
 		       mint_nodes ngreen, mint_nodes nblue,
-		       int var, int nrows, int xpos, int ypos );
+		       int var, int xpos, int ypos );
 
 /** Scale an image to 'scale' times its current size. */
 void mint_image_scale( struct mint_image *, float scale );

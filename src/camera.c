@@ -19,7 +19,7 @@ static pid_t mint_camera_pid = 0;  /* pid of camshot process */
 static char mint_camera_pipe[256]; /* filename of camshot pipe */
 static int mint_camera_lock = 0;   /* 1 thread only accesses camera */
 
-static float mint_network_camera_default[5] = {-1, 0, -1, -1, -1};
+static float mint_network_camera_default[4] = {-1, -1, -1};
 
 /* since this function is called through atexit(), errors can be
    non-fatal */
@@ -98,7 +98,7 @@ void mint_camera_init( void ) {
   }
   
   /* now we register ops that make use of the camera */
-  mint_op_add( "camera", mint_op_network_operate, mint_network_camera, 5, 
+  mint_op_add( "camera", mint_op_network_operate, mint_network_camera, 4, 
 	       mint_network_camera_default );
 } 
 
@@ -141,24 +141,23 @@ struct mint_image *mint_camera_image( void ) {
 }
 
 void mint_camera_paste( mint_nodes nred, mint_nodes ngreen, mint_nodes nblue,
-			int var, int nrows, int xpos, int ypos ) {
+			int var, int xpos, int ypos ) {
   struct mint_image *img;
   img = mint_camera_image();
-  mint_image_paste( img, nred, ngreen, nblue, var, nrows, xpos, ypos );
+  mint_image_paste( img, nred, ngreen, nblue, var, xpos, ypos );
   mint_image_del( img );
 }
 
 void mint_network_camera( struct mint_network *net, float *p ) {
-  int var, rows, R, G, B;
+  int var, R, G, B;
   mint_nodes nred = 0;
   mint_nodes ngreen = 0;
   mint_nodes nblue = 0;
 
-  rows = p[0];
-  var = p[1];
-  R = p[2];
-  G = p[3];
-  B = p[4];
+  var = p[0];
+  R = p[1];
+  G = p[2];
+  B = p[3];
 
   mint_check( R>=0 && R<mint_network_groups( net ),
 	      "node group out of range (parameter 2)" );
@@ -173,6 +172,6 @@ void mint_network_camera( struct mint_network *net, float *p ) {
     nblue = mint_network_nodes( net, B );
   }
 
-  mint_camera_paste( nred, ngreen, nblue, var, rows, 0, 0 );
+  mint_camera_paste( nred, ngreen, nblue, var, 0, 0 );
  
 }

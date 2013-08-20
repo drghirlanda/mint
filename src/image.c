@@ -1,5 +1,7 @@
 #include "image.h"
 #include "utils.h"
+#include "op.h"
+
 #include <stdlib.h>
 #include <math.h>
 
@@ -47,14 +49,19 @@ void mint_image_save( const struct mint_image *image, char *filename,
 struct mint_image *mint_image_nodes( const mint_nodes nred, 
 				     const mint_nodes ngreen, 
 				     const mint_nodes nblue,
-				     int rows, int var ) {
+				     int var ) {
   struct mint_image *image;
-  int cols, size, x, y;
+  struct mint_ops *ops;
+  int i, rows, cols, size, x, y;
   int stride;
   BYTE *bits;
 
+  ops = mint_nodes_get_ops( nred );
+  i = mint_ops_find( ops, "rows" );
+  mint_check( i>=0, "rows is not set for first node group" );
+  rows = mint_op_get_param( mint_ops_get(ops, i), 0 );
+
   size = mint_nodes_size( nred );
-  /* mint_check( size%rows==0, "nodes size not multiple of rows argument" ); */
   cols = size / rows;
 
   if( ngreen && nblue ) {
@@ -168,12 +175,13 @@ void mint_image_paste( const struct mint_image *image,
 		       mint_nodes nred,
 		       mint_nodes ngreen, 
 		       mint_nodes nblue,
-		       int var, int nrows, int xpos, int ypos ) {
-  int irows, icols, ncols, size, x, y;
+		       int var, int xpos, int ypos ) {
+  int i, irows, icols, nrows, ncols, size, x, y;
   int stride, idx;
   BYTE *bits;
   FIBITMAP *fib;
   float scale;
+  struct mint_ops *ops;
 
   mint_check( xpos>=0 && ypos>=0, "negative xpos/ypos unimlemented" );
 
@@ -186,9 +194,14 @@ void mint_image_paste( const struct mint_image *image,
     mint_check( 0, "must provide 1 or 3 node arguments, not 2" );
   } 
 
+  /* set node rows and columns, then image rows and columns */
+  ops = mint_nodes_get_ops( nred );
+  i = mint_ops_find( ops, "rows" );
+  mint_check( i>=0, "rows is not set for first node group" );
+  nrows = mint_op_get_param( mint_ops_get(ops, i), 0 );
+  ncols = size / nrows;
   irows = FreeImage_GetHeight( image->ptr );
   icols = FreeImage_GetWidth( image->ptr );
-  ncols = size / nrows;
 
   /* choose the smaller dimension */
   if( nrows/irows < ncols/icols )

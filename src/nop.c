@@ -146,3 +146,9 @@ void mint_node_spikes( mint_nodes n, int min, int max, float *p ) {
   for( i=min; i<max; i++ )
     *(out+i) = mint_random() < .001 * p[0];
 }
+
+void mint_node_rows( mint_nodes n, int min, int max, float *p ) {
+  int size = mint_nodes_size( n );
+  mint_check( p[0] != -1, "rows argument missing (parameter 0)" );
+  mint_check( p[0]>0 && p[0]<size, "rows argument negative or too large" );
+}

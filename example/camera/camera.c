@@ -23,7 +23,7 @@ int main( void ) {
 
   mint_network_operate( net );
 
-  img = mint_image_nodes( R, G, B, 240, 1 );
+  img = mint_image_nodes( R, G, B, 1 );
   mint_image_save( img, "capture.jpg", FIF_JPEG );
   mint_image_del( img );
   

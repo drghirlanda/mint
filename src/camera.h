@@ -33,19 +33,18 @@ struct mint_image *mint_camera_image( void );
     images) or three (for color images) node groups. If either or both
     of ngreen and nblue are null, a grayscale version of the image is
     stored in nred. Otherwise, nred, ngreen, and nblue will contain
-    the three RGB components of the image. */
+    the three RGB components of the image. The nodes are considered as
+    rectangular arrays according to their rows (see
+    mint_node_rows). */
 void mint_camera_paste( mint_nodes nred, mint_nodes ngreen, mint_nodes
-			nblue, int var, int nrows, int xpos, int ypos );
-
+			nblue, int var, int xpos, int ypos );
 
 /** Set node activation according to an image captured from
     camera. This function considers the nodes as being arranged in a
-    rectangular arrays, see description of parameter 1 and
-    documentation for mint_image_paste. 
+    rectangular arrays, according to their number of rows (see
+    mint_node_rows).
 
- Parameters: 0: Number of rows in the rectangular array. 
-
-             1: Which node variable will receive image data. As usual
+ Parameters: 0: Which node variable will receive image data. As usual
              in MINT: 0: input, 1: output >=2: other state variable
              (default: 1, i.e., set node output directly.
 

@@ -30,6 +30,7 @@ static float node_noise_param[3] = { 0, 0, 0.01 };
 static float node_bounded_param[3] = { 1, 0, 1 };
 static float node_counter_param[3] = { 1, 1, 2 };
 static float node_spikes_param[1] = { 5 };
+static float node_rows_param[1] = { -1 };
 
 static float weights_hebbian_param[4] = { 0., 0., 0., 0. };
 static float weights_delta_param[2] = { 0.05, 2 };
@@ -53,7 +54,7 @@ static float network_clocked_param[2] = { 10, 1 };
 
     NOTE: change this whenever adding or removing from the table
     above, otherwise crashes can occur when adding ops! */
-#define mint_nop_builtin 28
+#define mint_nop_builtin 29
 
 /* built-in ops */
 static struct mint_op mint_op_static_table[ mint_nop_builtin+1 ] = {
@@ -81,6 +82,11 @@ static struct mint_op mint_op_static_table[ mint_nop_builtin+1 ] = {
 
   { "spikes",mint_op_nodes_update,mint_node_spikes,
     1,node_spikes_param },
+
+
+  /* nodes init */
+
+  { "rows", mint_op_nodes_init, mint_node_rows, 1, node_rows_param },
 
 
   /* weights operate */
