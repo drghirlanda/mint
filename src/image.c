@@ -54,18 +54,16 @@ struct mint_image *mint_image_nodes( const mint_nodes nred,
   BYTE *bits;
 
   size = mint_nodes_size( nred );
-  mint_check( size%rows==0, "nodes size not multiple of rows argument" );
+  /* mint_check( size%rows==0, "nodes size not multiple of rows argument" ); */
   cols = size / rows;
 
-  if( ngreen ) {
-    if( nblue ) {
-      mint_check( rows*cols==mint_nodes_size(ngreen), 
-		  "image and second node sizes don't match" );
-      mint_check( rows*cols==mint_nodes_size(nblue), 
-		  "image and third node sizes don't match" );
-    } else {
-      mint_check( 0, "must provide 1 or 3 node arguments, not 2" );
-    }
+  if( ngreen && nblue ) {
+    mint_check( size == mint_nodes_size(ngreen), 
+		"image and second node sizes don't match" );
+    mint_check( size == mint_nodes_size(nblue), 
+		"image and third node sizes don't match" );
+  } else {
+    mint_check( 0, "must provide 1 or 3 node arguments, not 2" );
   } 
 
   image = malloc( sizeof(struct mint_image) );
@@ -171,32 +169,45 @@ void mint_image_paste( const struct mint_image *image,
 		       mint_nodes ngreen, 
 		       mint_nodes nblue,
 		       int var, int nrows, int xpos, int ypos ) {
-  int rows, cols, size, x, y;
+  int irows, icols, ncols, size, x, y;
   int stride, idx;
   BYTE *bits;
+  FIBITMAP *fib;
+  float scale;
 
   mint_check( xpos>=0 && ypos>=0, "negative xpos/ypos unimlemented" );
 
-  rows = FreeImage_GetHeight( image->ptr );
-  cols = FreeImage_GetWidth( image->ptr );
-
   size = mint_nodes_size( nred );
-  mint_check( size%nrows==0, "nred size not a multiple of nrows");
-  
-  if( ngreen ) {
-    if( nblue ) {
-      mint_check( mint_nodes_size(ngreen)==size, "ngreen size != nred" );
+
+  if( ngreen && nblue ) {
+    mint_check( mint_nodes_size(ngreen)==size, "ngreen size != nred" );
       mint_check( mint_nodes_size(nblue)==size, "nblue size != nred" );
-    } else {
-      mint_check( 0, "must provide 1 or 3 node arguments, not 2" );
-    }
+  } else {
+    mint_check( 0, "must provide 1 or 3 node arguments, not 2" );
   } 
 
-  stride = FreeImage_GetLine(image->ptr) / FreeImage_GetWidth(image->ptr);
+  irows = FreeImage_GetHeight( image->ptr );
+  icols = FreeImage_GetWidth( image->ptr );
+  ncols = size / nrows;
 
-  for ( y=0; y<rows; y++ ) {
-    bits = FreeImage_GetScanLine( image->ptr, y );
-    for ( x=0; x<cols; x++ ) {
+  /* choose the smaller dimension */
+  if( nrows/irows < ncols/icols )
+    scale = (float)nrows / irows;
+  else
+    scale = (float)ncols / icols;
+  
+  if( scale != 1 )
+    fib = FreeImage_Rescale( image->ptr, irows*scale, icols*scale, FILTER_BOX );
+  else
+    fib = image->ptr;
+
+  irows = FreeImage_GetHeight( fib );
+  icols = FreeImage_GetWidth( fib );
+  stride = FreeImage_GetLine(fib) / FreeImage_GetWidth(fib);
+
+  for ( y=0; y<irows; y++ ) {
+    bits = FreeImage_GetScanLine( fib, y );
+    for ( x=0; x<icols; x++ ) {
       idx = y+ypos + nrows*(x+xpos);
       if( idx>=0 && idx<size ) {
 	if( !ngreen ) {
@@ -211,6 +222,9 @@ void mint_image_paste( const struct mint_image *image,
       bits += stride;
     }
   }
+
+  if( fib != image->ptr )
+    FreeImage_Unload( fib );
 }
 
 void mint_image_scale( struct mint_image *image, float scale ) {

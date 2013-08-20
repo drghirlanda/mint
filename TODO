@@ -11,6 +11,10 @@
     that they need not be set explicitly when the op has no potential
     for clashing with others.
 
+  - geometry: geometry ops could be added to nodes and checked by
+    functions. e.g., nodes 10000 0 rows 100 would specify a square
+    array of 100x100 nodes
+ 
 - to be tested:
 
   - freezing/unfreezing of weight matrices and networks

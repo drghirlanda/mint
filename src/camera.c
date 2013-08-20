@@ -83,7 +83,10 @@ void mint_camera_init( void ) {
     count++; 
   } while( !file && count<30 );
   mint_check( count<30, "cannot read from camshot pipe\n" );
-  
+
+  /* we don't fclose( file ) because that would stop camshot, which is
+     at the other hand of the pipe */
+
   /* we grab an image because camshot has a bug: the first two
      images ever read from the pipe are identical! this also checks
      that we can read from the camera pipe. */
