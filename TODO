@@ -44,12 +44,6 @@
 
 - ops system:
 
-  - add node init op? could be used for one-time set up of update
-    ops. the init op would do such setup and then install a
-    complementary node update function for the update proper. perhaps
-    the same can be achieved by having a flag in the op parameters
-    flagging to do/skip the setup.
-
   - add node operate op? can be used to turn on multi-threading on
     nodes. (is a dedicated update op enough? if first, it could call
     all other ops, but how to avoid that the others are also called?)
