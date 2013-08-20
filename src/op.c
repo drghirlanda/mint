@@ -300,7 +300,7 @@ void mint_op_add( const char *name, int type, void *f,
 	    mint_nop*sizeof(struct mint_op) );
   } else {
     mint_op_table = realloc( mint_op_table, 
-			       (mint_nop+1)*sizeof(struct mint_op) );
+			     (mint_nop+1)*sizeof(struct mint_op) );
   }
   h = mint_op_table + mint_nop;
   len = strlen(name);
@@ -585,6 +585,4 @@ void mint_network_operate( struct mint_network *net ) {
       ((mint_netop_t) ops->p[i]->op)( net, ops->p[i]->param );
   }
 }
-
-#undef mint_nop_max
 

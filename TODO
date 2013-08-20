@@ -20,9 +20,7 @@
 
 -mint_pi:
 
-  - test servo motor and sensor functions (no pull resistor on sensor
-    yet, sensor should probably be done through a callback)
-  - test init_done and set_mode params in dcmotor op
+  - test sensor functions
 
 - threads:
 

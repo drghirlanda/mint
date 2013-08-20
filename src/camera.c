@@ -3,6 +3,8 @@
 
 #include "camera.h"
 #include "utils.h"
+#include "network.h"
+#include "op.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -17,16 +19,22 @@ static pid_t mint_camera_pid = 0;  /* pid of camshot process */
 static char mint_camera_pipe[256]; /* filename of camshot pipe */
 static int mint_camera_lock = 0;   /* 1 thread only accesses camera */
 
+static float mint_network_camera_default[5] = {-1, 0, -1, -1, -1};
+
 /* since this function is called through atexit(), errors can be
    non-fatal */
 void mint_camera_close( void ) {
   char cmd[256];
 
+  fprintf( stderr, "mint_camera_close: removing '%s'\n",
+	   mint_camera_pipe );
   if( unlink( mint_camera_pipe ) == -1 )
     fprintf( stderr, 
 	     "mint_camera_close: cannot remove '%s'\n", 
 	     mint_camera_pipe );
 
+  fprintf( stderr, "mint_camera_close: stopping camshot (pid=%u\n",
+	   (unsigned int)mint_camera_pid );
   sprintf( cmd, "kill -15 %u", (unsigned int)mint_camera_pid );
   if( system( cmd ) == -1 ) {
     fprintf( stderr, 
@@ -43,7 +51,9 @@ void mint_camera_init( void ) {
   char *camarg[] = { CAMSHOT, "-p", 0, 0 };
   char cmd[256];
   pid_t pid = 0;
-  
+  int count;
+  FILE *file;
+
   if( mint_camera_pid ) /* camera already set up */
     return;
 
@@ -52,35 +62,41 @@ void mint_camera_init( void ) {
   camarg[2] = mint_camera_pipe;
 
   pid = fork();
+  mint_check( pid != -1, "cannot fork to create camshot process" );
 
-  if( pid == -1 ) { /* parent, failed fork */
-    fprintf( stderr, "cannot fork to create camshot process" );
-    abort();
-  } else if( pid==0 ) { /* child */
-#ifndef NDEBUG
-    fprintf( stderr, "mint_camera_init: starting camera with pid=%u\n",
-	     (unsigned int) getpid() );
-#endif
+  if( pid==0 ) { /* child */
     execv( "/usr/bin/camshot", camarg );
     fprintf( stderr, "mint_camera_init: %s\n", strerror(errno) );
     abort();
-  } else { /* parent, successful fork: wait for camera to start */
-#ifndef NDEBUG
-    fprintf( stderr, "camera master pid=%u\n waiting 5s for pid=%u to start camera\n", getpid(), pid );
-#endif
-    mint_camera_pid = pid;
-    atexit( mint_camera_close );
-
-    /* we grab an image because camshot has a bug: the first two
-       images ever read from the pipe are identical! this also serves
-       to wait until the camera is ready. */
-    sprintf( cmd, "cat %s > /dev/null", mint_camera_pipe );
-    if( system( cmd ) == -1 ) {
-      fprintf( stderr, "mint_camera_init: cannot read from '%s'\n", 
-	       mint_camera_pipe );
-      abort();
-    }
   }
+
+  /* parent:  */
+  mint_camera_pid = pid;
+  atexit( mint_camera_close );
+
+  /* wait until the camera is ready, signaled by being able to open
+     the camera pipe. times out after 30s */
+  count = 0;
+  do {
+    sleep( 1 );
+    file = fopen( mint_camera_pipe, "r" );
+    count++; 
+  } while( !file && count<30 );
+  mint_check( count<30, "cannot read from camshot pipe\n" );
+  
+  /* we grab an image because camshot has a bug: the first two
+     images ever read from the pipe are identical! this also checks
+     that we can read from the camera pipe. */
+  sprintf( cmd, "cat %s > /dev/null", mint_camera_pipe );
+  if( system( cmd ) == -1 ) {
+    fprintf( stderr, "mint_camera_init: cannot read from '%s'\n", 
+	     mint_camera_pipe );
+    abort();
+  }
+  
+  /* now we register ops that make use of the camera */
+  mint_op_add( "camera", mint_op_network_operate, mint_network_camera, 5, 
+	       mint_network_camera_default );
 } 
 
 struct mint_image *mint_camera_image( void ) {
@@ -97,8 +113,6 @@ struct mint_image *mint_camera_image( void ) {
   }
 
   mint_camera_lock = 1;
-
-  mint_camera_init(); /* does nothing if camera already set up */
 
   /* create image filename */
   sprintf( filename, "/tmp/mint-image-%u.bmp", (unsigned int)getpid() );
@@ -131,3 +145,31 @@ void mint_camera_paste( mint_nodes nred, mint_nodes ngreen, mint_nodes nblue,
   mint_image_del( img );
 }
 
+void mint_network_camera( struct mint_network *net, float *p ) {
+  int var, rows, R, G, B;
+  mint_nodes nred = 0;
+  mint_nodes ngreen = 0;
+  mint_nodes nblue = 0;
+
+  rows = p[0];
+  var = p[1];
+  R = p[2];
+  G = p[3];
+  B = p[4];
+
+  mint_check( R>=0 && R<mint_network_groups( net ),
+	      "node group out of range (parameter 2)" );
+  nred = mint_network_nodes( net, R );
+
+  if( G!=-1 && B!=-1 ) {
+    mint_check( G>=0 && G<mint_network_groups( net ),
+		"node group out of range (parameter 3)" );
+    mint_check( B>=0 && B<mint_network_groups( net ),
+		"node group out of range (parameter 4)" );
+    ngreen = mint_network_nodes( net, G );
+    nblue = mint_network_nodes( net, B );
+  }
+
+  mint_camera_paste( nred, ngreen, nblue, var, rows, 0, 0 );
+ 
+}
