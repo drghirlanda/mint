@@ -187,5 +187,14 @@ void mint_weights_freeze( mint_weights w, int f );
 /** Get freeze status of weight matrix w. */
 int mint_weights_frozen( mint_weights w );
 
+
+/** Decide whehter the weight-matrix operation involving the given
+    objects is faster with a sparse or with a dense matrix, and
+    returned the optimal matrix. The weight matrices that are compared
+    are sparse and dense forms of w pruned to eliminate all weights
+    less than cutoff (use cutoff=Inf to preserve all weights). */
+mint_weights mint_weights_optimize( mint_weights w, mint_nodes pre, 
+				    mint_nodes post, float cutoff );
+
 #endif
 

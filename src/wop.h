@@ -86,4 +86,30 @@ void mint_weights_init_from( mint_weights w, int rmin, int rmax,
 void mint_weights_init_to( mint_weights w, int rmin, int rmax, 
 			       float *p );
 
+/* Set weights to perform lateral processing of different kinds. Every
+   time the network is updated, these weights provide input to each
+   node according to the current output of neighboring nodes and a
+   gaussian kernel function. This op is aware of node geometry: if
+   node rows have been specified (see mint_node_rows), neighbours are
+   calculated in two dimensions. The effect of neighbor output on the
+   focal node is a normal function of distance, with the configurable
+   parameters detailed below. The parameters allow several kinds of
+   lateral processing, such as pure lateral inhibition and
+   center-surround effects (Mexican hat or reversed Mexican hat).
+
+   State variables: none required.
+
+   Parameters: 0: Value at distance 0 (positive or negative).
+
+               1: Maximum distance. No input will be received from
+               nodes further than this.
+
+	       2: Value at maximum distance.
+
+   NOTE: The weight matrix is constructed the first time the network
+   is updated. Also, weights values that do not pertain to the lateral
+   connections are left unmodified. */
+void mint_weights_lateral( mint_weights w, mint_nodes nfrom, mint_nodes nto, 
+			   int rmin, int rmax, float *p );
+
 #endif

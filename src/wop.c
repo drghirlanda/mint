@@ -223,3 +223,51 @@ void mint_weights_init_to( mint_weights w, int rmin, int rmax,
   mint_weights_set_to( w, p[0] );
 }
 
+void mint_weights_lateral( mint_weights w, mint_nodes nfrom, mint_nodes nto, 
+			   int rmin, int rmax, float *p ) {
+  int i, ri, rj, ci, cj, size, nrows, ncols;
+  struct mint_ops *ops;
+  float val, val0, dmax, valmax, d, a;
+
+  mint_check( nfrom == nto, "from and to nodes must be the same!" );
+
+  ops = mint_nodes_get_ops( nfrom );
+  i = mint_ops_find( ops, "rows" );
+  if( i > -1 ) {
+    nrows = mint_op_get_param( mint_ops_get( ops, i ), 0 );
+  } else
+    nrows = 1;
+
+  size = mint_nodes_size( nfrom );
+  ncols = size / nrows;
+
+  val0 = p[0];
+  dmax = p[1];
+  valmax = p[2];
+  
+  mint_check( dmax>0, "distance must be positive (parameter 2)" );
+
+  /* NOTE: because w might be sparse for memory rather than for speed
+     reasons, we access weight values with the clunkier interface
+     valid for both sparse and dense matrices */
+
+  a = (valmax - val0) / dmax; /* shortcut used below */
+
+  for( ri=0; ri<nrows; ri++ ) {
+    for( ci=0; ci<ncols; ci++ ) {
+      for( rj=0; rj<nrows; rj++ ) {
+	for( cj=0; cj<ncols; cj++ ) {
+	  d = sqrt( (ri-rj)*(ri-rj) + (ci-cj)*(ci-cj) );
+	  if( d>0 && d<=dmax ) {
+	    val = a * d + val0;
+	  } else 
+	    val = 0;
+	  /* now we set the value translating between 2-dim and 1-dim
+	     indexing */
+	  mint_weights_set( w, 0, ri+nrows*ci, rj+nrows*cj, 0 );
+	}
+      }
+    }
+  }
+
+}

@@ -5,6 +5,9 @@
 
 - known bugs or poorly designed features:
 
+  - states are copied incorrectly for sparse matrices! same bug in
+    mint_weights_copy as well as mint_weights_prune
+
   - all ops that need state should allow the user to configure which
     state variables are used, so that multiple ops can coexist without
     clashing! the state variables will have reasonable defaults so
@@ -14,7 +17,10 @@
   - geometry: geometry ops could be added to nodes and checked by
     functions. e.g., nodes 10000 0 rows 100 would specify a square
     array of 100x100 nodes
- 
+
+  - lateral processing weights op can be turned into receptive field
+    op by allowing nfrom to be different from nto!
+   
 - to be tested:
 
   - freezing/unfreezing of weight matrices and networks

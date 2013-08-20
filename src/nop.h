@@ -135,4 +135,5 @@ void mint_node_spikes( mint_nodes n, int min, int max, float *p );
     camera, and those establishing weight matrices that take into
     account the spatial arrangement of nodes. */
 void mint_node_rows( mint_nodes n, int min, int max, float *p );
+
 #endif

@@ -7,6 +7,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <math.h> 
+#include <time.h>
 
 struct mint_weights_str {
   unsigned int rows;
@@ -566,6 +567,44 @@ void mint_weights_freeze( mint_weights w, int f ) {
 int mint_weights_frozen( mint_weights w ) {
   struct mint_ops *ops = mint_weights_get_ops( w );
   return mint_ops_find( ops, "frozen" ) >= 0;
+}
+
+
+mint_weights mint_weights_optimize( mint_weights w, mint_nodes pre, 
+				    mint_nodes post, float cutoff ) {
+
+  clock_t tdense, tsparse;
+  int i, rows;
+  int N = 10; /* number of operations */
+  mint_weights wdense, wsparse;
+
+  rows = mint_weights_rows( w );
+
+  wsparse = mint_weights_prune( w, 1, cutoff );
+  wdense = mint_weights_prune( w, 0, cutoff );
+
+  /* before measuring operation speed, we run operate once in case
+     there are some initializations still to be performed */ 
+  mint_weights_operate( wdense, pre, post, 0, rows );
+  mint_weights_operate( wsparse, pre, post, 0, rows );
+
+  tdense = clock();
+  for( i=0; i<N; i++ ) 
+    mint_weights_operate( wdense, pre, post, 0, rows );
+  tdense = clock() - tdense;
+
+  tsparse = clock();
+  for( i=0; i<N; i++ ) 
+    mint_weights_operate( wsparse, pre, post, 0, rows );
+  tsparse = clock() - tsparse;
+
+  if( tdense < tsparse ) {
+    mint_weights_del( wsparse );
+    return wdense;
+  } else {
+    mint_weights_del( wdense );
+    return wsparse;
+  }
 }
 
 #undef _STR
