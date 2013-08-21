@@ -62,7 +62,7 @@ static mint_weights mint_weights_alloc( unsigned int rows,
   wstr->target = 0;
   wstr->ops = mint_ops_new();
 
-  w = (mint_weights) ++wstr;
+  w = (mint_weights) (wstr + 1);
 
   /* the following loops set up w[s] and w[s][r] pointers so that they
      point to appropriate places in the memory block allocated by

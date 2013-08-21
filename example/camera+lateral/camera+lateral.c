@@ -10,10 +10,11 @@ int main( void ) {
   struct mint_image *img;
   FILE *file;
   mint_nodes R, G, B;
+  int i;
 
   mint_camera_init();
 
-  file = fopen( "camera.arc", "r" );
+  file = fopen( "camera+lateral.arc", "r" );
   net = mint_network_load( file );
   fclose( file );
 
@@ -21,10 +22,15 @@ int main( void ) {
   G = mint_network_nodes( net, 1 );
   B = mint_network_nodes( net, 2 );
 
-  mint_network_operate( net );
+  for( i=0; i<10; i++ )
+    mint_network_operate( net );
+
+  img = mint_image_nodes( R, G, B, 0 );
+  mint_image_save( img, "in.jpg", FIF_JPEG );
+  mint_image_del( img );
 
   img = mint_image_nodes( R, G, B, 1 );
-  mint_image_save( img, "capture.bmp", FIF_BMP );
+  mint_image_save( img, "out.jpg", FIF_JPEG );
   mint_image_del( img );
   
   mint_network_del( net );

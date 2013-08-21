@@ -184,7 +184,6 @@ void mint_image_paste( const struct mint_image *image,
   int stride, idx;
   BYTE *bits;
   FIBITMAP *fib;
-  float scale;
   struct mint_ops *ops;
 
   mint_check( xpos>=0 && ypos>=0, "negative xpos/ypos unimlemented" );
@@ -207,24 +206,16 @@ void mint_image_paste( const struct mint_image *image,
   irows = FreeImage_GetHeight( image->ptr );
   icols = FreeImage_GetWidth( image->ptr );
 
-  /* choose the smaller dimension */
-  if( nrows/irows < ncols/icols )
-    scale = (float)nrows / irows;
-  else
-    scale = (float)ncols / icols;
-  
-  if( scale != 1 )
-    fib = FreeImage_Rescale( image->ptr, irows*scale, icols*scale, FILTER_BOX );
+  if( nrows != irows || ncols != icols )
+    fib = FreeImage_Rescale( image->ptr, ncols, nrows, FILTER_BOX );
   else
     fib = image->ptr;
 
-  irows = FreeImage_GetHeight( fib );
-  icols = FreeImage_GetWidth( fib );
   stride = FreeImage_GetLine(fib) / FreeImage_GetWidth(fib);
 
-  for ( y=0; y<irows; y++ ) {
+  for ( y=0; y<nrows; y++ ) {
     bits = FreeImage_GetScanLine( fib, y );
-    for ( x=0; x<icols; x++ ) {
+    for ( x=0; x<ncols; x++ ) {
       idx = y+ypos + nrows*(x+xpos);
       if( idx>=0 && idx<size ) {
 	if( !ngreen ) {

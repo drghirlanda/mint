@@ -266,11 +266,9 @@ void mint_weights_lateral( mint_weights w, mint_nodes nfrom, mint_nodes nto,
 	  d = sqrt( (ri-rj)*(ri-rj) + (ci-cj)*(ci-cj) );
 	  if( d>=1 && d<=dmax ) {
 	    val = a * d + b;
-	  } else 
-	    val = 0;
-	  /* now we set the value translating between 2-dim and 1-dim
-	     indexing */
-	  mint_weights_set( w, 0, rj+nrows*cj, ri+nrows*ci, val );
+	    /* translate between 2-dim and 1-dim indexing: */
+	    mint_weights_set( w, 0, rj*ncols+cj, ri*ncols+ci, val );
+	  }
 	}
       }
     }

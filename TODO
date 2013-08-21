@@ -5,8 +5,16 @@
 
 - known bugs or poorly designed features:
 
+  - redesign management of network_operate ops! multiple operations
+    shoudl work with the provision that some of them set the spread,
+    and the spread is followed as the last operation, if it
+    exists. also, in saving and loading the spread should be located
+    before nodes and not at the end of everything
+
   - states are copied incorrectly for sparse matrices! same bug in
     mint_weights_copy as well as mint_weights_prune
+
+  - better docs form network_camera op
 
   - all ops that need state should allow the user to configure which
     state variables are used, so that multiple ops can coexist without
@@ -21,6 +29,9 @@
   - lateral processing weights op can be turned into receptive field
     op by allowing nfrom to be different from nto!
    
+  - info functions to complement save functions? save is too much info
+    to look through
+
 - to be tested:
 
   - freezing/unfreezing of weight matrices and networks
