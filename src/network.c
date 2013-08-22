@@ -34,14 +34,14 @@ void mint_weights_compatibility( mint_weights w, mint_nodes from,
 
   if( rows != tosize ) {
     fprintf( stderr, 
-	     "mint: weight matrix rows (%d) != target nodes size (%d)\n",
+	     "mint_network_load: weight rows (%d) != 'to' node size (%d)\n",
 	     rows, tosize );
     abort();
   }
 
   if( cols != fromsize ) {
     fprintf( stderr, 
-	     "mint: weight matrix cols (%d) != source nodes size (%d)\n",
+	     "mint_network_load: weight cols (%d) != 'from' nodes size (%d)\n",
 	     cols, fromsize );
     abort();
   }
@@ -136,18 +136,23 @@ int mint_network_frozen( struct mint_network *net ) {
 void mint_network_save( const struct mint_network *net, FILE *dest ) {
   int i;
   fprintf( dest, "network %d %d\n", net->groups, net->matrices );
+
   mint_ops_save( net->ops, dest );
+
   for( i=0; i<net->groups; i++ ) 
     mint_nodes_save( net->n[i], dest );
+
   for( i=0; i<net->matrices; i++ )
     mint_weights_save( net->w[i], dest );
+
   mint_spread_save( net->spread, dest );
 }
 
 struct mint_network *mint_network_load( FILE *file ) {
   int i, groups, matrices, read, from, to;
   struct mint_network *net;
-  struct mint_op*op;
+  /* struct mint_op*op; */
+  struct mint_spread *spread;
 
   read = fscanf( file, " network %d %d", &groups, &matrices );
   mint_check( read==2, "cannot read network geometry" );
@@ -171,19 +176,27 @@ struct mint_network *mint_network_load( FILE *file ) {
 			  0, mint_weights_rows( net->w[i] ) );
   }
 
-  /* run init ops, if spread not set after that, add synchronous
-     spread and run it. */
+   /* we now run init ops (which may set a spread) and also attempt to
+     read a spread from file (which takes precedence). if after this
+     there is still no spraed, and there is no operate op, we add
+     synchronous spread as a default. */
   mint_network_init( net );
-  if( !net->spread ) {
+
+  /* if there is a spread on file, it takes precedence */
+  spread = mint_spread_load( file );
+  if( spread ) {
+      /* INFO spread override */ 
+      mint_spread_del( net->spread );
+      net->spread = spread;
+  }
+
+  if( !net->spread && 
+      mint_ops_count( net->ops, mint_op_network_operate )<0 ) {
     op = mint_op_new( "synchronous" );
     mint_ops_append( net->ops, op );
     mint_op_run( op, net );
     mint_op_del( op ); /* a copy has been stored in net->ops */
   }
-
-  /* set plain operate if not specified */
-  if( !mint_ops_count( net->ops, mint_op_network_operate ) )
-    mint_ops_append( net->ops, mint_op_new("do_spread") );
 
   return net;
 }
@@ -445,12 +458,14 @@ void mint_network_asynchronous( struct mint_network *net, float *p ) {
      time the op executes, and unless the user has specified a number
      of updates already (this hinges on the fact that the default p[0]
      value is 0). */
-  if( !p[0] )
-    p[0] = net->size;
+  if( p[0] )
+    steps = p[0];
+  else
+    steps = net->size;
 
-  steps = p[0];
   while( steps-- ) {
-    /* pick node group at random, weighing by size */
+    /* pick node group at random, weighing by size and only taking
+       into account nodes with an update op */
     i = j = 0; 
     k = mint_random_int( 0, net->size );
     while( j<=k ) {
@@ -459,6 +474,7 @@ void mint_network_asynchronous( struct mint_network *net, float *p ) {
 	j += mint_nodes_size( net->n[i] );
       i++;
     }
+    i--;
 
     /* pick node at random from group i */
     j = mint_random_int( 0, mint_nodes_size(net->n[i]) );
@@ -482,8 +498,11 @@ void mint_network_asynchronous( struct mint_network *net, float *p ) {
   }
 }
 
-void mint_network_spread( struct mint_network *net, float *p ) {
+void mint_network_spread( struct mint_network *net ) {
   int i, j, k, from, to, len, target;
+
+  if( !net->spread ) 
+    return;
 
   /* reset the targets of weight matrices */
   for( i=0; i<net->matrices; i++ ) {
@@ -518,4 +537,16 @@ void mint_network_spread( struct mint_network *net, float *p ) {
 			   0, mint_weights_rows(net->w[k]) );
 
   }
+}
+
+void mint_network_operate( struct mint_network *net ) {
+  int i, n;
+  struct mint_op *op;
+  n = mint_ops_size( net->ops );
+  for( i=0; i<n; i++ ) {
+    op = mint_ops_get( net->ops, i );
+    if( mint_op_type( op ) == mint_op_network_operate )
+      mint_op_run( op, net );
+  }
+  mint_network_spread( net );
 }

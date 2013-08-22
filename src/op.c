@@ -44,10 +44,9 @@ static float weights_init_target_param[1] = { 0. };
 static float weights_init_from_param[1] = { -1 };
 static float weights_init_to_param[1] = { -1 };
 
-static float network_init_spread_param[1] = { 0 };
 static float network_init_threads_param[2] = { 1, 0 };
 static float network_asynchronous_param[1] = { 0 };
-static float network_clocked_param[2] = { 10, 1 };
+static float network_clocked_param[2] = { 25, 0 };
 
 /*  number of built-in ops, see mint_op_atexit. it is a #define
     and not a static variable otherwise it must be exposed in the
@@ -55,7 +54,7 @@ static float network_clocked_param[2] = { 10, 1 };
 
     NOTE: change this whenever adding or removing from the table
     above, otherwise crashes can occur when adding ops! */
-#define mint_nop_builtin 30
+#define mint_nop_builtin 28
 
 /* built-in ops */
 static struct mint_op mint_op_static_table[ mint_nop_builtin+1 ] = {
@@ -113,6 +112,7 @@ static struct mint_op mint_op_static_table[ mint_nop_builtin+1 ] = {
 
   { "frozen", mint_op_weights_update,0,0,0 },
 
+
   /* weights init */
 
   { "random",mint_op_weights_init,mint_weights_init_random,3,
@@ -148,9 +148,6 @@ static struct mint_op mint_op_static_table[ mint_nop_builtin+1 ] = {
   { "synchronous",mint_op_network_init,mint_network_init_synchronous,
     0,0 },
 
-  { "spread",mint_op_network_init,mint_network_init_spread,1,
-    network_init_spread_param },
-
   { "threads",mint_op_network_init,mint_network_init_threads,2,
     network_init_threads_param },
 
@@ -158,8 +155,6 @@ static struct mint_op mint_op_static_table[ mint_nop_builtin+1 ] = {
 
   { "asynchronous",mint_op_network_operate,mint_network_asynchronous,
     1,network_asynchronous_param },
-
-  { "do_spread",mint_op_network_operate,mint_network_spread,0,0 },
 
   { "clocked", mint_op_network_operate,mint_network_clocked,2,
     network_clocked_param }
@@ -289,6 +284,10 @@ int mint_op_type( const struct mint_op *h ) {
 
 int mint_op_nparam( const struct mint_op *h ) {
   return h->nparam;
+}
+
+float *mint_op_get_params( struct mint_op *h ) {
+  return h->param;
 }
 
 float mint_op_get_param( struct mint_op *h, int i ) {
@@ -587,15 +586,5 @@ void mint_network_init( struct mint_network *net ) {
     if( ops->p[i]->type == mint_op_network_init )
       ((mint_netop_t) ops->p[i]->op)( net, ops->p[i]->param );
   }  
-}
-
-void mint_network_operate( struct mint_network *net ) {
-  int i;
-  struct mint_ops *ops;
-  ops = mint_network_get_ops( net );
-  for( i=0; i<ops->n; i++ ) {
-    if( ops->p[i]->type == mint_op_network_operate )
-      ((mint_netop_t) ops->p[i]->op)( net, ops->p[i]->param );
-  }
 }
 

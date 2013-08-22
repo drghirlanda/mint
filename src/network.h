@@ -36,20 +36,22 @@ void mint_network_save( const struct mint_network *net, FILE *dest );
 /** Load a network from an open file. The file format is:
 
    network g m \n
+   <node operations>
    <node groups> \n
    <weight matrices> \n
    <spread scheme> \n
 
    where: g and m are the number of node groups and weight matrices;
-   <spread scheme> is an OPTIONAL spreading scheme (synchronous
-   spreading is set if not specified, may be changed later; see
-   spread.h for info about spreading schemes); <node groups> consists
-   of g node group specifications; <weight matrices> consists of m
-   weight matrix specifications. Both may be either in short form,
-   giving only architectural details such as number of nodes and state
-   variables, or in long form giving values for all nodes/weights. See
-   nodes.h and weights.h for details.
-*/
+   <node operations> are optional node operations; <node groups>
+   consists of g node group specifications; <weight matrices> consists
+   of m weight matrix specifications. Both may be either in short
+   form, giving only architectural details such as number of nodes and
+   state variables, or in long form giving values for all
+   nodes/weights. See nodes.h and weights.h for details. Lastly,
+   <spread scheme> is an optional spreading scheme (see spread.h). If
+   no spreading scheme is on file, if none is set by the network
+   operations, and if there is no 'operate' operation specified,
+   synchronous spreading is set. */
 struct mint_network *mint_network_load( FILE * );
 
 /** Number of node groups in this network */

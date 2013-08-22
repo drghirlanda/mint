@@ -5,11 +5,15 @@
 
 - known bugs or poorly designed features:
 
-  - redesign management of network_operate ops! multiple operations
-    shoudl work with the provision that some of them set the spread,
-    and the spread is followed as the last operation, if it
-    exists. also, in saving and loading the spread should be located
-    before nodes and not at the end of everything
+  - threads op levels should be more explicit... use a list of params
+    describing which threading features to enable, default no
+    features.
+
+  - the design of the MINT arc files should be documented better. note
+    especially how spread is set and why it is at the end
+    (network_init ops need to have the matrices and nodes loaded, and
+    might ant to set a spread, but the user-specified spread should
+    take precedence and so it is last to override spreads set by ops).
 
   - states are copied incorrectly for sparse matrices! same bug in
     mint_weights_copy as well as mint_weights_prune

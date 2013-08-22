@@ -75,6 +75,9 @@ int mint_op_nparam( const struct mint_op *h );
 /** Return value of parameter i. */
 float mint_op_get_param( struct mint_op *h, int i );
 
+/** Return pointer to parameter array . */
+float *mint_op_get_params( struct mint_op *h );
+
 /** Set value of op parameter i. */
 void mint_op_set_param( struct mint_op *h, int i, float x );
 

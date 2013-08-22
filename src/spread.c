@@ -108,40 +108,6 @@ void mint_network_init_synchronous( struct mint_network *net,
   mint_spread_del( s );
 }
 
-/* Set up a custom update sequence for network nodes by reading a
-    spread structure from an open architecture file (this is managed
-    by MINT internally through the mint_*_file functions---the user
-    should never need to know about this. */
-void mint_network_init_spread( struct mint_network *net, float *p ) {
-  struct mint_spread *s;
-  int i, g, m, len;
-  FILE *file;
-
-  file = mint_get_file();
-  i = fscanf( file, " %d", &len );
-  mint_check( i==1, "cannot read spread length" );
-  s = mint_spread_new( len );
-
-  g = mint_network_groups( net );
-  m = mint_network_matrices( net );
-
-  for( i=0; i<len; i++ ) {
-    i = fscanf( file, " %d", s->w + i );
-    mint_check( i==1, "cannot read weight index" );
-    if( s->w[i]<0 )
-      s->w[i] = -1;
-    mint_check( s->w[i]<m, "weights index too large" );
-  }
-
-  for( i=0; i<len; i++ ) {
-    i = fscanf( file, " %d", s->n + i );
-    mint_check( i==1, "cannot read weight index" );
-    mint_check( s->n[i]>=0 && s->n[i]<g, "nodes index out of range" );
-  }
-
-  mint_network_set_spread( net, s );
-  mint_spread_del( s );
-}
 
 struct mint_spread *mint_spread_dup( const struct mint_spread *s1 ) {
   int i;
