@@ -142,18 +142,14 @@ int mint_weights_is_sparse( const mint_weights );
 /** Returns number of nonzero elements in a weight matrix. */
 int mint_weights_nonzero( const mint_weights );
  
-/** Add weights to a sparse weight matrix. Weights in row r with
-    column indices in ind are set to values in val; len is the common
-    length of val and ind. This function works with both full and
-    sparse matrices (it is more helpful with sparse matrices).
-
-    NOTES: When used with sparse matrices, the function does not check
-    for duplicates. This should be fixed.
-
-    Also, the function does not sort the resulting index arrays. This
-    may be a performance penalty in matrix-vector multiplication. */
+/** Set weight values or state variable by row (most useful for sparse
+    matrices). Variables in row r with column indices in ind are set
+    to values in val; len is the common length of val and ind; var
+    indicates which state variable to set (0 for weight values, >0 for
+    other states). This function works with both full and sparse
+    matrices (it is more helpful with sparse matrices). */
 void mint_weights_set_row( mint_weights w,  int r, int len,
-			   float *val, unsigned int *ind );
+			   float *val, unsigned int *ind, int var );
 
 /** Returns number of elements existing in a row (equal to the number
     of columns for dense matrices, possibly less for sparse

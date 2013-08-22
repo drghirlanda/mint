@@ -141,7 +141,7 @@ mint_weights mint_weights_dup( const mint_weights src ) {
 }
 
 void mint_weights_cpy( mint_weights dst, const mint_weights src ) {
-  unsigned int r, c, s, rows, cols, states;
+  unsigned int r, s, rows, cols, states;
   struct mint_weights_str *dstr, *sstr; 
 
   if( dst == src ) return;
@@ -162,16 +162,13 @@ void mint_weights_cpy( mint_weights dst, const mint_weights src ) {
   mint_ops_del( dstr->ops );
   dstr->ops = mint_ops_dup( sstr->ops );
 
-  for( r=0; r<rows; r++ ) {
-    if( mint_weights_is_sparse(src) )
-      mint_weights_set_row( dst, r, sstr->rlen[r], src[0][r], sstr->cind[r] );
-    else
-      mint_weights_set_row( dst, r, cols, src[0][r], 0 );
-    for( s=1; s<1+states; s++ ) {
-      for( c=0; c<cols; c++ )
-	dst[s][r][c] = src[s][r][c];
+  if( mint_weights_is_sparse(src) ) {
+    for( s=0; s<1+states; s++ ) {
+      for( r=0; r<rows; r++ )
+	mint_weights_set_row( dst, r, sstr->rlen[r], src[s][r], sstr->cind[r], s );
     }
-  }
+  } else
+    memcpy( &dst[0][0][0], &src[0][0][0], (1+states)*rows*cols*sizeof(float) );
 }
 
 void mint_weights_load_values( mint_weights w, FILE *f ) {
@@ -369,8 +366,9 @@ int mint_weights_nonzero( const mint_weights w ) {
 }
 
 void mint_weights_set_row( mint_weights w, int r, int newlen,
-			   float *newval, unsigned int *newind ) {
-  int i, j, states;
+			   float *newval, unsigned int *newind,
+			   int var ) {
+  int i, states;
   unsigned int *ind;
   struct mint_weights_str *wstr = _STR(w);
 
@@ -396,28 +394,21 @@ void mint_weights_set_row( mint_weights w, int r, int newlen,
     }
     /* copy new values */
     memcpy( wstr->cind[r], ind, newlen*sizeof(unsigned int) );
-    memcpy( w[0][r], newval, newlen*sizeof(float) );
-    /* set state values to zero */
-    for( i=1; i<1+states; i++ ) {
-      for( j=0; j<newlen; j++ )
-	w[i][r][j] = 0;
-    }
+    memcpy( w[ var ][r], newval, newlen*sizeof(float) );
     wstr->rlen[r] = newlen;
 
   } else {
 
-    /* set values and states to zero */
-    for( j=0; j<1+states; j++ ) {
-      for( i=0; i<wstr->cols; i++ )
-	w[j][r][i] = 0;
-    }
+    /* set values to zero */
+    for( i=0; i<wstr->cols; i++ )
+      w[ var ][r][i] = 0;
     /* set new values */
     if( !newind )
-      memcpy( w[0][r], newval, newlen );
+      memcpy( w[ var ][r], newval, newlen );
     else {
       for( i=0; i<newlen; i++ ) {
 	mint_check( ind[i] < wstr->cols, "index too large" );
-	w[0][r][ ind[i] ] = newval[i];
+	w[ var ][r][ ind[i] ] = newval[i];
       }
     }
 
@@ -508,15 +499,16 @@ mint_weights mint_weights_prune( mint_weights src, float cutoff, int sparse ) {
       }
     }
 
-    /* create row in dst (states allocated, but set to 0) */ 
-    mint_weights_set_row( dst, r, i, val, ind );
+    /* set values */ 
+    mint_weights_set_row( dst, r, i, val, ind, 0 );
     
     /* copy states */
-    for( c=0; c<i; c++ ) {
-      for( s=1; s<states+1; s++ )
-	dst[s][r][c] = src[s][r][ ind[c] ];
+    for( s=1; s<states+1; s++ ) {
+      for( c=0; c<i; c++ )
+	val[c] = src[s][r][ ind[c] ];
+      mint_weights_set_row( dst, r, i, val, ind, s );
     }
-    
+
     free( val );
     free( ind );
   }

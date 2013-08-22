@@ -11,6 +11,7 @@ example/servomotor/servomotor
 example/clocked/clocked
 example/sigmoid/sigmoid
 example/network-add/network-add
+example/network/network
 example/izikevich/izzy
 example/camera/camera
 example/threads/threads

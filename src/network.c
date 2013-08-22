@@ -151,7 +151,7 @@ void mint_network_save( const struct mint_network *net, FILE *dest ) {
 struct mint_network *mint_network_load( FILE *file ) {
   int i, groups, matrices, read, from, to;
   struct mint_network *net;
-  /* struct mint_op*op; */
+  struct mint_op*op;
   struct mint_spread *spread;
 
   read = fscanf( file, " network %d %d", &groups, &matrices );
