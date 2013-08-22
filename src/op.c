@@ -44,7 +44,7 @@ static float weights_init_target_param[1] = { 0. };
 static float weights_init_from_param[1] = { -1 };
 static float weights_init_to_param[1] = { -1 };
 
-static float network_init_threads_param[2] = { 1, 0 };
+static float network_init_threads_param[3] = { 1, 0, 0 };
 static float network_asynchronous_param[1] = { 0 };
 static float network_clocked_param[2] = { 25, 0 };
 
@@ -148,7 +148,7 @@ static struct mint_op mint_op_static_table[ mint_nop_builtin+1 ] = {
   { "synchronous",mint_op_network_init,mint_network_init_synchronous,
     0,0 },
 
-  { "threads",mint_op_network_init,mint_network_init_threads,2,
+  { "threads",mint_op_network_init,mint_network_init_threads,3,
     network_init_threads_param },
 
   /* network operate */

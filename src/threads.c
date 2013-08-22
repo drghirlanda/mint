@@ -9,9 +9,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <pthread.h>
 
 #ifdef MINT_USE_THREADS
+
+#include <pthread.h>
 
 /* holds info needed by mint_threads_mult_helper and
    mint_threads_spread_helper to perform a matrix-vector
@@ -185,43 +186,39 @@ void mint_threads_spread( struct mint_network *net, float *p ) {
   free(td);
 }
 
-/* these enums are used to specify the threading level */
-enum {
-  threads_network = 2,
-  threads_weights = 4,
-};
-
 void mint_network_init_threads( struct mint_network *net, float *p ) {
   struct mint_ops *ops;
   struct mint_op *op;
   mint_weights w;
-  int i, level;
-  float defpar = 1;
+  int i, num_threads, threaded_spread, threaded_mult;
+  float default_threads = 1;
 
-  level = p[1];
+  num_threads = p[0];
+  threaded_spread = p[1];
+  threaded_mult = p[2];
 
-  if( level & threads_network ) {
+  if( threaded_spread ) {
 
     if( !mint_op_exists( "threads_spread" ) )
       mint_op_add( "threads_spread", mint_op_network_operate,
-		   (void *)mint_threads_spread, 1, &defpar );
+		   (void *)mint_threads_spread, 1, &default_threads );
 
     ops = mint_network_get_ops( net );
     mint_ops_del_type( ops, mint_op_network_operate );
     op = mint_op_new( "threads_spread" );
-    mint_op_set_param( op, 0, p[0] );
+    mint_op_set_param( op, 0, num_threads );
     mint_ops_append( ops, op );
     mint_op_del( op );
   }
 
-  if( level & threads_weights ) {
+  if( threaded_mult ) {
 
     if( !mint_op_exists( "threads_mult" ) )
       mint_op_add( "threads_mult", mint_op_weights_operate,
-		   (void *)mint_threads_mult, 1, &defpar );
+		   (void *)mint_threads_mult, 1, &default_threads );
 
     op = mint_op_new( "threads_mult" );
-    mint_op_set_param( op, 0, p[0] );
+    mint_op_set_param( op, 0, num_threads );
 
     for( i=0; i<mint_network_matrices( net ); i++ ) {
       w = mint_network_weights( net, i );
