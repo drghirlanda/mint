@@ -51,7 +51,13 @@ void mint_network_save( const struct mint_network *net, FILE *dest );
    <spread scheme> is an optional spreading scheme (see spread.h). If
    no spreading scheme is on file, if none is set by the network
    operations, and if there is no 'operate' operation specified,
-   synchronous spreading is set. */
+   synchronous spreading is set. 
+
+   NOTE: It is possible to have 'operate' ops AND a spread. It is up
+   to you to decide whether this makes sense. For example, MINT
+   provides an 'operate' op to acquire images from camera, which does
+   not do any spreading of activation and thus should be used in
+   conjunction with other ops. */
 struct mint_network *mint_network_load( FILE * );
 
 /** Number of node groups in this network */
