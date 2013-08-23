@@ -5,6 +5,9 @@
 
 - known bugs or poorly designed features:
 
+  - mint_weights_set assumes indices in sparse matrix cind variables
+    are sorted, but mint_weights_set_row does not check...
+
   - the design of the MINT arc files should be documented better. note
     especially how spread is set and why it is at the end
     (network_init ops need to have the matrices and nodes loaded, and

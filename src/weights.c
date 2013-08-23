@@ -443,8 +443,8 @@ void mint_weights_set( mint_weights w, int s, int r, int c, float x ) {
     i = 0;
     while( i < rlen && wstr->cind[r][i] < c )
       i++;
-    if( i == c ) { /* place already exists */
-      w[s][r][c] = x;
+    if( i < rlen ) { /* place already exists */
+      w[s][r][i] = x;
     } else {
       /* copy values and states */
       for( j=0; j < 1 + wstr->states; j++ ) {
