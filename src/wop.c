@@ -153,7 +153,7 @@ void mint_weights_init_random_sparse( mint_weights w, int rmin,
       val[i] = rnd( p[0], p[1] );
     ind = malloc( len*sizeof(ind) );
     mint_random_subset( ind, len, 0, cols, 1 );
-    mint_weights_set_row( w, r, len, val, ind );
+    mint_weights_set_row( w, r, len, val, ind, 0 );
     free( val );
     free( ind );
   }
@@ -196,14 +196,10 @@ void mint_weights_init_normal( mint_weights w, int rmin, int rmax,
 
 void mint_weights_init_diagonal( mint_weights w, int rmin, int rmax,
 				 float *p ) {
-  unsigned int i, r, c, from, to;
-  from = mint_weights_get_from( w );
-  to = mint_weights_get_to( w );
-  mint_check( from==to, "weight matrix is not recurrent" );
+  unsigned int i, r, c;
   r = mint_weights_rows(w);
   c = mint_weights_cols(w);
-  mint_check( rmin>=0 && rmax<=r, "rmin, rmax out fo range" );
-  mint_check( r==c, "rows != columns in recurrent matrix" );
+  mint_check( r==c, "from size != to size" );
   for( i=rmin; i<rmax; i++ )
     mint_weights_set( w, 0, i, i, p[0] );
 }
