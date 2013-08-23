@@ -19,15 +19,11 @@
     that they need not be set explicitly when the op has no potential
     for clashing with others.
 
-  - geometry: geometry ops could be added to nodes and checked by
-    functions. e.g., nodes 10000 0 rows 100 would specify a square
-    array of 100x100 nodes
-
   - lateral processing weights op can be turned into receptive field
     op by allowing nfrom to be different from nto!
    
-  - info functions to complement save functions? save is too much info
-    to look through
+  - object info functions to complement save functions? save is too
+    much info to look through
 
 - to be tested:
 
@@ -71,7 +67,7 @@
 
 
 - dot output: print each nodes and weights op on a separate line?
-  maybe with record nodes?
+  maybe with record nodes? simplify?
 
 
 - weights init functions that build receptive fields and topographic
@@ -131,7 +127,14 @@ mint_nodes mint_2d_stim( int size, float x, float h, float d ) {
   - specify also num states for from and to in weight update rules?
 
   - go through all mint_check and separate fatal errors from
-    recoverable errors; the latter should return a status code
+    recoverable errors; the latter should return a status code.
+
+  - redesign with mint_check for errors that are always fatal and do
+    not depend on programming errors (e.g., camera unavailable,
+    threads cannot be created, out of memory, etc.), mint_info for
+    optional warnings (add an "info" op to network to turn this on)
+    and mint_debug to check programming errors (boundaries, etc.) that
+    can be turned off once program is working.
 
 
 - examples:

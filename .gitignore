@@ -13,11 +13,12 @@ example/sigmoid/sigmoid
 example/network-add/network-add
 example/network/network
 example/izikevich/izzy
-example/camera/camera
 example/threads/threads
 example/sparse/sparse
 example/integrator/integrator
 example/speed/speed
+example/camera/camera
+example/camera+lateral/camera+lateral
 mint-*.zip
 doc/html/*
 

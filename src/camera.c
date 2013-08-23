@@ -33,7 +33,7 @@ void mint_camera_close( void ) {
 	     "mint_camera_close: cannot remove '%s'\n", 
 	     mint_camera_pipe );
 
-  fprintf( stderr, "mint_camera_close: stopping camshot (pid=%u\n",
+  fprintf( stderr, "mint_camera_close: stopping camshot (pid=%u)\n",
 	   (unsigned int)mint_camera_pid );
   sprintf( cmd, "kill -15 %u", (unsigned int)mint_camera_pid );
   if( system( cmd ) == -1 ) {

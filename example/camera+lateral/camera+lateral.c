@@ -22,15 +22,15 @@ int main( void ) {
   G = mint_network_nodes( net, 1 );
   B = mint_network_nodes( net, 2 );
 
-  for( i=0; i<10; i++ )
+  for( i=0; i<1; i++ )
     mint_network_operate( net );
 
   img = mint_image_nodes( R, G, B, 0 );
-  mint_image_save( img, "in.jpg", FIF_JPEG );
+  mint_image_save( img, "in.bmp", FIF_JPEG );
   mint_image_del( img );
 
   img = mint_image_nodes( R, G, B, 1 );
-  mint_image_save( img, "out.jpg", FIF_JPEG );
+  mint_image_save( img, "out.bmp ", FIF_JPEG );
   mint_image_del( img );
   
   mint_network_del( net );

@@ -73,13 +73,19 @@ mint_nodes mint_nodes_load( FILE *file ) {
   unsigned int size, states, read, i, k;
   mint_nodes n;
   struct mint_nodes_str *nstr;
+  struct mint_op *op;
   mint_skip_space( file );
   read = fscanf( file, "nodes %d %d", &size, &states );
   mint_check( read==2, "cannot read nodes geometry" );
   n = mint_nodes_new( size, states );
   nstr = _STR(n);
   nstr->ops = mint_ops_load( file );
-  
+
+  /* add identity update op is no update op specified */
+  if( mint_ops_count( nstr->ops, mint_op_nodes_update ) < 1 ) {
+    op = mint_op_new( "identity" );
+    mint_ops_append( nstr->ops, op );
+  }
   
   if( mint_values_waiting( file ) ) {
     for( k=0; k<2+states; k++ ) for( i=0; i<size; i++ ) {
