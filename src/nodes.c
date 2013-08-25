@@ -61,8 +61,10 @@ void mint_nodes_cpy( mint_nodes dst, const mint_nodes src ) {
   if( dst == src ) return;
   sstr = _STR( src );
   dstr = _STR( dst );
-  mint_check( dstr->size==sstr->size, "different number of nodes" );
-  mint_check( dstr->states==sstr->states, "different number of states" );
+  mint_check( dstr->size==sstr->size, 
+	      "sizes differ: %d != %d",  dstr->size, sstr->size );
+  mint_check( dstr->states==sstr->states, 
+	      "state variables differ: %d != %d", dstr->size, sstr->size );
   mint_ops_del( dstr->ops );
   dstr->ops = mint_ops_dup( sstr->ops );
   memcpy( &dst[0][0], &src[0][0], 

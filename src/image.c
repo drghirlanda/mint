@@ -112,7 +112,9 @@ struct mint_image *mint_image_weights( const mint_weights w, int irows,
   rows = mint_weights_rows( w );
 
   if( irows>0 ) {
-    mint_check( cols*rows % irows == 0, "cols*rows not multiple of irows" );
+    mint_check( cols*rows % irows == 0, 
+		"matrix size (%d * %d) not a multiple of image rows (%d)", 
+		rows, cols, irows );
     icols = irows; /* transpose to get things right */
     irows = cols*rows / icols;
   } else {
@@ -191,8 +193,10 @@ void mint_image_paste( const struct mint_image *image,
   size = mint_nodes_size( nred );
 
   if( ngreen && nblue ) {
-    mint_check( mint_nodes_size(ngreen)==size, "ngreen size != nred" );
-      mint_check( mint_nodes_size(nblue)==size, "nblue size != nred" );
+    i = mint_nodes_size( ngreen );
+    mint_check( i==size, "ngreen size (%d) != nred size (%d)", size, i );
+    i = mint_nodes_size( nblue );
+    mint_check( i==size, "nblue size (%d) != nred size (%d)", size, i );
   } else {
     mint_check( 0, "must provide 1 or 3 node arguments, not 2" );
   } 

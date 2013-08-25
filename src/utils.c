@@ -5,6 +5,18 @@
 #include <string.h>
 #include <stdarg.h>
 
+/* internal function used by both mint_error and mint_check below */
+void mint_check( int test, char *template, ... ) {
+  va_list ap;
+  if( test ) return;
+  fprintf( stderr, "%s (%s:%d): ", __FUNCTION__, __FILE__, __LINE__ );
+  va_start( ap, template );
+  vfprintf( stderr, template, ap );
+  va_end( ap );
+  fprintf( stderr, "\n" );
+  abort();
+}  
+
 int mint_skip_space( FILE *file ) {
   char c;
   do c = fgetc( file );
@@ -41,10 +53,8 @@ int mint_keyword( FILE *file ) {
   return 0;
 }
 
-static const char *defaults[2] = {
-  "do_spread", "mult" };
-
 int mint_default( const char *name ) {
+  static const char *defaults[3] = { "identity", "mult", "synchronous" };
   int i, len;
   for( i=0; i<2; i++ ) {
     len = strlen( defaults[i] );

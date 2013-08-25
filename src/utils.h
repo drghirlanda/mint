@@ -3,9 +3,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 
-/* more informative assert-like marco */
-#define mint_check( condition, message ) if(!(condition)){fprintf(stderr,"%s: %s (%s:%d)\n",__FUNCTION__,message,__FILE__,__LINE__);abort();}
+/* utlity function for error checking and reporting */
+void mint_check( int test, char *template, ... );
 
 /* advance until a non space character, the latter remains available
    for reading and is also returned */

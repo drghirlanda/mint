@@ -211,13 +211,8 @@ static struct mint_op *mint_op_alloc( const char *name,
 struct mint_op *mint_op_new( const char *name ) {
   struct mint_op *h, *hsrc;
   int i, len;
-  char *buf;
   i = mint_op_id( name );
-  if( i>=mint_nop ) {
-    buf = malloc( 1024 );
-    sprintf( buf, "invalid op name: %s", name );
-    mint_check( 0, buf );
-  }
+  mint_check( i<mint_nop, "invalid op name: %s", name );
   hsrc = mint_op_table + i;
   h = mint_op_alloc( hsrc->name, hsrc->nparam );
   len = strlen( hsrc->name );
@@ -268,8 +263,9 @@ struct mint_op *mint_op_load( FILE *file ) {
   /* load parameters (missing ones already got a default value */
   j = 0;
   while( mint_values_waiting(file) && j < h->nparam ) {
-      i = fscanf( file, " %f", h->param + j++ );
-      mint_check( i==1, "can't load op parameters" );
+      i = fscanf( file, " %f", h->param + j );
+      mint_check( i==1, "can't load op parameter %d", j );
+      j++;
   }
   return h;
 }
@@ -440,13 +436,13 @@ int mint_ops_size( const struct mint_ops *ops ) {
 }
 
 struct mint_op *mint_ops_get( struct mint_ops *ops, int i ) {
-  mint_check( ops, "null ops object" );
+  mint_check( ops!=0, "null ops object" );
   mint_check( i>=0 && i<ops->n, "index i out of range" );
   return ops->p[i];
 }
 
 void mint_ops_set( struct mint_ops *ops, int i, struct mint_op *op ) {
-  mint_check( ops, "null ops object" );
+  mint_check( ops!=0, "null ops object" );
   mint_check( i>=0 && i<ops->n, "index i out of range" );
   mint_op_del( ops->p[i] );
   ops->p[i] = mint_op_dup( op );
@@ -455,7 +451,7 @@ void mint_ops_set( struct mint_ops *ops, int i, struct mint_op *op ) {
 int mint_ops_del_type( struct mint_ops *ops, int type ) {
   int i, k;
   struct mint_op **pnew;
-  mint_check( ops, "null ops object" );
+  mint_check( ops!=0, "null ops object" );
   pnew = malloc( ops->n * sizeof(struct mint_op *) );
   k = 0;
   for( i=0; i<ops->n; i++ ) {
@@ -474,7 +470,7 @@ int mint_ops_del_type( struct mint_ops *ops, int type ) {
 int mint_ops_del_name( struct mint_ops *ops, const char *name ) {
   int i, k;
   struct mint_op **pnew;
-  mint_check( ops, "null ops object" );
+  mint_check( ops!=0, "null ops object" );
   pnew = malloc( ops->n * sizeof(struct mint_op *) );
   k = 0;
   for( i=0; i<ops->n; i++ ) {
@@ -492,7 +488,7 @@ int mint_ops_del_name( struct mint_ops *ops, const char *name ) {
 
 int mint_ops_count( struct mint_ops *ops, int type ) {
   int i, count;
-  mint_check( ops, "null ops object" );
+  mint_check( ops!=0, "null ops object" );
   count = 0;
   for( i=0; i<ops->n; i++ ) 
     count += ops->p[i]->type == type;
@@ -502,7 +498,7 @@ int mint_ops_count( struct mint_ops *ops, int type ) {
 int mint_ops_find( struct mint_ops *ops, const char *name ) {
   int i;
   const char *opname;
-  mint_check( ops, "null ops object" );
+  mint_check( ops!=0, "null ops object" );
   for( i=0; i<ops->n; i++ ) {
     opname = mint_op_name( ops->p[i] );
     if( strncmp( opname, name, strlen(opname) ) == 0 )

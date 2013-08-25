@@ -18,19 +18,15 @@ int main( void ) {
   net = mint_network_load( file );
   fclose( file );
 
-  R = mint_network_nodes( net, 0 );
-  G = mint_network_nodes( net, 1 );
-  B = mint_network_nodes( net, 2 );
+  R = mint_network_nodes( net, 3 );
+  G = mint_network_nodes( net, 4 );
+  B = mint_network_nodes( net, 5 );
 
   for( i=0; i<1; i++ )
     mint_network_operate( net );
 
-  img = mint_image_nodes( R, G, B, 0 );
-  mint_image_save( img, "in.bmp", FIF_JPEG );
-  mint_image_del( img );
-
   img = mint_image_nodes( R, G, B, 1 );
-  mint_image_save( img, "out.bmp ", FIF_JPEG );
+  mint_image_save( img, "out.bmp", FIF_BMP );
   mint_image_del( img );
   
   mint_network_del( net );

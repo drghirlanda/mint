@@ -51,7 +51,7 @@ void mint_camera_init( void ) {
   char *camarg[] = { CAMSHOT, "-p", 0, 0 };
   char cmd[256];
   pid_t pid = 0;
-  int count;
+  int i;
   FILE *file;
 
   if( mint_camera_pid ) /* camera already set up */
@@ -66,8 +66,7 @@ void mint_camera_init( void ) {
 
   if( pid==0 ) { /* child */
     execv( "/usr/bin/camshot", camarg );
-    fprintf( stderr, "mint_camera_init: %s\n", strerror(errno) );
-    abort();
+    mint_check( 0, "%s", strerror(errno) );
   }
 
   /* parent:  */
@@ -76,26 +75,23 @@ void mint_camera_init( void ) {
 
   /* wait until the camera is ready, signaled by being able to open
      the camera pipe. times out after 30s */
-  count = 0;
+  i = 0;
   do {
     sleep( 1 );
     file = fopen( mint_camera_pipe, "r" );
-    count++; 
-  } while( !file && count<30 );
-  mint_check( count<30, "cannot read from camshot pipe\n" );
+    i++; 
+  } while( !file && i<30 );
+  mint_check( i < 30, "cannot open camshot pipe (%s)\n", mint_camera_pipe );
 
   /* we don't fclose( file ) because that would stop camshot, which is
-     at the other hand of the pipe */
+     at the other end of the pipe */
 
   /* we grab an image because camshot has a bug: the first two
      images ever read from the pipe are identical! this also checks
      that we can read from the camera pipe. */
   sprintf( cmd, "cat %s > /dev/null", mint_camera_pipe );
-  if( system( cmd ) == -1 ) {
-    fprintf( stderr, "mint_camera_init: cannot read from '%s'\n", 
-	     mint_camera_pipe );
-    abort();
-  }
+  i = system( cmd );
+  mint_check( i != -1, "cannot read from camshot pipe (%s)", mint_camera_pipe );
   
   /* now we register ops that make use of the camera */
   mint_op_add( "camera", mint_op_network_operate, mint_network_camera, 4, 
@@ -149,7 +145,7 @@ void mint_camera_paste( mint_nodes nred, mint_nodes ngreen, mint_nodes nblue,
 }
 
 void mint_network_camera( struct mint_network *net, float *p ) {
-  int var, R, G, B;
+  int var, R, G, B, groups;
   mint_nodes nred = 0;
   mint_nodes ngreen = 0;
   mint_nodes nblue = 0;
@@ -159,15 +155,17 @@ void mint_network_camera( struct mint_network *net, float *p ) {
   G = p[2];
   B = p[3];
 
-  mint_check( R>=0 && R<mint_network_groups( net ),
-	      "node group out of range (parameter 2)" );
+  groups = mint_network_groups( net );
+
+  mint_check( R>=0 && R<groups,
+	      "node group %d out of range 0-%d", R, groups-1 );
   nred = mint_network_nodes( net, R );
 
   if( G!=-1 && B!=-1 ) {
-    mint_check( G>=0 && G<mint_network_groups( net ),
-		"node group out of range (parameter 3)" );
-    mint_check( B>=0 && B<mint_network_groups( net ),
-		"node group out of range (parameter 4)" );
+    mint_check( G>=0 && G<groups,
+		"node group %d out of range 0-%d", G, groups-1 );
+    mint_check( B>=0 && B<groups,
+		"node group %d out of range 0-%d", B, groups-1 );
     ngreen = mint_network_nodes( net, G );
     nblue = mint_network_nodes( net, B );
   }

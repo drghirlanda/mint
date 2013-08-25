@@ -96,8 +96,8 @@ void mint_network_del( struct mint_network *net )
 void mint_network_cpy( struct mint_network *net1, 
 		       const struct mint_network *net2 ) {
   int i;
-  mint_check( net1, "destination network is null" );
-  mint_check( net2, "source network is null" );
+  mint_check( net1 != 0, "destination network is null" );
+  mint_check( net2 != 0, "source network is null" );
   if( net1 == net2 ) return;
   
   if( net1->groups != net2->groups || net1->matrices != net2->matrices ) {
@@ -117,7 +117,9 @@ void mint_network_cpy( struct mint_network *net1,
 
 void mint_network_freeze( struct mint_network *net, int i, int f ) {
   if( i >= 0 ) {
-    mint_check( i < net->matrices, "weight matrix index too large" );
+    mint_check( i < net->matrices, 
+		"weight matrix index %d too large (max=%d)",
+		i, net->matrices - 1);
     mint_weights_freeze( net->w[i], f );
   } else {
     for( i=0; i<net->matrices; i++ )
@@ -154,8 +156,11 @@ struct mint_network *mint_network_load( FILE *file ) {
   struct mint_op*op;
   struct mint_spread *spread;
 
-  read = fscanf( file, " network %d %d", &groups, &matrices );
-  mint_check( read==2, "cannot read network geometry" );
+  read = fscanf( file, " network %d", &groups );
+  mint_check( read==1, "cannot read number or node groups" );
+  read = fscanf( file, " %d", &matrices );
+  mint_check( read==1, "cannot read number or weight matrices" );
+
   net = mint_network_alloc( groups, matrices );
 
   net->ops = mint_ops_load( file );
@@ -201,14 +206,16 @@ struct mint_network *mint_network_load( FILE *file ) {
   return net;
 }
 
-mint_nodes mint_network_nodes( struct mint_network *n, int i ) {
-  mint_check( i>=0 && i<n->groups, "index out of range" );
-  return n->n[i];
+mint_nodes mint_network_nodes( struct mint_network *net, int i ) {
+  mint_check( i>=0 && i<net->groups, "index %d out of range 0-%d",
+	      i, net->groups - 1);
+  return net->n[i];
 }
 
-mint_weights mint_network_weights( struct mint_network *n, int i ) {
-  mint_check( i>=0 && i<n->matrices, "index out of range" );
-  return n->w[i];
+mint_weights mint_network_weights( struct mint_network *net, int i ) {
+  mint_check( i>=0 && i<net->matrices, "index %d out of range 0-%d",
+	      i, net->matrices - 1);
+  return net->w[i];
 }
 
 int mint_network_groups( const struct mint_network *n ) {
@@ -241,8 +248,8 @@ void mint_network_add( struct mint_network *net1,
   m1 = net1->matrices; 
   m2 = net2->matrices; 
   
-  mint_check( n1>=0 && n1<g1, "2nd arg out of range" ); 
-  mint_check( n2>=0 && n2<g2, "4th arg out of range" ); 
+  mint_check( n1>=0 && n1<g1, "2nd arg (%d) out of range 0-%d", n1, g1-1 ); 
+  mint_check( n2>=0 && n2<g2, "4th arg (%d) out of range 0-%d", n2, g2-1 ); 
 
   net1->n = realloc( net1->n, (g1+g2)*sizeof(mint_nodes) );
   net1->w = realloc( net1->w, (m1+m2+1)*sizeof(mint_weights) );
@@ -437,7 +444,8 @@ struct mint_ops *mint_network_get_ops( struct mint_network *net ) {
 
 void mint_network_replace_weights( struct mint_network *net, 
 				   int i, mint_weights w ) {
-  mint_check( i>=0 && i<net->matrices, "weights index out of range");
+  mint_check( i>=0 && i<net->matrices, 
+	      "weights index %d out of range 0-%d", i, net->matrices - 1 );
   mint_weights_del( net->w[i] );
   net->w[i] = mint_weights_dup( w );
 }
