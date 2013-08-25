@@ -20,7 +20,7 @@ void mint_node_identity( mint_nodes n, int min, int max, float *p );
 
 /** Sigmoidal non-linearity. 
 
-    State variables: nonw. 
+    State variables: none. 
 
     Parameters: 0: node output when input is zero.
                 1: maximum slope of the sigmoid function.
@@ -30,9 +30,9 @@ void mint_node_identity( mint_nodes n, int min, int max, float *p );
     of hyperbola together.  */
 void mint_node_sigmoid( mint_nodes n, int min, int max, float *p );
 
-/** Leaky integrator.  with time constant T = param[0] and leak L =
-    param[1]. The update performed is: output += ( input - L * old_output) /
-    T. 
+/** Leaky integrator.  with time constant T=param[0] and leak
+    L=param[1]. The update performed is: output += ( input -
+    L*old_output)/T.
 
     State variables: 1, to remember output value between updates
                      (old_output in equation)..
@@ -66,7 +66,7 @@ void mint_node_integrator( mint_nodes n, int min, int max, float *p );
 		4: Index of state variable used to store v values
 		(>=2, default 2).
 		5: Index of state variable used to store u values
-		(>=2, default 2, must be different from parameter 4). */
+		(>=2, default 3, must be different from parameter 4). */
 void mint_node_izzy( mint_nodes n, int min, int max, float *p );
 
 /** Adds a normally distributed number to a state variable. Note that
@@ -83,7 +83,8 @@ void mint_node_izzy( mint_nodes n, int min, int max, float *p );
                    0.01).  
 
      NOTE: You can use this op to simulate tonically active neurons,
-     just use it with a positive mean activity. */
+     just use it with a positive mean activity and the desired
+     standard deviation (0 also works). */
 void mint_node_noise( mint_nodes n, int min, int max, float *p );
 
 /** Restrict a node state variable to a given range. The default
@@ -94,7 +95,7 @@ void mint_node_noise( mint_nodes n, int min, int max, float *p );
 
     Parameters: 0: State variable to bound (default 1, i.e., node output). 
                 1: Minimum value (default 0).
-		2: Maximum value (default ). */
+		2: Maximum value (default 1). */
 void mint_node_bounded( mint_nodes n, int min, int max, float *p );
 
 /** A counter counts the number of updates since a state variable
@@ -106,8 +107,11 @@ void mint_node_bounded( mint_nodes n, int min, int max, float *p );
 
     Parameters: 0: State variable to monitor (default 1, i.e., node
                    output). 
+
 		1: Threshold value.
-		2: Index of state variable that stores the counter. */
+
+		2: Index of state variable that stores the counter
+		   (must be different from parameter 0). */
 void mint_node_counter( mint_nodes n, int min, int max, float *p );
 
 /** Poissonian source of spikes. Sets node output to 1 or 0 at random,

@@ -14,13 +14,13 @@
     might ant to set a spread, but the user-specified spread should
     take precedence and so it is last to override spreads set by ops).
 
-  - better docs form network_camera op
+  - better docs for network_camera op
 
   - all ops that need state should allow the user to configure which
     state variables are used, so that multiple ops can coexist without
     clashing! the state variables will have reasonable defaults so
     that they need not be set explicitly when the op has no potential
-    for clashing with others.
+    for clashing with others. DONE FOR NOP.
 
   - lateral processing weights op can be turned into receptive field
     op by allowing nfrom to be different from nto!
@@ -128,17 +128,6 @@ mint_nodes mint_2d_stim( int size, float x, float h, float d ) {
 - improve error management: 
 
   - specify also num states for from and to in weight update rules?
-
-  - go through all mint_check and separate fatal errors from
-    recoverable errors; the latter should return a status code.
-
-  - redesign with mint_check for errors that are always fatal and do
-    not depend on programming errors (e.g., camera unavailable,
-    threads cannot be created, out of memory, etc.), mint_info for
-    optional warnings (add an "info" op to network to turn this on)
-    and mint_debug to check programming errors (boundaries, etc.) that
-    can be turned off once program is working.
-
 
 - examples:
 
