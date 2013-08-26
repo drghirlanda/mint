@@ -60,6 +60,7 @@ void mint_network_init_feedforward( struct mint_network *net,
 	  w = mint_network_weights(net, j);
 	  to = mint_weights_get_to(w);
 	  from = mint_weights_get_from(w);
+	  mint_check( to != from, "matrix %d is self-recurrent!", j );
 	  if( to==i && !done[from] ) /* if input from nodes not done */
 	    break;                   
 	}
