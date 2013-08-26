@@ -5,8 +5,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
-/* utlity function for error checking and reporting */
-void mint_check( int test, char *template, ... );
+#define mint_check( test, ... ) if(!(test)) { fprintf( stderr, "%s (%s:%d): ", __FUNCTION__, __FILE__, __LINE__ ); fprintf( stderr, __VA_ARGS__ ); abort(); }
 
 /* advance until a non space character, the latter remains available
    for reading and is also returned */

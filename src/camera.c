@@ -1,4 +1,4 @@
-/* needed to access nanosleep() in gcc */
+
 #define _POSIX_C_SOURCE 199309L
 
 #include "camera.h"
@@ -91,7 +91,8 @@ void mint_camera_init( void ) {
      that we can read from the camera pipe. */
   sprintf( cmd, "cat %s > /dev/null", mint_camera_pipe );
   i = system( cmd );
-  mint_check( i != -1, "cannot read from camshot pipe (%s)", mint_camera_pipe );
+  mint_check( i != -1, "cannot read from camshot pipe (%s)", 
+	      mint_camera_pipe );
   
   /* now we register ops that make use of the camera */
   mint_op_add( "camera", mint_op_network_operate, mint_network_camera, 4, 
@@ -158,14 +159,14 @@ void mint_network_camera( struct mint_network *net, float *p ) {
   groups = mint_network_groups( net );
 
   mint_check( R>=0 && R<groups,
-	      "node group %d out of range 0-%d", R, groups-1 );
+	       "node group %d out of range 0-%d", R, groups-1 );
   nred = mint_network_nodes( net, R );
 
   if( G!=-1 && B!=-1 ) {
     mint_check( G>=0 && G<groups,
-		"node group %d out of range 0-%d", G, groups-1 );
+		 "node group %d out of range 0-%d", G, groups-1 );
     mint_check( B>=0 && B<groups,
-		"node group %d out of range 0-%d", B, groups-1 );
+		 "node group %d out of range 0-%d", B, groups-1 );
     ngreen = mint_network_nodes( net, G );
     nblue = mint_network_nodes( net, B );
   }
