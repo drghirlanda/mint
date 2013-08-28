@@ -183,20 +183,20 @@ struct mint_network *mint_network_load( FILE *file ) {
 
    /* we now run init ops (which may set a spread) and also attempt to
      read a spread from file (which takes precedence). if after this
-     there is still no spraed, and there is no operate op, we add
-     synchronous spread as a default. */
+     there is still no spread, and there is no asynchronous op (which
+     takes no spread), we add synchronous spread as a default. */
   mint_network_init( net );
 
   /* if there is a spread on file, it takes precedence */
   spread = mint_spread_load( file );
   if( spread ) {
-      /* INFO spread override */ 
-      mint_spread_del( net->spread );
-      net->spread = spread;
+    fprintf( stderr, "mint_network_load:" 
+	     "spread on file overrides existing spread\n" );
+    mint_spread_del( net->spread );
+    net->spread = spread;
   }
 
-  if( !net->spread && 
-      mint_ops_count( net->ops, mint_op_network_operate )<0 ) {
+  if( !net->spread && mint_ops_find( net->ops, "asynchronous" )<0 ) {
     op = mint_op_new( "synchronous" );
     mint_ops_append( net->ops, op );
     mint_op_run( op, net );
