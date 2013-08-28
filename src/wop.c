@@ -241,10 +241,10 @@ void mint_weights_lateral( mint_weights w, mint_nodes nfrom, mint_nodes nto,
   ncols = size / nrows;
 
   val0 = p[0];
-  dmax = p[1];
+  dmax = p[1] + 1;
   valmax = p[2];
 
-  mint_check( dmax>0, "distance must be positive (parameter 2)" );
+  mint_check( dmax>0, "distance must be >0 (parameter 2)" );
 
   /* NOTE: because w might be sparse for memory rather than for speed
      reasons, we access weight values with the clunkier interface
