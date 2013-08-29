@@ -5,6 +5,9 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
+#define MINT_NAME_LENGTH 255
+#define MINT_NAME_LENGTH_STRING "255"
+
 #define mint_check( test, ... ) if(!(test)) { fprintf( stderr, "%s (%s:%d): ", __FUNCTION__, __FILE__, __LINE__ ); fprintf( stderr, __VA_ARGS__ ); abort(); }
 
 /* advance until a non space character, the latter remains available

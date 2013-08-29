@@ -1,6 +1,7 @@
 #include "nodes.h"
 #include "utils.h"
 #include "op.h"
+#include "str.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -10,6 +11,7 @@ struct mint_nodes_str {
   unsigned int size;
   unsigned int states;
   struct mint_ops *ops;
+  struct mint_str *name;
 };
 
 #define _STR(n) ( (struct mint_nodes_str *)n - 1 )
@@ -34,6 +36,7 @@ mint_nodes mint_nodes_new( unsigned int size, unsigned int states ) {
   nstr->size = size;
   nstr->states = states;
   nstr->ops = mint_ops_new();
+  nstr->name = 0;
   n = (mint_nodes) ++nstr;
   /* values start at offset, before we store n[s] pointers */
   offset = (2+states)*sizeof(float *);
@@ -47,6 +50,7 @@ void mint_nodes_del( mint_nodes n ) {
   if( !n ) return;
   struct mint_nodes_str *nstr = _STR(n);
   mint_ops_del( nstr->ops );
+  mint_str_del( nstr->name );
   free( nstr );
 }
 
@@ -67,6 +71,7 @@ void mint_nodes_cpy( mint_nodes dst, const mint_nodes src ) {
 	      "state variables differ: %d != %d", dstr->size, sstr->size );
   mint_ops_del( dstr->ops );
   dstr->ops = mint_ops_dup( sstr->ops );
+  dstr->name = mint_str_dup( sstr->name );
   memcpy( &dst[0][0], &src[0][0], 
 	  (2+dstr->states) * dstr->size * sizeof(float) );
 }
@@ -76,14 +81,18 @@ mint_nodes mint_nodes_load( FILE *file ) {
   mint_nodes n;
   struct mint_nodes_str *nstr;
   struct mint_op *op;
+
   mint_skip_space( file );
+
   read = fscanf( file, "nodes %d %d", &size, &states );
   mint_check( read==2, "cannot read nodes geometry" );
   n = mint_nodes_new( size, states );
+
   nstr = _STR(n);
+  nstr->name = mint_str_load( file );
   nstr->ops = mint_ops_load( file );
 
-  /* add identity update op is no update op specified */
+  /* add identity update op if no update op specified */
   if( mint_ops_count( nstr->ops, mint_op_nodes_update ) < 1 ) {
     op = mint_op_new( "identity" );
     mint_ops_append( nstr->ops, op );
@@ -110,7 +119,9 @@ void mint_nodes_save_var( const mint_nodes n, int k, FILE *f  ) {
 void mint_nodes_save( const mint_nodes n, FILE *f ) {
   unsigned int k;
   struct mint_nodes_str *nstr = _STR( n );
-  fprintf( f, "nodes %d %d\n", nstr->size, nstr->states );
+
+  fprintf( f, "nodes %d %d %s\n",  nstr->size, nstr->states,
+	   mint_str_char( nstr->name ) );
   mint_ops_save( nstr->ops, f );
   for( k=0; k<2+nstr->states; k++ )
     mint_nodes_save_var( n, k, f );
@@ -152,6 +163,16 @@ mint_nodes mint_nodes_resize( mint_nodes n, unsigned int s2 ) {
   _STR(n2)->ops = mint_ops_dup( _STR(n)->ops );
   mint_nodes_del( n );
   return n2;
+}
+
+char *mint_nodes_get_name( mint_nodes n ) {
+  return mint_str_char( _STR(n)->name );
+}
+
+void mint_nodes_set_name( mint_nodes n, const char *name ) {
+  struct mint_nodes_str *nstr = _STR( n );
+  mint_str_del( nstr->name );
+  nstr->name = mint_str_new( name );
 }
 
 #undef _STR

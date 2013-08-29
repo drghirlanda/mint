@@ -5,6 +5,8 @@
 *.log
 *.bbl
 *.blg
+*.jpg
+*.bmp
 camshot/camshot
 example/dcmotor/dcmotor
 example/servomotor/servomotor
