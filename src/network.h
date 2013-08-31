@@ -72,6 +72,9 @@ int mint_network_size( struct mint_network *net );
 /** Access to node group i of the network */
 mint_nodes mint_network_nodes( struct mint_network *, int i );
 
+/** Return index of nodes with given name, or -1 if no such name. */
+int mint_network_nodes_find( struct mint_network *, char *name );
+
 /** Access to weight matrix i of the network */
 mint_weights mint_network_weights( struct mint_network *, int i );
 

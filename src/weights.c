@@ -2,6 +2,7 @@
 #include "utils.h"
 #include "random.h"
 #include "op.h"
+#include "str.h"
 #include "wop.h"
 
 #include <string.h>
@@ -15,6 +16,8 @@ struct mint_weights_str {
   unsigned int states;
   unsigned int from;
   unsigned int to;
+  struct mint_str *fromname;
+  struct mint_str *toname;
   unsigned int target; /* which 'to' variable results are stored in */
   struct mint_ops *ops;
 
@@ -59,6 +62,8 @@ static mint_weights mint_weights_alloc( unsigned int rows,
   wstr->states = states;
   wstr->from = -1;
   wstr->to = -1;
+  wstr->fromname = 0;
+  wstr->toname = 0;
   wstr->target = 0;
   wstr->ops = mint_ops_new();
 
@@ -126,6 +131,8 @@ void mint_weights_del( mint_weights w ) {
     free( wstr->cind );
     free( wstr->rlen );
   }
+  mint_str_del( wstr->fromname );
+  mint_str_del( wstr->toname );
   free( wstr );
 }
 
@@ -158,6 +165,8 @@ void mint_weights_cpy( mint_weights dst, const mint_weights src ) {
 
   dstr->from = sstr->from;
   dstr->to = sstr->to;
+  mint_str_cpy( dstr->fromname, sstr->fromname );
+  mint_str_cpy( dstr->toname, dstr->toname );
   dstr->target = sstr->target;
   mint_ops_del( dstr->ops );
   dstr->ops = mint_ops_dup( sstr->ops );
@@ -214,22 +223,26 @@ mint_weights mint_weights_load( FILE *f ) {
   struct mint_weights_str *wstr;
   struct mint_op *op;
   unsigned int rows, cols, states, i;
-  long pos;
-  char buf[7];
 
   i = fscanf( f, " weights %d %d %d", &rows, &cols, &states );
   mint_check( i==3, "cannot read weights geometry" );
 
-  pos = ftell( f );
-  i = fscanf( f, " %6s", buf );
-  if( i != 1 || strncmp(buf,"sparse",6)!=0 ) {
-    fseek( f, pos, SEEK_SET );
-    w = mint_weights_new( rows, cols, states );
-  } else {
+  if( mint_next_string( f, "sparse", 6 ) )
     w = mint_weights_sparse_new( rows, cols, states );    
-  }
+  else
+    w = mint_weights_new( rows, cols, states );
 
   wstr = _STR(w);
+
+  /* read from and to names */
+  if( mint_next_string( f, "from", 6 ) ) {
+    wstr->fromname = mint_str_load( f );
+    mint_check( wstr->fromname, "cannot load 'from' name" );
+  }
+  if( mint_next_string( f, "to", 2 ) ) {
+    wstr->toname = mint_str_load( f );
+    mint_check( wstr->toname, "cannot load 'to' name" );
+  }
 
   /* load ops, and set default operate if not on file */
   wstr->ops = mint_ops_load( f );
@@ -307,9 +320,19 @@ unsigned int mint_weights_get_from( const mint_weights w ) {
   return wstr->from;
 }
 
+char *mint_weights_get_from_name( const mint_weights w ) {
+  struct mint_weights_str *wstr = _STR(w);
+  return mint_str_char( wstr->fromname );
+}
+
 unsigned int mint_weights_get_to( const mint_weights w ) {
   struct mint_weights_str *wstr = _STR(w);
   return wstr->to;
+}
+
+char *mint_weights_get_to_name( const mint_weights w ) {
+  struct mint_weights_str *wstr = _STR(w);
+  return mint_str_char( wstr->toname );
 }
 
 unsigned int mint_weights_get_target( const mint_weights w ) {
@@ -322,9 +345,21 @@ void mint_weights_set_from( mint_weights w, unsigned int i ) {
   wstr->from = i;
 }
 
+void mint_weights_set_from_name( const mint_weights w, char *name ) {
+  struct mint_weights_str *wstr = _STR(w);
+  mint_str_del( wstr->fromname );
+  wstr->fromname = mint_str_new( name );
+}
+
 void mint_weights_set_to( mint_weights w, unsigned int i ) {
   struct mint_weights_str *wstr = _STR(w);
   wstr->to = i;
+}
+
+void mint_weights_set_to_name( const mint_weights w, char *name ) {
+  struct mint_weights_str *wstr = _STR(w);
+  mint_str_del( wstr->toname );
+  wstr->toname = mint_str_new( name );
 }
 
 void mint_weights_set_target( mint_weights w, unsigned int i ) {

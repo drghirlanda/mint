@@ -1,9 +1,27 @@
 #include "utils.h"
+
 #include <stdlib.h>
 #include <ctype.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
+
+int mint_next_string( FILE *file, char *string, int len ) {
+  int i;
+  long pos;
+  char c;
+  pos = ftell( file );
+  i = 0;
+  while( i<len ) {
+    c = fgetc( file );
+    if( c != string[i] ) { /* at EOF this will return */
+      fseek( file, pos, SEEK_SET );
+      return 0;
+    }
+    i++;
+  }
+  return 0;
+}
 
 int mint_skip_space( FILE *file ) {
   char c;

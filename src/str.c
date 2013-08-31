@@ -55,6 +55,7 @@ struct mint_str *mint_str_load( FILE *f ) {
   }
   fseek( f, pos, SEEK_SET );
   s = (struct mint_str *)malloc( sizeof(struct mint_str) );
+  s->data = malloc( len );
   fscanf( f, "%s", s->data );
   s->len = len;
   return s;

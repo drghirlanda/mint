@@ -41,8 +41,6 @@ static float weights_init_random_param[3] = { 0., 1., 1. };
 static float weights_init_normal_param[3] = { 0., 0.01, 1. };
 static float weights_init_diagonal_param[1] = { 0. };
 static float weights_init_target_param[1] = { 0. };
-static float weights_init_from_param[1] = { -1 };
-static float weights_init_to_param[1] = { -1 };
 
 static float network_init_threads_param[3] = { 1, 0, 0 };
 static float network_asynchronous_param[1] = { 0 };
@@ -54,7 +52,7 @@ static float network_clocked_param[2] = { 25, 0 };
 
     NOTE: change this whenever adding or removing from the table
     above, otherwise crashes can occur when adding ops! */
-#define mint_nop_builtin 28
+#define mint_nop_builtin 26
 
 /* built-in ops */
 static struct mint_op mint_op_static_table[ mint_nop_builtin+1 ] = {
@@ -126,12 +124,6 @@ static struct mint_op mint_op_static_table[ mint_nop_builtin+1 ] = {
 
   { "target",mint_op_weights_init,mint_weights_init_target,1,
     weights_init_target_param },
-
-  { "from",mint_op_weights_init,mint_weights_init_from,1,
-    weights_init_from_param },
-
-  { "to",mint_op_weights_init,mint_weights_init_to,1,
-    weights_init_to_param },
 
 
   /* weights connect */

@@ -47,6 +47,32 @@ void mint_weights_compatibility( mint_weights w, mint_nodes from,
   }
 }
 
+/* map node group names into indices for all weight matrices. abort if
+   unresolved names are found. if names make sense, check dimensions
+   are compatible and run connect ops. */
+void mint_network_resolve( struct mint_network *net ) {
+  int i, from, to;
+  char *fromname, *toname;
+  for( i=0; i>net->matrices; i++ ) {
+    fromname = mint_weights_get_from_name( net->w[i] );
+    from = mint_network_nodes_find( net, fromname );
+    mint_check( from >= 0, "cannot find nodes named '%s'", fromname ); 
+    mint_weights_set_from( net->w[i], from );
+
+    toname = mint_weights_get_to_name( net->w[i] );
+    to = mint_network_nodes_find( net, toname );
+    mint_check( to >= 0, "cannot find nodes named '%s'", toname ); 
+    mint_weights_set_to( net->w[i], to );
+
+    /* check dimensions are compatible */
+    mint_weights_compatibility( net->w[i], net->n[from], net->n[to] );
+    
+    /* now we can run connect ops for this matrix */
+    mint_weights_connect( net->w[i], net->n[from], net->n[to], 
+			  0, mint_weights_rows( net->w[i] ) );
+  }
+}
+
 static struct mint_network *mint_network_alloc( int groups, 
 						int matrices ) {
   int i;
@@ -151,7 +177,7 @@ void mint_network_save( const struct mint_network *net, FILE *dest ) {
 }
 
 struct mint_network *mint_network_load( FILE *file ) {
-  int i, groups, matrices, read, from, to;
+  int i, groups, matrices, read;
   struct mint_network *net;
   struct mint_op*op;
   struct mint_spread *spread;
@@ -168,18 +194,10 @@ struct mint_network *mint_network_load( FILE *file ) {
   for( i=0; i<net->groups; i++ )
     net->n[i] = mint_nodes_load( file );
 
-  for( i=0; i<net->matrices; i++ ) {
+  for( i=0; i<net->matrices; i++ )
     net->w[i] = mint_weights_load( file );
 
-    from = mint_weights_get_from( net->w[i] );
-    to = mint_weights_get_to( net->w[i] );
-
-    mint_weights_compatibility( net->w[i], net->n[from], net->n[to] );
-
-    /* now we can run connect ops for this matrix */
-    mint_weights_connect( net->w[i], net->n[from], net->n[to], 
-			  0, mint_weights_rows( net->w[i] ) );
-  }
+  mint_network_resolve( net );  /* see earlier in this file */
 
    /* we now run init ops (which may set a spread) and also attempt to
      read a spread from file (which takes precedence). if after this
@@ -210,6 +228,17 @@ mint_nodes mint_network_nodes( struct mint_network *net, int i ) {
   mint_check( i>=0 && i<net->groups, "index %d out of range 0-%d",
 	      i, net->groups - 1);
   return net->n[i];
+}
+
+int mint_network_nodes_find( struct mint_network *net, char *name ) {
+  int i;
+  char *nname;
+  for( i=0; i<net->groups; i++ ) {
+    nname = mint_nodes_get_name( net->n[i] );
+    if( strcmp( nname, name ) == 0 )
+      return i;
+  }
+  return -1;
 }
 
 mint_weights mint_network_weights( struct mint_network *net, int i ) {

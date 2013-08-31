@@ -209,16 +209,6 @@ void mint_weights_init_target( mint_weights w, int rmin, int rmax,
   mint_weights_set_target( w, p[0] );
 }
 
-void mint_weights_init_from( mint_weights w, int rmin, int rmax, 
-			     float *p ) {
-  mint_weights_set_from( w, p[0] );
-}
-
-void mint_weights_init_to( mint_weights w, int rmin, int rmax, 
-			   float *p ) {
-  mint_weights_set_to( w, p[0] );
-}
-
 void mint_weights_lateral( mint_weights w, mint_nodes nfrom, mint_nodes nto, 
 			   int rmin, int rmax, float *p ) {
   int i, ri, rj, ci, cj, size, nrows, ncols;

@@ -78,14 +78,6 @@ void mint_weights_init_diagonal( mint_weights w, int rmin, int rmax,
 void mint_weights_init_target( mint_weights w, int rmin, int rmax, 
 			       float *p );
 
-/* Set the 'from' variable (index of pre-synpatic nodes). */
-void mint_weights_init_from( mint_weights w, int rmin, int rmax, 
-			       float *p );
-
-/* Set the 'to' variable (index of post-synaptic nodes). */
-void mint_weights_init_to( mint_weights w, int rmin, int rmax, 
-			       float *p );
-
 /* A weights connect op to perform lateral processing of different
    kinds. The weights are set up so that nodes provide input to their
    neighbors according to a configurable linear function of distance

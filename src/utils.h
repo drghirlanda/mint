@@ -10,6 +10,11 @@
 
 #define mint_check( test, ... ) if(!(test)) { fprintf( stderr, "%s (%s:%d): ", __FUNCTION__, __FILE__, __LINE__ ); fprintf( stderr, __VA_ARGS__ ); abort(); }
 
+/* check whether a specific string is on file. if yes, return 1 and
+   advance file position past the string. if no, return 0 and do not
+   change file position. */
+int mint_next_string( FILE *file, char *string, int len );
+
 /* advance until a non space character, the latter remains available
    for reading and is also returned */
 int mint_skip_space( FILE *file );
