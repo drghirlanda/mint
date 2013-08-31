@@ -11,6 +11,7 @@ int mint_next_string( FILE *file, char *string, int len ) {
   long pos;
   char c;
   pos = ftell( file );
+  mint_skip_space( file );
   i = 0;
   while( i<len ) {
     c = fgetc( file );
@@ -20,7 +21,7 @@ int mint_next_string( FILE *file, char *string, int len ) {
     }
     i++;
   }
-  return 0;
+  return 1;
 }
 
 int mint_skip_space( FILE *file ) {

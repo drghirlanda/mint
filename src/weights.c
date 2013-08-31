@@ -235,7 +235,7 @@ mint_weights mint_weights_load( FILE *f ) {
   wstr = _STR(w);
 
   /* read from and to names */
-  if( mint_next_string( f, "from", 6 ) ) {
+  if( mint_next_string( f, "from", 4 ) ) {
     wstr->fromname = mint_str_load( f );
     mint_check( wstr->fromname, "cannot load 'from' name" );
   }
@@ -292,10 +292,15 @@ void mint_weights_save_values( const mint_weights w, FILE *f ) {
 
 void mint_weights_save( const mint_weights w, FILE *f ) {
   struct mint_weights_str *wstr = _STR( w );
-  fprintf( f, "weights %d %d %d\n", 
+  fprintf( f, "weights %d %d %d", 
 	   wstr->rows, wstr->cols, wstr->states );
   if( mint_weights_is_sparse(w) )
-    fprintf( f, "sparse " );
+    fprintf( f, " sparse" );
+  if( wstr->fromname )
+    fprintf( f, " from %s", mint_str_char( wstr->fromname ) );
+  if( wstr->toname )
+    fprintf( f, " to %s", mint_str_char( wstr->toname ) );
+  fprintf( f, "\n" );
   mint_ops_save( wstr->ops, f );
   mint_weights_save_values( w, f );
 }

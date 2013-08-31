@@ -53,7 +53,7 @@ void mint_weights_compatibility( mint_weights w, mint_nodes from,
 void mint_network_resolve( struct mint_network *net ) {
   int i, from, to;
   char *fromname, *toname;
-  for( i=0; i>net->matrices; i++ ) {
+  for( i=0; i<net->matrices; i++ ) {
     fromname = mint_weights_get_from_name( net->w[i] );
     from = mint_network_nodes_find( net, fromname );
     mint_check( from >= 0, "cannot find nodes named '%s'", fromname ); 
