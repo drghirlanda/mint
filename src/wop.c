@@ -5,6 +5,25 @@
 
 #include <math.h>
 
+
+void mint_weights_init_rows( mint_weights w, int rmin, int rmax, 
+			     float *p ) {
+  mint_check( p[0] != -1, "rows argument missing (parameter 0)" );
+  mint_check( p[0] > 0, "rows argument negative" );
+}
+
+void mint_weights_init_cols( mint_weights w, int rmin, int rmax, 
+			     float *p ) {
+  mint_check( p[0] != -1, "cols argument missing (parameter 0)" );
+  mint_check( p[0] > 0, "cols argument negative" );
+}
+
+void mint_weights_init_states( mint_weights w, int rmin, int rmax, 
+			       float *p ) {
+  mint_check( p[0] != -1, "states argument missing (parameter 0)" );
+  mint_check( p[0] > 0, "states argument negative" );
+}
+
 /* matrix-vector multiplication. using some explicit pointer
    arithmetic allows for a speedup since the compiler can optimize
    more (see test/mult_test). we exploit the fact that all w, to, and

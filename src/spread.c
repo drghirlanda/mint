@@ -1,6 +1,9 @@
 #include "network.h"
+#include "spread.h"
+#include "str.h"
 #include "weights.h"
 #include "utils.h"
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -122,14 +125,40 @@ struct mint_spread *mint_spread_dup( const struct mint_spread *s1 ) {
   return s2;
 }
 
-struct mint_spread *mint_spread_load( FILE *f ) {
+void mint_spread_load_names( struct mint_spread *spread, FILE *f, 
+			     struct mint_network *net ) {
+  int i, j;
+  struct mint_str *name;
+  i = 0;
+  while( i < spread->len ) {
+    name = mint_str_load( f );
+    mint_check( mint_str_size(name), "cannot load spread item %d", i ); 
+    if( strchr( mint_str_char( name ), '-' ) ) { /* weight matrix */
+      j = mint_network_weights_find( net, mint_str_char(name) );
+      mint_check( j >= 0, "cannot find weight matrix '%s'", 
+		  mint_str_char(name) );
+      mint_spread_set_nodes( spread, i, -1 );
+      mint_spread_set_weights( spread, i, j );
+    } else { /* node group */
+      j = mint_network_nodes_find( net, mint_str_char(name) );
+      mint_check( j >= 0, "cannot find node group '%s'", 
+		  mint_str_char(name) );
+      mint_spread_set_nodes( spread, i, j );
+      mint_spread_set_weights( spread, i, -1 );
+    }
+    i++;
+  }
+}
+
+struct mint_spread *mint_spread_load( FILE *f, 
+				      struct mint_network *net ) {
   int i, j, len;
   struct mint_spread *s;
   if( mint_skip_space(f) != 's' ) return 0; /* no spread on file */
   i = fscanf( f, "spread %d", &len );
   mint_check( i==1, "cannot read length" );
   s = mint_spread_new( len );
-  if( len>0 ) {
+  if( mint_values_waiting( f ) ) { /* numeric spread */
     for( i=0; i<len; i++ ) {
       j = fscanf( f, "%d", s->w+i );
       mint_check( j==1, "cannot read weights sequence" );
@@ -138,7 +167,8 @@ struct mint_spread *mint_spread_load( FILE *f ) {
       j = fscanf( f, "%d", s->n+i );
       mint_check( j==1, "cannot read nodes sequence" );
     }
-  }
+  } else /* alphanumeric spread */
+    mint_spread_load_names( s, f, net );
   return s;
 }
 

@@ -1,4 +1,5 @@
 #include "str.h"
+#include "utils.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -22,7 +23,7 @@ struct mint_str *mint_str_new( const char *str ) {
     len++;
   }
   s->data[ len ] = '\0';
-  s->len = len;
+  s->len = len - 1;
   return s;
 }
 
@@ -36,8 +37,8 @@ struct mint_str *mint_str_dup( const struct mint_str *src ) {
 }
 
 void mint_str_cpy( struct mint_str *dst, const struct mint_str *src ) {
-  dst->data = realloc( dst->data, src->len );
-  memcpy( dst->data, src->data, src->len );
+  dst->data = realloc( dst->data, src->len + 1 );
+  memcpy( dst->data, src->data, src->len + 1 );
   dst->len = src->len;
 }
 
@@ -46,31 +47,41 @@ struct mint_str *mint_str_load( FILE *f ) {
   int len;
   char c;
   struct mint_str *s;
+
+  /* it's not a MINT string if it starts with a number */
+  if( mint_values_waiting( f ) || feof( f ) )
+    return 0;
+
   pos = ftell( f );
   len = 0;
   while( len<MINT_STRLEN && !feof(f) ) {
     c = fgetc( f );
-    if( isalnum(c) ) len++;
+    if( !isspace(c) ) len++;
     else break;
   }
   fseek( f, pos, SEEK_SET );
+  if( !len ) return 0;
   s = (struct mint_str *)malloc( sizeof(struct mint_str) );
-  s->data = malloc( len );
+  s->data = malloc( len + 1 );
   fscanf( f, "%s", s->data );
+  s->data[ len ] = '\0';
   s->len = len;
   return s;
 }
 
 void mint_str_save( const struct mint_str *s, FILE *f ) {
+  if( !s ) return;
   fprintf( f, "%s ", s->data );
 }
 
 int mint_str_size( const struct mint_str *s ) {
-  return s->len;
+  if( s ) return s->len;
+  else return 0;
 }
 
 char *mint_str_char( struct mint_str *s ) {
-  return s->data;
+  if( s && s->len ) return s->data;
+  else return 0;
 }
 
 #undef MINT_STRLEN

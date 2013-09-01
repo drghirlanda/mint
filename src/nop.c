@@ -152,3 +152,11 @@ void mint_node_rows( mint_nodes n, int min, int max, float *p ) {
   mint_check( p[0] != -1, "rows argument missing (parameter 0)" );
   mint_check( p[0]>0 && p[0]<size, "rows argument negative or too large" );
 }
+
+void mint_node_states( mint_nodes n, int min, int max, float *p ) {
+  mint_check( p[0]>0, "states argument negative" );
+}
+
+void mint_node_size( mint_nodes n, int min, int max, float *p ) {
+  mint_check( p[0]>0, "size argument negative" );
+}

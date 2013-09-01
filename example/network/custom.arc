@@ -1,12 +1,12 @@
 network 4 4
-nodes 10 0 noise 1 1 0.1
-nodes 5 0 sigmoid 0.01 1
-nodes 5 0 sigmoid 0.01 1
-nodes 1 0 sigmoid 0.01 1
-weights 5 10 0 from 0 to 1 random 0 1
-weights 5 5 0 from 1 to 2 random 0 1
-weights 5 5 0 from 2 to 1 random 0 1
-weights 1 5 0 from 1 to 3 random 0 1
-spread 5
-0 1 2 3 3
-0 1 2 1 3
+nodes n0 size 10 noise 1 1 0.1
+nodes n1 size 5 sigmoid 0.01 1
+nodes n2 size 5 sigmoid 0.01 1
+nodes n3 size 1 sigmoid 0.01 1
+weights from n0 to n1 random 0 1
+weights from 1 to 2 random 0 1
+weights from 2 to 1 random 0 1
+weights from 1 to 3 random 0 1
+spread 9
+n0 n0-n1 n1 n1-n2 n2 n2-n1 n1 n1-n3 n3
+

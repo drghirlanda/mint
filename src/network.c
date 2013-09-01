@@ -47,32 +47,6 @@ void mint_weights_compatibility( mint_weights w, mint_nodes from,
   }
 }
 
-/* map node group names into indices for all weight matrices. abort if
-   unresolved names are found. if names make sense, check dimensions
-   are compatible and run connect ops. */
-void mint_network_resolve( struct mint_network *net ) {
-  int i, from, to;
-  char *fromname, *toname;
-  for( i=0; i<net->matrices; i++ ) {
-    fromname = mint_weights_get_from_name( net->w[i] );
-    from = mint_network_nodes_find( net, fromname );
-    mint_check( from >= 0, "cannot find nodes named '%s'", fromname ); 
-    mint_weights_set_from( net->w[i], from );
-
-    toname = mint_weights_get_to_name( net->w[i] );
-    to = mint_network_nodes_find( net, toname );
-    mint_check( to >= 0, "cannot find nodes named '%s'", toname ); 
-    mint_weights_set_to( net->w[i], to );
-
-    /* check dimensions are compatible */
-    mint_weights_compatibility( net->w[i], net->n[from], net->n[to] );
-    
-    /* now we can run connect ops for this matrix */
-    mint_weights_connect( net->w[i], net->n[from], net->n[to], 
-			  0, mint_weights_rows( net->w[i] ) );
-  }
-}
-
 static struct mint_network *mint_network_alloc( int groups, 
 						int matrices ) {
   int i;
@@ -177,15 +151,15 @@ void mint_network_save( const struct mint_network *net, FILE *dest ) {
 }
 
 struct mint_network *mint_network_load( FILE *file ) {
-  int i, groups, matrices, read;
+  int i, groups, matrices, read, from, to;
   struct mint_network *net;
-  struct mint_op*op;
+  struct mint_op *op;
   struct mint_spread *spread;
 
   read = fscanf( file, " network %d", &groups );
-  mint_check( read==1, "cannot read number or node groups" );
+  mint_check( read==1, "cannot read number of node groups" );
   read = fscanf( file, " %d", &matrices );
-  mint_check( read==1, "cannot read number or weight matrices" );
+  mint_check( read==1, "cannot read number of weight matrices" );
 
   net = mint_network_alloc( groups, matrices );
 
@@ -194,19 +168,25 @@ struct mint_network *mint_network_load( FILE *file ) {
   for( i=0; i<net->groups; i++ )
     net->n[i] = mint_nodes_load( file );
 
-  for( i=0; i<net->matrices; i++ )
-    net->w[i] = mint_weights_load( file );
 
-  mint_network_resolve( net );  /* see earlier in this file */
+  /* for each matrix: load, check compatibility, run connect ops */
+  for( i=0; i<net->matrices; i++ ) {
+    net->w[i] = mint_weights_load( file, net );
+    from = mint_weights_get_from( net->w[i] );
+    to = mint_weights_get_to( net->w[i] );
+    mint_weights_compatibility( net->w[i], net->n[from], net->n[to] );
+    mint_weights_connect( net->w[i], net->n[from], net->n[to], 
+			  0, mint_weights_rows( net->w[i] ) );
+  }
 
-   /* we now run init ops (which may set a spread) and also attempt to
+  /* we now run init ops (which may set a spread) and also attempt to
      read a spread from file (which takes precedence). if after this
      there is still no spread, and there is no asynchronous op (which
      takes no spread), we add synchronous spread as a default. */
   mint_network_init( net );
 
   /* if there is a spread on file, it takes precedence */
-  spread = mint_spread_load( file );
+  spread = mint_spread_load( file, net );
   if( spread ) {
     fprintf( stderr, "mint_network_load:" 
 	     "spread on file overrides existing spread\n" );
@@ -245,6 +225,40 @@ mint_weights mint_network_weights( struct mint_network *net, int i ) {
   mint_check( i>=0 && i<net->matrices, "index %d out of range 0-%d",
 	      i, net->matrices - 1);
   return net->w[i];
+}
+
+int mint_network_weights_find( struct mint_network *net, char *name ) {
+  int i, k, m, num, name_num;
+  char *fromname, *toname;
+  mint_weights w;
+  mint_nodes n;
+
+  num = 1;
+
+  for( i=0; i<net->matrices; i++ ) {
+  
+    w = mint_network_weights( net, i );
+    n = mint_network_nodes( net, mint_weights_get_from( w ) );
+    fromname = mint_nodes_get_name( n );
+    n = mint_network_nodes( net, mint_weights_get_to( w ) );
+    toname = mint_nodes_get_name( n );
+
+    k = strlen( fromname );
+    m = strlen( toname );
+    if( strncmp( fromname, name, k ) == 0 &&
+	strncmp( toname, name + k + 1, m ) == 0 ) {
+      if( strlen( name ) > k + m + 1 && /* multiple matrices */
+	  name[ k+m ] == '.' ) {        /* btw node groups */
+	sscanf( name + k + m + 1, "%d", &name_num );
+	if( name_num == num )
+	  return i;
+	else
+	  num++;
+      } else
+	return i;
+    }
+  }
+  return -1;
 }
 
 int mint_network_groups( const struct mint_network *n ) {

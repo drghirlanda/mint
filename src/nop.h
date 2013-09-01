@@ -140,4 +140,16 @@ void mint_node_spikes( mint_nodes n, int min, int max, float *p );
     account the spatial arrangement of nodes. */
 void mint_node_rows( mint_nodes n, int min, int max, float *p );
 
+/** Specify the number of state variables for a nodes object. 
+
+    State variables: none required. 
+    Parameters: 0: The number of states. */
+void mint_node_states( mint_nodes n, int min, int max, float *p );
+
+/** Specify the number of nodes in a nodes object. 
+
+    State variables: none required. 
+    Parameters: 0: The number of nodes. */
+void mint_node_size( mint_nodes n, int min, int max, float *p );
+
 #endif

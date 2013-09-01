@@ -1,4 +1,5 @@
 #include "utils.h"
+#include "op.h"
 
 #include <stdlib.h>
 #include <ctype.h>
@@ -45,11 +46,14 @@ int mint_keyword( FILE *file ) {
   int i, len;
   long pos;
   char name[256];
+
   pos = ftell( file );
   i = fscanf( file, " %255s", name );
   fseek( file, pos, SEEK_SET );
-  if( i!=1 ) /* no string on file */
+
+  if( i != 1 ) /* no string on file */
     return 0;
+
   for( i=0; i<4; i++ ) {
     len = strlen( keywords[i] );
     if( strncmp(name,keywords[i],len) == 0 ) {
@@ -57,6 +61,7 @@ int mint_keyword( FILE *file ) {
       return 1;
     }
   }
+
   return 0;
 }
 

@@ -1,6 +1,7 @@
 #include "weights.h"
 #include "utils.h"
 #include "random.h"
+#include "network.h"
 #include "op.h"
 #include "str.h"
 #include "wop.h"
@@ -218,34 +219,146 @@ void mint_weights_load_values( mint_weights w, FILE *f ) {
 
 }
 
-mint_weights mint_weights_load( FILE *f ) {
+mint_weights mint_weights_load( FILE *file, struct mint_network *net ) {
   mint_weights w;
+  mint_nodes n;
   struct mint_weights_str *wstr;
   struct mint_op *op;
-  unsigned int rows, cols, states, i;
+  struct mint_ops *ops;
+  struct mint_str *fromname, *toname;
+  unsigned int rows, cols, states, sparse;
+  int from, to, i;
 
-  i = fscanf( f, " weights %d %d %d", &rows, &cols, &states );
-  mint_check( i==3, "cannot read weights geometry" );
+  /* sensible initial values (used for error checking) */
+  fromname = toname = 0;
+  sparse = rows = cols = states = 0;
+  from = to = -1;
 
-  if( mint_next_string( f, "sparse", 6 ) )
+  if( ! mint_next_string( file, "weights", 7 ) )
+    mint_check( 0, "cannot find 'weights' keyword" );
+
+  if( mint_next_string( file, "sparse", 6 ) )
+    sparse = 1;
+
+  if( mint_next_string( file, "from", 4 ) ) {
+    fromname = mint_str_load( file );
+    if( !fromname ) {
+      i = fscanf( file, "%d", &from );
+      mint_check( i == 1, "cannot read 'from' name or index" );
+    }
+  }
+
+  if( mint_next_string( file, "to", 2 ) ) {
+    toname = mint_str_load( file );
+    if( !toname ) {
+      i = fscanf( file, "%d", &to );
+      mint_check( i == 1, "cannot read 'to' name or index" );
+    }
+  }
+
+  ops = mint_ops_load( file );
+
+  /* check whether rows, cols, and states are specified in ops: */
+  i = mint_ops_find( ops, "rows" );
+  if( i > -1 ) {
+    op = mint_ops_get( ops, i );
+    rows = mint_op_get_param( op, 0 );
+  }
+  i = mint_ops_find( ops, "cols" );
+  if( i > -1 ) {
+    op = mint_ops_get( ops, i );
+    cols = mint_op_get_param( op, 0 );
+  }
+  i = mint_ops_find( ops, "states" );
+  if( i > -1 ) {
+    op = mint_ops_get( ops, i );
+    states = mint_op_get_param( op, 0 );
+  } else {
+    states = 0;
+    op = mint_op_new( "states" );
+    mint_op_set_param( op, 0, states );
+    mint_ops_append( ops, op );
+    mint_op_del( op );
+  }
+
+  /* now try to determine matrix columns, either thorugh the cols op
+     or through the fromname/from info, if net is provided */
+  n = 0;
+  if( net ) {
+    if( fromname ) {
+      i = mint_network_nodes_find( net, mint_str_char(fromname) );
+      n = mint_network_nodes( net, i );
+      from = i;
+    } else if( from > -1 ) {
+      n = mint_network_nodes( net, from );
+      fromname = mint_str_new( mint_nodes_get_name( n ) );
+    }
+    if( n ) {
+      if( cols )
+	mint_check( cols == mint_nodes_size( n ),
+		    "'cols' and 'from' specify different sizes!" );
+      cols = mint_nodes_size( n );
+    }
+  }
+  if( !fromname && from == -1 && cols == 0 )
+    mint_check( 0, "cannot determine matrix columns" );
+
+  /* now try to determine matrix rows, same algorithms as before */
+  n = 0;
+  if( net ) {
+    if( toname ) {
+      i = mint_network_nodes_find( net, mint_str_char(toname) );
+      n = mint_network_nodes( net, i );
+      to = i;
+    } else if( to > -1 ) {
+      n = mint_network_nodes( net, to );
+      toname = mint_str_new( mint_nodes_get_name( n ) );
+    }
+    if( n ) {
+      if( rows )
+	mint_check( rows == mint_nodes_size( n ),
+		    "'rows' and 'to' specify different sizes!");
+      rows = mint_nodes_size( n );
+    }
+  }
+  if( !toname && to == -1 && rows == 0 )
+    mint_check( 0, "cannot determine matrix rows" );
+
+  /* now we add cols and rows op for completeness, if not already
+     present -- this is important if the matrix is later saved
+     separate from the network */
+  i = mint_ops_find( ops, "cols" );
+  if( i == -1 ) {
+    op = mint_op_new( "cols" );
+    mint_op_set_param( op, 0, cols );
+    mint_ops_append( ops, op );
+    mint_op_del( op );
+  }
+  i = mint_ops_find( ops, "rows" );
+  if( i == -1 ) {
+    op = mint_op_new( "rows" );
+    mint_op_set_param( op, 0, rows );
+    mint_ops_append( ops, op );
+    mint_op_del( op );
+  }
+
+  /* now we can finally create the weight matrix and set everything we
+     know about it... */
+
+  if( sparse )
     w = mint_weights_sparse_new( rows, cols, states );    
   else
     w = mint_weights_new( rows, cols, states );
 
   wstr = _STR(w);
 
-  /* read from and to names */
-  if( mint_next_string( f, "from", 4 ) ) {
-    wstr->fromname = mint_str_load( f );
-    mint_check( wstr->fromname, "cannot load 'from' name" );
-  }
-  if( mint_next_string( f, "to", 2 ) ) {
-    wstr->toname = mint_str_load( f );
-    mint_check( wstr->toname, "cannot load 'to' name" );
-  }
+  wstr->fromname = fromname;
+  wstr->toname = toname;
+  wstr->from = from;
+  wstr->to = to;
+  wstr->ops = ops;
 
-  /* load ops, and set default operate if not on file */
-  wstr->ops = mint_ops_load( f );
+  /* set default operate if not on file */
   if( !mint_ops_count(wstr->ops, mint_op_weights_operate) ) {
     if( mint_weights_is_sparse(w) ) {
       op = mint_op_new( "mult_sparse" );
@@ -258,14 +371,9 @@ mint_weights mint_weights_load( FILE *f ) {
     }
   }
 
-  if( mint_ops_find( wstr->ops, "from" ) == -1 )
-    wstr->from = -1;
-
-  if( mint_ops_find( wstr->ops, "to" ) == -1 )
-    wstr->to = -1;
-
   mint_weights_init( w, 0, wstr->rows );
-  mint_weights_load_values( w, f );
+
+  mint_weights_load_values( w, file );
 
   return w;
 }
@@ -292,8 +400,7 @@ void mint_weights_save_values( const mint_weights w, FILE *f ) {
 
 void mint_weights_save( const mint_weights w, FILE *f ) {
   struct mint_weights_str *wstr = _STR( w );
-  fprintf( f, "weights %d %d %d", 
-	   wstr->rows, wstr->cols, wstr->states );
+  fprintf( f, "weights" );
   if( mint_weights_is_sparse(w) )
     fprintf( f, " sparse" );
   if( wstr->fromname )

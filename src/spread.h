@@ -70,7 +70,7 @@ struct mint_spread *mint_spread_dup( const struct mint_spread * );
    shortened by one step replacing the pairs (ni,wi) (ni+1,wi+1) with
    (wi,ni+1).
 */
-struct mint_spread *mint_spread_load( FILE * );
+struct mint_spread *mint_spread_load( FILE *, struct mint_network *net );
 
 /** Save a spread object to file, according to the above format */
 void mint_spread_save( struct mint_spread *, FILE * );

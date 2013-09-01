@@ -30,7 +30,9 @@ static float node_noise_param[3] = { 0, 0, 0.01 };
 static float node_bounded_param[3] = { 1, 0, 1 };
 static float node_counter_param[3] = { 1, 1, 2 };
 static float node_spikes_param[1] = { 5 };
+static float node_size_param[1] = { -1 };
 static float node_rows_param[1] = { -1 };
+static float node_states_param[1] = { 0 };
 
 static float weights_hebbian_param[4] = { 0., 0., 0., 0. };
 static float weights_delta_param[2] = { 0.05, 2 };
@@ -41,6 +43,9 @@ static float weights_init_random_param[3] = { 0., 1., 1. };
 static float weights_init_normal_param[3] = { 0., 0.01, 1. };
 static float weights_init_diagonal_param[1] = { 0. };
 static float weights_init_target_param[1] = { 0. };
+static float weights_init_states_param[1] = { 0 };
+static float weights_init_cols_param[1] = { -1 };
+static float weights_init_rows_param[1] = { -1 };
 
 static float network_init_threads_param[3] = { 1, 0, 0 };
 static float network_asynchronous_param[1] = { 0 };
@@ -52,7 +57,7 @@ static float network_clocked_param[2] = { 25, 0 };
 
     NOTE: change this whenever adding or removing from the table
     above, otherwise crashes can occur when adding ops! */
-#define mint_nop_builtin 26
+#define mint_nop_builtin 30
 
 /* built-in ops */
 static struct mint_op mint_op_static_table[ mint_nop_builtin+1 ] = {
@@ -84,7 +89,12 @@ static struct mint_op mint_op_static_table[ mint_nop_builtin+1 ] = {
 
   /* nodes init */
 
+  { "size", mint_op_nodes_init, mint_node_size, 1, node_size_param },
+
   { "rows", mint_op_nodes_init, mint_node_rows, 1, node_rows_param },
+
+  { "states", mint_op_nodes_init, mint_node_states, 1, 
+    node_states_param },
 
 
   /* weights operate */
@@ -110,6 +120,14 @@ static struct mint_op mint_op_static_table[ mint_nop_builtin+1 ] = {
 
   { "frozen", mint_op_weights_update,0,0,0 },
 
+  { "rows", mint_op_weights_init, mint_weights_init_rows, 1, 
+    weights_init_rows_param },
+
+  { "cols", mint_op_weights_init, mint_weights_init_cols, 1, 
+    weights_init_cols_param },
+
+  { "states", mint_op_weights_init, mint_weights_init_states, 1, 
+    weights_init_states_param },
 
   /* weights init */
 
@@ -176,6 +194,7 @@ static void mint_op_atexit( void ) {
 /* looks up a rule id by name. returns mint_nop if not found */
 static int mint_op_id( const char *name ) {
   int len1, len2, id;
+  mint_check( name != 0, "'name' is null" ); 
   len1 = strlen(name);
   for( id=0; id<mint_nop; id++ ) {
     len2 = strlen( mint_op_table[id].name );
@@ -187,6 +206,7 @@ static int mint_op_id( const char *name ) {
 }
 
 int mint_op_exists( const char *name ) {
+  if( !name ) return 0;
   return mint_op_id(name) < mint_nop;
 }
 
@@ -560,7 +580,8 @@ void mint_weights_init( mint_weights w, int rmin, int rmax ) {
   struct mint_ops *ops;
   ops = mint_weights_get_ops( w );
   for( i=0; i<ops->n; i++ ) {
-    if( ops->p[i]->type == mint_op_weights_init )
+    if( ops->p[i]->type == mint_op_weights_init &&
+	ops->p[i]->op )
       ((mint_winit_t) ops->p[i]->op)( w, rmin, rmax, 
 				      ops->p[i]->param );
   }

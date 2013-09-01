@@ -75,6 +75,10 @@ mint_nodes mint_network_nodes( struct mint_network *, int i );
 /** Return index of nodes with given name, or -1 if no such name. */
 int mint_network_nodes_find( struct mint_network *, char *name );
 
+/** Return index of weight matrix connecting nodes with given names,
+    or -1 if no such matrix. */
+int mint_network_weights_find( struct mint_network *, char *name );
+
 /** Access to weight matrix i of the network */
 mint_weights mint_network_weights( struct mint_network *, int i );
 

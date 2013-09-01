@@ -2,8 +2,44 @@
 
   - uninstall
 
+- update examples to new file format before merging with master
+
+- file format redesign! it will look like this:
+
+network nodes 3 matrices 3
+nodes eye size 10
+nodes brain size 5
+nodes muscles size 2
+weights from eye to brain
+weights from eye to brain
+weights from brain to muscles 
+spread 6
+eye eye-brain.1 eye-brain.2 brain brain-muscles muscles
+
+RESERVED WORDS: network, nodes, matrices, size, states, rows, cols,
+from, to, spread + the names of all ops.
+
+Loading of the differnt objects works this way:
+
+NODES: 
+syntax: 'nodes' [name] size <num> [states <num>] ...
+
+WEIGHTS:
+syntax: 'weights' [from <name>] [to <name>] [rows <num>] 
+	[cols <num>] [states <num>]
+
+either 'to' or 'rows' MUST be present
+either 'from' or 'cols' MUST be present
+
+when to and from are specified, size must be resolved looking at the
+connected nodes, hence mint_weights_load must get network
+information. if rows and cols are specified, network parameter can be
+null.
 
 - known bugs or poorly designed features:
+
+  - spread is now accepted in either numeric or symbolic mode, but it
+    is always saved as numeric!
 
   - mint_weights_set assumes indices in sparse matrix cind variables
     are sorted, but mint_weights_set_row does not check...

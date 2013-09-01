@@ -6,6 +6,7 @@
 #include <stdio.h>
 
 struct mint_image; 
+struct mint_network;
 
 /** \file weights.h
     
@@ -65,7 +66,7 @@ void mint_weights_cpy( mint_weights dst, mint_weights src );
    Thus this sequence is first used to save all weight values, then
    repeated to save the first state variable, if it exists, and so
    on. If values are given, initialization ops are not run. */
-mint_weights mint_weights_load( FILE * );
+mint_weights mint_weights_load( FILE *, struct mint_network *net );
 
 void mint_weights_load_values( mint_weights w, FILE *f );
 

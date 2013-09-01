@@ -77,20 +77,42 @@ void mint_nodes_cpy( mint_nodes dst, const mint_nodes src ) {
 }
 
 mint_nodes mint_nodes_load( FILE *file ) {
-  unsigned int size, states, read, i, k;
+  unsigned int size, states, read;
+  int i, k;
   mint_nodes n;
+  struct mint_str *name;
   struct mint_nodes_str *nstr;
   struct mint_op *op;
+  struct mint_ops *ops;
 
-  mint_skip_space( file );
+  if( ! mint_next_string( file, "nodes", 5 ) )
+    mint_check( 0, "cannot find 'nodes' keyword" );
+    
+  name = mint_str_load( file );
+  mint_check( !mint_op_exists( mint_str_char(name) ),
+	      "nodes name is an op name: '%s'", mint_str_char(name) );
 
-  read = fscanf( file, "nodes %d %d", &size, &states );
-  mint_check( read==2, "cannot read nodes geometry" );
+  ops = mint_ops_load( file );
+  
+  i = mint_ops_find( ops, "size" );
+  mint_check( i>=0, "cannot read nodes size" );
+  size = mint_op_get_param( mint_ops_get(ops, i), 0 );
+
+  i = mint_ops_find( ops, "states" );
+  if( i == -1 ) {
+    states = 0;
+    op = mint_op_new( "states" );
+    mint_op_set_param( op, 0, states );
+    mint_ops_append( ops, op );
+    mint_op_del( op );
+  } else
+    states = mint_op_get_param( mint_ops_get(ops, i), 0 );
+				
   n = mint_nodes_new( size, states );
 
   nstr = _STR(n);
-  nstr->name = mint_str_load( file );
-  nstr->ops = mint_ops_load( file );
+  nstr->name = name;
+  nstr->ops = ops;
 
   /* add identity update op if no update op specified */
   if( mint_ops_count( nstr->ops, mint_op_nodes_update ) < 1 ) {
@@ -98,12 +120,14 @@ mint_nodes mint_nodes_load( FILE *file ) {
     mint_ops_append( nstr->ops, op );
   }
   
+  /* load values if on file */
   if( mint_values_waiting( file ) ) {
     for( k=0; k<2+states; k++ ) for( i=0; i<size; i++ ) {
 	read = fscanf( file, " %f", n[k]+i );
 	mint_check( read == 1, "cannot read values" );
       }
   }
+
   return n;
 }
 
