@@ -29,7 +29,7 @@ int mint_values_waiting( FILE *file );
    changed, i.e., anything that was available for reading before
    mint_keyword is called remains available for reading after the
    function returns. */
-int mint_keyword( FILE *file );
+int mint_keyword( char *name );
 
 /* returns 1 if the string is the name of a default op for nodes,
    weights, or networks, 0 otherwise. */

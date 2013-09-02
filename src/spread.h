@@ -73,7 +73,8 @@ struct mint_spread *mint_spread_dup( const struct mint_spread * );
 struct mint_spread *mint_spread_load( FILE *, struct mint_network *net );
 
 /** Save a spread object to file, according to the above format */
-void mint_spread_save( struct mint_spread *, FILE * );
+void mint_spread_save( struct mint_spread *, FILE *,
+		       struct mint_network *net );
 
 /** Retrieve length of spread sequence */
 int mint_spread_len( struct mint_spread * );

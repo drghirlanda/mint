@@ -89,8 +89,9 @@ mint_nodes mint_nodes_load( FILE *file ) {
     mint_check( 0, "cannot find 'nodes' keyword" );
     
   name = mint_str_load( file );
-  mint_check( !mint_op_exists( mint_str_char(name) ),
-	      "nodes name is an op name: '%s'", mint_str_char(name) );
+  mint_check( !mint_op_exists( mint_str_char(name) ) &&
+	      !mint_keyword( mint_str_char(name) ),
+	      "missing nodes name" );
 
   ops = mint_ops_load( file );
   

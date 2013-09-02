@@ -38,26 +38,21 @@ int mint_values_waiting( FILE *file ) {
   return isdigit(c) || c=='.' || c=='-' || c=='+';
 }
 
+static const char *keywords[7] = {
+  "weights", "nodes", "spread", "network", "from", "to", "sparse" };
 
-static const char *keywords[4] = {
-  "weights", "nodes", "spread", "network" };
+int mint_keyword( char *string ) {
+  int i, len1, len2;
 
-int mint_keyword( FILE *file ) {
-  int i, len;
-  long pos;
-  char name[256];
-
-  pos = ftell( file );
-  i = fscanf( file, " %255s", name );
-  fseek( file, pos, SEEK_SET );
-
-  if( i != 1 ) /* no string on file */
+  if( ! string )
     return 0;
+  
+  len1 = strlen(string);
 
-  for( i=0; i<4; i++ ) {
-    len = strlen( keywords[i] );
-    if( strncmp(name,keywords[i],len) == 0 ) {
-      fseek( file, pos, SEEK_SET );
+  for( i=0; i<7; i++ ) {
+    len2 = strlen( keywords[i] );
+    if( len1 < len2 ) len2 = len1;
+    if( strncmp( string, keywords[i], len2 ) == 0 ) {
       return 1;
     }
   }

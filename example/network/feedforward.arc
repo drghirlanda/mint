@@ -1,7 +1,7 @@
 network 3 2
 feedforward
-nodes input size 10 sigmoid 0.05 1
-nodes hidden size 5 sigmoid 0.05 1
-nodes output size 1 sigmoid 0.05 1
-weights from input to hidden random -.5 .15
-weights from hidden to output random -.5 .15
+nodes n1 size 10 sigmoid 0.05 1
+nodes n2 size 5 sigmoid 0.05 1
+nodes n3 size 1 sigmoid 0.05 1
+weights w1 from n1 to n2 random -.5 .15
+weights w2 from n2 to n3 random -.5 .15

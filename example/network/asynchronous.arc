@@ -1,6 +1,6 @@
 network 1 1
 asynchronous 10
-nodes brain size 10 sigmoid 0.1 1
-weights from brain to brain random -.5 .15
+nodes n1 size 10 sigmoid 0.1 1
+weights w1 from n1 to n1 random -.5 .15
 
 

@@ -125,54 +125,43 @@ struct mint_spread *mint_spread_dup( const struct mint_spread *s1 ) {
   return s2;
 }
 
-void mint_spread_load_names( struct mint_spread *spread, FILE *f, 
-			     struct mint_network *net ) {
-  int i, j;
-  struct mint_str *name;
-  i = 0;
-  while( i < spread->len ) {
-    name = mint_str_load( f );
-    mint_check( mint_str_size(name), "cannot load spread item %d", i ); 
-    if( strchr( mint_str_char( name ), '-' ) ) { /* weight matrix */
-      j = mint_network_weights_find( net, mint_str_char(name) );
-      mint_check( j >= 0, "cannot find weight matrix '%s'", 
-		  mint_str_char(name) );
-      mint_spread_set_nodes( spread, i, -1 );
-      mint_spread_set_weights( spread, i, j );
-    } else { /* node group */
-      j = mint_network_nodes_find( net, mint_str_char(name) );
-      mint_check( j >= 0, "cannot find node group '%s'", 
-		  mint_str_char(name) );
-      mint_spread_set_nodes( spread, i, j );
-      mint_spread_set_weights( spread, i, -1 );
-    }
-    i++;
-  }
-}
-
 struct mint_spread *mint_spread_load( FILE *f, 
 				      struct mint_network *net ) {
   int i, j, len;
-  struct mint_spread *s;
-  if( mint_skip_space(f) != 's' ) return 0; /* no spread on file */
-  i = fscanf( f, "spread %d", &len );
+  struct mint_spread *spread;
+  struct mint_str *name;
+
+  if( !mint_next_string(f, "spread", 6 ) )
+    return 0;
+
+  i = fscanf( f, "%d", &len );
   mint_check( i==1, "cannot read length" );
-  s = mint_spread_new( len );
-  if( mint_values_waiting( f ) ) { /* numeric spread */
-    for( i=0; i<len; i++ ) {
-      j = fscanf( f, "%d", s->w+i );
-      mint_check( j==1, "cannot read weights sequence" );
+  spread = mint_spread_new( len );
+
+  i = 0;
+  while( i < spread->len ) {
+    name = mint_str_load( f );
+    mint_check( name, "cannot load spread item %d", i ); 
+    j = mint_network_weights_find( net, mint_str_char(name) );
+    if( j >= 0 ) {
+      mint_spread_set_nodes( spread, i, -1 );
+      mint_spread_set_weights( spread, i, j );
+    } else {
+      j = mint_network_nodes_find( net, mint_str_char(name) );
+      if( j >= 0 ) { 
+	mint_spread_set_nodes( spread, i, j );
+	mint_spread_set_weights( spread, i, -1 );
+      } else 
+	mint_check( 0, "no such group or matrix: %s", 
+		    mint_str_char(name) );
     }
-    for( i=0; i<len; i++ ) {
-      j = fscanf( f, "%d", s->n+i );
-      mint_check( j==1, "cannot read nodes sequence" );
-    }
-  } else /* alphanumeric spread */
-    mint_spread_load_names( s, f, net );
-  return s;
+    i++;
+  }
+
+  return spread;
 }
 
-void mint_spread_save( struct mint_spread *s, FILE *f ) {
+void mint_spread_save_indices( struct mint_spread *s, FILE *f ) {
   int i;
   if( s==0 ) return;
   fprintf( f, "spread %d\n", s->len );
@@ -182,6 +171,30 @@ void mint_spread_save( struct mint_spread *s, FILE *f ) {
     for( i=0; i<s->len; i++ ) fprintf( f, "%d ", s->n[i] ); 
     fprintf( f, "\n" );
   }
+}
+
+void mint_spread_save( struct mint_spread *s, FILE *f,
+		       struct mint_network *net ) {
+  int i;
+  mint_weights w;
+  mint_nodes n;
+
+  if( !s ) 
+    return;
+
+  fprintf( f, "spread %d\n", s->len );
+
+  for( i=0; i<s->len; i++ ) {
+    if( s->w[i] > -1 ) {
+      w = mint_network_weights( net, s->w[i] );
+      fprintf( f, "%s ", mint_weights_get_name( w ) );
+    }
+    if( s->n[i] > -1 ) {
+      n = mint_network_nodes( net, s->n[i] );
+      fprintf( f, "%s ", mint_nodes_get_name( n ) );
+    }
+  }
+  fprintf( f, "\n" );
 }
 
 int mint_spread_len( struct mint_spread *s ) {

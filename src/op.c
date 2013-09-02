@@ -3,6 +3,7 @@
 #include "wop.h"
 #include "netop.h"
 #include "utils.h"
+#include "str.h"
 #include "threads.h"
 
 #include <stdlib.h>
@@ -262,16 +263,23 @@ void mint_op_save( const struct mint_op *u, FILE *dest ) {
 
 struct mint_op *mint_op_load( FILE *file ) {
   int i, j;
-  char name[256];
+  long pos;
   struct mint_op *h;
-  if( mint_keyword(file) || mint_values_waiting(file) ) 
+  struct mint_str *name;
+
+  pos = ftell( file );
+  name = mint_str_load( file );
+
+  if( !name ) 
     return 0;
-  i = fscanf( file, " %255s", name );
-  if( feof(file) ) return 0; /* ops are allowed to be at eof */
-  mint_check( i==1, "cannot read op name" );
-  h = mint_op_new( name );
-  if( !h ) 
+
+  if( mint_keyword( mint_str_char( name ) ) ) {
+    fseek( file, pos, SEEK_SET );
     return 0;
+  }
+
+  h = mint_op_new( mint_str_char( name ) );
+
   /* load parameters (missing ones already got a default value */
   j = 0;
   while( mint_values_waiting(file) && j < h->nparam ) {

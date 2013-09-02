@@ -17,8 +17,7 @@ struct mint_weights_str {
   unsigned int states;
   unsigned int from;
   unsigned int to;
-  struct mint_str *fromname;
-  struct mint_str *toname;
+  struct mint_str *name;
   unsigned int target; /* which 'to' variable results are stored in */
   struct mint_ops *ops;
 
@@ -63,8 +62,7 @@ static mint_weights mint_weights_alloc( unsigned int rows,
   wstr->states = states;
   wstr->from = -1;
   wstr->to = -1;
-  wstr->fromname = 0;
-  wstr->toname = 0;
+  wstr->name = 0;
   wstr->target = 0;
   wstr->ops = mint_ops_new();
 
@@ -132,8 +130,7 @@ void mint_weights_del( mint_weights w ) {
     free( wstr->cind );
     free( wstr->rlen );
   }
-  mint_str_del( wstr->fromname );
-  mint_str_del( wstr->toname );
+  mint_str_del( wstr->name );
   free( wstr );
 }
 
@@ -166,8 +163,7 @@ void mint_weights_cpy( mint_weights dst, const mint_weights src ) {
 
   dstr->from = sstr->from;
   dstr->to = sstr->to;
-  mint_str_cpy( dstr->fromname, sstr->fromname );
-  mint_str_cpy( dstr->toname, dstr->toname );
+  mint_str_cpy( dstr->name, sstr->name );
   dstr->target = sstr->target;
   mint_ops_del( dstr->ops );
   dstr->ops = mint_ops_dup( sstr->ops );
@@ -225,7 +221,7 @@ mint_weights mint_weights_load( FILE *file, struct mint_network *net ) {
   struct mint_weights_str *wstr;
   struct mint_op *op;
   struct mint_ops *ops;
-  struct mint_str *fromname, *toname;
+  struct mint_str *fromname, *toname, *name;
   unsigned int rows, cols, states, sparse;
   int from, to, i;
 
@@ -236,6 +232,11 @@ mint_weights mint_weights_load( FILE *file, struct mint_network *net ) {
 
   if( ! mint_next_string( file, "weights", 7 ) )
     mint_check( 0, "cannot find 'weights' keyword" );
+
+  name = mint_str_load( file );
+  mint_check( ! mint_op_exists( mint_str_char(name) ) &&
+	      ! mint_keyword( mint_str_char(name) ),
+	      "missing weights name" );
 
   if( mint_next_string( file, "sparse", 6 ) )
     sparse = 1;
@@ -352,8 +353,7 @@ mint_weights mint_weights_load( FILE *file, struct mint_network *net ) {
 
   wstr = _STR(w);
 
-  wstr->fromname = fromname;
-  wstr->toname = toname;
+  wstr->name = name;
   wstr->from = from;
   wstr->to = to;
   wstr->ops = ops;
@@ -374,6 +374,9 @@ mint_weights mint_weights_load( FILE *file, struct mint_network *net ) {
   mint_weights_init( w, 0, wstr->rows );
 
   mint_weights_load_values( w, file );
+
+  free( fromname );
+  free( toname );
 
   return w;
 }
@@ -398,16 +401,37 @@ void mint_weights_save_values( const mint_weights w, FILE *f ) {
   }
 }
 
-void mint_weights_save( const mint_weights w, FILE *f ) {
+void mint_weights_save( const mint_weights w, FILE *f,
+			struct mint_network *net ) {
   struct mint_weights_str *wstr = _STR( w );
+  mint_nodes n;
+  char *name;
+
   fprintf( f, "weights" );
   if( mint_weights_is_sparse(w) )
     fprintf( f, " sparse" );
-  if( wstr->fromname )
-    fprintf( f, " from %s", mint_str_char( wstr->fromname ) );
-  if( wstr->toname )
-    fprintf( f, " to %s", mint_str_char( wstr->toname ) );
+
+  if( net ) { /* to and from information */
+    if( wstr->from > -1 ) {
+      n = mint_network_nodes( net, wstr->from );
+      name = mint_nodes_get_name( n );
+      if( name )
+	fprintf( f, "from %s ",  name );
+      else 
+	fprintf( f, "from %d ", wstr->from );
+    }
+    if( wstr->to > -1 ) {
+      n = mint_network_nodes( net, wstr->to );
+      name = mint_nodes_get_name( n );
+      if( name )
+	fprintf( f, "to %s ", name );
+      else 
+	fprintf( f, "to %d ", wstr->to );
+    }
+  }
+
   fprintf( f, "\n" );
+
   mint_ops_save( wstr->ops, f );
   mint_weights_save_values( w, f );
 }
@@ -432,19 +456,14 @@ unsigned int mint_weights_get_from( const mint_weights w ) {
   return wstr->from;
 }
 
-char *mint_weights_get_from_name( const mint_weights w ) {
+char *mint_weights_get_name( const mint_weights w ) {
   struct mint_weights_str *wstr = _STR(w);
-  return mint_str_char( wstr->fromname );
+  return mint_str_char( wstr->name );
 }
 
 unsigned int mint_weights_get_to( const mint_weights w ) {
   struct mint_weights_str *wstr = _STR(w);
   return wstr->to;
-}
-
-char *mint_weights_get_to_name( const mint_weights w ) {
-  struct mint_weights_str *wstr = _STR(w);
-  return mint_str_char( wstr->toname );
 }
 
 unsigned int mint_weights_get_target( const mint_weights w ) {
@@ -457,21 +476,15 @@ void mint_weights_set_from( mint_weights w, unsigned int i ) {
   wstr->from = i;
 }
 
-void mint_weights_set_from_name( const mint_weights w, char *name ) {
+void mint_weights_set_name( const mint_weights w, char *name ) {
   struct mint_weights_str *wstr = _STR(w);
-  mint_str_del( wstr->fromname );
-  wstr->fromname = mint_str_new( name );
+  mint_str_del( wstr->name );
+  wstr->name = mint_str_new( name );
 }
 
 void mint_weights_set_to( mint_weights w, unsigned int i ) {
   struct mint_weights_str *wstr = _STR(w);
   wstr->to = i;
-}
-
-void mint_weights_set_to_name( const mint_weights w, char *name ) {
-  struct mint_weights_str *wstr = _STR(w);
-  mint_str_del( wstr->toname );
-  wstr->toname = mint_str_new( name );
 }
 
 void mint_weights_set_target( mint_weights w, unsigned int i ) {

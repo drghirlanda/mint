@@ -71,7 +71,8 @@ mint_weights mint_weights_load( FILE *, struct mint_network *net );
 void mint_weights_load_values( mint_weights w, FILE *f );
 
 /** Save a weight matrix to file. */
-void mint_weights_save( mint_weights , FILE * );
+void mint_weights_save( mint_weights , FILE *,
+			struct mint_network *net );
 
 /** Get the number of rows */
 unsigned int mint_weights_rows( mint_weights  );
@@ -88,23 +89,17 @@ unsigned int mint_weights_get_from( const mint_weights w );
 /** Set index of 'pre-synaptic' node group. See network.h. */
 void mint_weights_set_from( mint_weights w, unsigned int );
 
-/** Retrieve name of 'pre-synaptic' node group. */
-char *mint_weights_get_from_name( const mint_weights w );
-
-/** Set name of 'pre-synaptic' node group. See network.h. */
-void mint_weights_set_from_name( mint_weights w, char *name );
-
 /** Retrieve index of 'post-synaptic' node group. See network.h. */
 unsigned int mint_weights_get_to( const mint_weights w );
 
 /** Set index of 'post-synaptic' node group. See network.h. */
 void mint_weights_set_to( mint_weights w, unsigned int );
 
-/** Retrieve name of 'post-synaptic' node group. See network.h. */
-char *mint_weights_get_to_name( const mint_weights w );
+/** Retrieve name. */
+char *mint_weights_get_name( const mint_weights w );
 
 /** Set name of 'post-synaptic' node group. See network.h. */
-void mint_weights_set_to_name( mint_weights w, char *name );
+void mint_weights_set_name( mint_weights w, char *name );
 
 /** Retrieve which variable of 'post-synaptic' that is the target of this
     matrix (it will be variable 0, i.e., node input, unless you change
