@@ -25,10 +25,10 @@ from, to, spread + the names of all ops.
 Loading of the differnt objects works this way:
 
 NODES: 
-syntax: 'nodes' [name] size <num> [states <num>] ...
+syntax: 'nodes' <name> size <num> [states <num>] ...
 
 WEIGHTS:
-syntax: 'weights' [from <name>] [to <name>] [rows <num>] 
+syntax: 'weights' <name> [from <name>] [to <name>] [rows <num>] 
 	[cols <num>] [states <num>]
 
 either 'to' or 'rows' MUST be present

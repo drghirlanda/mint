@@ -161,18 +161,6 @@ struct mint_spread *mint_spread_load( FILE *f,
   return spread;
 }
 
-void mint_spread_save_indices( struct mint_spread *s, FILE *f ) {
-  int i;
-  if( s==0 ) return;
-  fprintf( f, "spread %d\n", s->len );
-  if( s->len>0 ) {
-    for( i=0; i<s->len; i++ ) fprintf( f, "%d ", s->w[i] ); 
-    fprintf( f, "\n" );
-    for( i=0; i<s->len; i++ ) fprintf( f, "%d ", s->n[i] ); 
-    fprintf( f, "\n" );
-  }
-}
-
 void mint_spread_save( struct mint_spread *s, FILE *f,
 		       struct mint_network *net ) {
   int i;
