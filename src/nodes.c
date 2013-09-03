@@ -36,7 +36,7 @@ mint_nodes mint_nodes_new( unsigned int size, unsigned int states ) {
   nstr->size = size;
   nstr->states = states;
   nstr->ops = mint_ops_new();
-  nstr->name = 0;
+  nstr->name = mint_str_new( "n" );
   n = (mint_nodes) ++nstr;
   /* values start at offset, before we store n[s] pointers */
   offset = (2+states)*sizeof(float *);
@@ -79,6 +79,7 @@ void mint_nodes_cpy( mint_nodes dst, const mint_nodes src ) {
 mint_nodes mint_nodes_load( FILE *file ) {
   unsigned int size, states, read;
   int i, k;
+  long pos;
   mint_nodes n;
   struct mint_str *name;
   struct mint_nodes_str *nstr;
@@ -88,10 +89,16 @@ mint_nodes mint_nodes_load( FILE *file ) {
   if( ! mint_next_string( file, "nodes", 5 ) )
     mint_check( 0, "cannot find 'nodes' keyword" );
     
+  /* attempt to read nodes name. if 'name' turns out to be op or
+     keyword, create default name and rewind file */
+  pos = ftell( file );
   name = mint_str_load( file );
-  mint_check( !mint_op_exists( mint_str_char(name) ) &&
-	      !mint_keyword( mint_str_char(name) ),
-	      "missing nodes name" );
+  if( mint_op_exists( mint_str_char(name) ) ||
+      mint_keyword( mint_str_char(name) ) ) {
+    mint_str_del( name );
+    name = mint_str_new( "n" );
+    fseek( file, pos, SEEK_SET );
+  }
 
   ops = mint_ops_load( file );
   
@@ -112,6 +119,7 @@ mint_nodes mint_nodes_load( FILE *file ) {
   n = mint_nodes_new( size, states );
 
   nstr = _STR(n);
+  mint_str_del( nstr->name ); /* default set in mint_nodes_new */
   nstr->name = name;
   nstr->ops = ops;
 
@@ -145,8 +153,7 @@ void mint_nodes_save( const mint_nodes n, FILE *f ) {
   unsigned int k;
   struct mint_nodes_str *nstr = _STR( n );
 
-  fprintf( f, "nodes %d %d %s\n",  nstr->size, nstr->states,
-	   mint_str_char( nstr->name ) );
+  fprintf( f, "nodes %s\n", mint_str_char( nstr->name ) );
   mint_ops_save( nstr->ops, f );
   for( k=0; k<2+nstr->states; k++ )
     mint_nodes_save_var( n, k, f );
@@ -190,14 +197,8 @@ mint_nodes mint_nodes_resize( mint_nodes n, unsigned int s2 ) {
   return n2;
 }
 
-char *mint_nodes_get_name( mint_nodes n ) {
-  return mint_str_char( _STR(n)->name );
-}
-
-void mint_nodes_set_name( mint_nodes n, const char *name ) {
-  struct mint_nodes_str *nstr = _STR( n );
-  mint_str_del( nstr->name );
-  nstr->name = mint_str_new( name );
+struct mint_str *mint_nodes_get_name( mint_nodes n ) {
+  return _STR(n)->name ;
 }
 
 #undef _STR

@@ -95,11 +95,9 @@ unsigned int mint_weights_get_to( const mint_weights w );
 /** Set index of 'post-synaptic' node group. See network.h. */
 void mint_weights_set_to( mint_weights w, unsigned int );
 
-/** Retrieve name. */
-char *mint_weights_get_name( const mint_weights w );
-
-/** Set name of 'post-synaptic' node group. See network.h. */
-void mint_weights_set_name( mint_weights w, char *name );
+/** Retrieve name string. Manipulating this object will directly
+    change the name. */
+struct mint_str *mint_weights_get_name( const mint_weights w );
 
 /** Retrieve which variable of 'post-synaptic' that is the target of this
     matrix (it will be variable 0, i.e., node input, unless you change

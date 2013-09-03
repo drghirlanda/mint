@@ -175,11 +175,11 @@ void mint_spread_save( struct mint_spread *s, FILE *f,
   for( i=0; i<s->len; i++ ) {
     if( s->w[i] > -1 ) {
       w = mint_network_weights( net, s->w[i] );
-      fprintf( f, "%s ", mint_weights_get_name( w ) );
+      fprintf( f, "%s ", mint_str_char(mint_weights_get_name( w )) );
     }
     if( s->n[i] > -1 ) {
       n = mint_network_nodes( net, s->n[i] );
-      fprintf( f, "%s ", mint_nodes_get_name( n ) );
+      fprintf( f, "%s ", mint_str_char(mint_nodes_get_name( n )) );
     }
   }
   fprintf( f, "\n" );

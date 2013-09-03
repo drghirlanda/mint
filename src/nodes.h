@@ -94,11 +94,9 @@ mint_nodes mint_nodes_resize( mint_nodes n, unsigned int newsize );
     all update ops in sequence. */
 void mint_nodes_update( mint_nodes n, int min, int max );
 
-/** Get nodes name (guaranteed null-terminated). */
-char *mint_nodes_get_name( mint_nodes s );
-
-/** Set nodes name (maximum length = 255) */
-void mint_nodes_set_name( mint_nodes n, const char *name );
+/** Get nodes name string. Manipulating the returning string will
+    directly change the name. */
+struct mint_str *mint_nodes_get_name( mint_nodes s );
 
 /* see .c for docs */
 size_t mint_nodes_bytes( unsigned int size, unsigned int states );

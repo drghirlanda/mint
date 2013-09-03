@@ -23,7 +23,7 @@ struct mint_str *mint_str_new( const char *str ) {
     len++;
   }
   s->data[ len ] = '\0';
-  s->len = len - 1;
+  s->len = len;
   return s;
 }
 
@@ -82,6 +82,62 @@ int mint_str_size( const struct mint_str *s ) {
 char *mint_str_char( struct mint_str *s ) {
   if( s && s->len ) return s->data;
   else return 0;
+}
+
+void mint_str_append( struct mint_str *str, char *more ) {
+  int len;
+  len = str->len + strlen(more);
+  str->data = realloc( str->data, len );
+  str->data = strncat( str->data, more, len );
+}
+
+int mint_str_find( struct mint_str *str, char c ) {
+  int i;
+  for( i=0; i<str->len; i++ ) {
+    if( str->data[i] == c )
+      return i;
+  }
+  return -1;
+}
+
+struct mint_str *mint_str_substr( struct mint_str *str, int start, 
+				  int stop ) {
+  struct mint_str *substr;
+
+  mint_check( str, "null string" );
+  mint_check( start>=0 && start<str->len, "start out of range" );
+  mint_check( stop>=start && stop<=str->len, "stop out of range" );
+
+  substr = malloc( sizeof(struct mint_str) );
+  substr->len = stop - start;
+  substr->data = malloc( substr->len );
+  memcpy( substr->data, str->data + start, substr->len );
+  return substr;
+}
+
+/* # of digits an integer will print to (adapted from a stackoverflow
+   answer). we don't need to handle negative numbers. */
+int int_len( int n ) {
+  if (n < 10) 
+    return 1;
+  return 1 + int_len( n/10 );
+}
+
+void mint_str_incr( struct mint_str *str ) {
+  int i, j, added_len;
+
+  i = mint_str_find( str, '.' );
+  if( i == -1 ) {
+    str->data = realloc( str->data, str->len + 2 );
+    sprintf( str->data + str->len, ".2" );
+    str->len += 2;
+  } else {
+    sscanf( str->data + i + 1, "%d", &j );
+    added_len = int_len(j+1) - int_len(j);
+    if( added_len )
+      str->data = realloc( str->data, str->len + added_len );
+    sprintf( str->data + i + 1, "%d", j+1 );
+  }
 }
 
 #undef MINT_STRLEN

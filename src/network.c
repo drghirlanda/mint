@@ -4,6 +4,7 @@
 #include "utils.h"
 #include "threads.h"
 #include "spread.h"
+#include "str.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -151,29 +152,49 @@ void mint_network_save( const struct mint_network *net, FILE *dest ) {
 }
 
 void mint_network_check_names( struct mint_network *net ) {
-  char *name1, *name2;
+  struct mint_str *name1, *name2;
   int i, j;
   
+ resolve_nodes:
   for( i=0; i<net->groups; i++ ) {
     name1 = mint_nodes_get_name( mint_network_nodes( net, i ) );
+    /* node-node conflicts: */
     for( j=i+1; j<net->groups; j++ ) {
       name2 = mint_nodes_get_name( mint_network_nodes( net, j ) );
-      mint_check( ! strcmp( name1, name2 ) == 0,
-		  "same name for two node groups: '%s'", name1 );
+      if( strcmp( mint_str_char(name1), 
+		  mint_str_char(name2) ) == 0 ) {
+	mint_str_incr( name2 );
+	fprintf( stderr, "mint_network_load: changing '%s' to '%s'\n", 
+		 mint_str_char(name1), mint_str_char(name2) );
+	goto resolve_nodes;
+      }
     }
+    /* node-matrix conflicts: */
     for( j=i+1; j<net->matrices; j++ ) {
       name2 = mint_weights_get_name( mint_network_weights( net, j ) );
-      mint_check( ! strcmp( name1, name2 ) == 0,
-		  "same name for a node groups and a matrix: '%s'", 
-		  name1 );
+      if( strcmp( mint_str_char(name1), 
+		  mint_str_char(name2) ) == 0 ) {
+	mint_str_incr( name2 );
+	fprintf( stderr, "mint_network_load: changing '%s' to '%s'\n", 
+		 mint_str_char(name1), mint_str_char(name2) );
+	goto resolve_nodes;
+      }
     }
   }
+
+ resolve_matrices:
   for( i=0; i<net->matrices; i++ ) {
     name1 = mint_weights_get_name( mint_network_weights( net, i ) );
+    /* matrix-matrix conflicts: */
     for( j=i+1; j<net->matrices; j++ ) {
       name2 = mint_weights_get_name( mint_network_weights( net, j ) );
-      mint_check( ! strcmp( name1, name2 ) == 0,
-		  "same name for two weight matrices: '%s'", name1 );
+      if( strcmp( mint_str_char(name1), 
+		  mint_str_char(name2) ) == 0 ) {
+	mint_str_incr( name2 );
+	fprintf( stderr, "mint_network_load: changing '%s' to '%s'\n", 
+		 mint_str_char(name1), mint_str_char(name2) );
+	goto resolve_matrices;
+      }
     }
   }
 }
@@ -217,12 +238,12 @@ struct mint_network *mint_network_load( FILE *file ) {
 
   /* if there is a spread on file, it takes precedence */
   spread = mint_spread_load( file, net );
-  if( net->spread && spread ) {
+  if( spread ) {
     fprintf( stderr, "mint_network_load:" 
 	     "spread on file overrides existing spread\n" );
     mint_spread_del( net->spread );
+    net->spread = spread;
   }
-  net->spread = spread;
 
   if( !net->spread && mint_ops_find( net->ops, "asynchronous" )<0 ) {
     op = mint_op_new( "synchronous" );
@@ -242,10 +263,10 @@ mint_nodes mint_network_nodes( struct mint_network *net, int i ) {
 
 int mint_network_nodes_find( struct mint_network *net, char *name ) {
   int i;
-  char *nname;
+  struct mint_str *nname;
   for( i=0; i<net->groups; i++ ) {
     nname = mint_nodes_get_name( net->n[i] );
-    if( strcmp( nname, name ) == 0 )
+    if( strncmp( mint_str_char(nname), name, mint_str_size(nname) ) == 0 )
       return i;
   }
   return -1;
@@ -260,12 +281,13 @@ mint_weights mint_network_weights( struct mint_network *net, int i ) {
 int mint_network_weights_find( struct mint_network *net, char *name ) {
   int i;
   mint_weights w;
-  char *wname;
+  struct mint_str *wname;
 
   for( i=0; i<net->matrices; i++ ) {
     w = mint_network_weights( net, i );
     wname = mint_weights_get_name( w );
-    if( strncmp( wname, name, strlen( wname ) ) == 0 )
+    if( strncmp( mint_str_char(wname), name, 
+		 mint_str_size(wname) ) == 0 )
       return i;
   }
 
@@ -345,6 +367,9 @@ void mint_network_add( struct mint_network *net1,
 			  mint_spread_get_weights( net2->spread, i ),
 			  mint_spread_get_nodes( net1->spread, i ) );
   }
+
+  /* 4th: resolve name conflicts */
+  mint_network_check_names( net1 );
 }
 
 void mint_network_graph( const struct mint_network *net, FILE *f ) {

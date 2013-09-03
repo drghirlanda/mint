@@ -19,5 +19,14 @@ int mint_str_size( const struct mint_str * );
 
 char *mint_str_char( struct mint_str * );
 
+void mint_str_append( struct mint_str *, char * );
+
+int mint_str_find( struct mint_str *, char );
+
+struct mint_str *mint_str_substr( struct mint_str *str, int start, 
+				  int stop );
+
+void mint_str_incr( struct mint_str *str );
+
 #endif
 

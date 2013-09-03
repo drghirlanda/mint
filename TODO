@@ -4,8 +4,6 @@
 
 - make sparse an op rather than a keyword
 
-- check handling of .n weight matrices
-
 - update examples to new file format before merging names with master
 
 - update management of op types to allow search by type and name
