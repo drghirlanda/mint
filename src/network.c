@@ -221,8 +221,8 @@ struct mint_network *mint_network_load( FILE *file ) {
     fprintf( stderr, "mint_network_load:" 
 	     "spread on file overrides existing spread\n" );
     mint_spread_del( net->spread );
-    net->spread = spread;
   }
+  net->spread = spread;
 
   if( !net->spread && mint_ops_find( net->ops, "asynchronous" )<0 ) {
     op = mint_op_new( "synchronous" );

@@ -221,12 +221,12 @@ mint_weights mint_weights_load( FILE *file, struct mint_network *net ) {
   struct mint_weights_str *wstr;
   struct mint_op *op;
   struct mint_ops *ops;
-  struct mint_str *fromname, *toname, *name;
+  struct mint_str *fromname, *toname, *name, *namecopy;
   unsigned int rows, cols, states, sparse;
   int from, to, i;
 
   /* sensible initial values (used for error checking) */
-  fromname = toname = 0;
+  fromname = toname = name = namecopy = 0;
   sparse = rows = cols = states = 0;
   from = to = -1;
 
@@ -238,24 +238,37 @@ mint_weights mint_weights_load( FILE *file, struct mint_network *net ) {
 	      ! mint_keyword( mint_str_char(name) ),
 	      "missing weights name" );
 
-  if( mint_next_string( file, "sparse", 6 ) )
-    sparse = 1;
+  /* parse name to see whether it contains from-to info */
+  if( strchr( mint_str_char(name), '-' ) ) {
+    namecopy = mint_str_dup( name );
+    fromname = mint_str_new( strtok( mint_str_char( namecopy ), "-" ) );
+    toname = mint_str_new( strtok( 0, "." ) );
+    from = mint_network_nodes_find( net, mint_str_char(fromname) );
+    to = mint_network_nodes_find( net, mint_str_char(toname) );
+    mint_check( from != -1 && to != -1, 
+		"invalid from and/or to node groups in '%s'", 
+		mint_str_char(name) );
+    mint_str_del( namecopy );
+  }
 
   if( mint_next_string( file, "from", 4 ) ) {
+    mint_check( !fromname, "'from' given twice for matrix %s", 
+		mint_str_char(name) );
     fromname = mint_str_load( file );
-    if( !fromname ) {
-      i = fscanf( file, "%d", &from );
-      mint_check( i == 1, "cannot read 'from' name or index" );
-    }
+    mint_check( fromname, "cannot read 'from' name for matrix %s", 
+		mint_str_char(name) );
   }
 
   if( mint_next_string( file, "to", 2 ) ) {
+    mint_check( !toname, "'to' given twice for matrix %s", 
+		mint_str_char(name) );
     toname = mint_str_load( file );
-    if( !toname ) {
-      i = fscanf( file, "%d", &to );
-      mint_check( i == 1, "cannot read 'to' name or index" );
-    }
+    mint_check( toname, "cannot read 'to' name for matrix %s", 
+		mint_str_char(name) );
   }
+
+  if( mint_next_string( file, "sparse", 6 ) )
+    sparse = 1;
 
   ops = mint_ops_load( file );
 
@@ -283,47 +296,36 @@ mint_weights mint_weights_load( FILE *file, struct mint_network *net ) {
   }
 
   /* now try to determine matrix columns, either thorugh the cols op
-     or through the fromname/from info, if net is provided */
+     or through the fromname info, if net is provided */
   n = 0;
   if( net ) {
-    if( fromname ) {
-      i = mint_network_nodes_find( net, mint_str_char(fromname) );
-      n = mint_network_nodes( net, i );
-      from = i;
-    } else if( from > -1 ) {
-      n = mint_network_nodes( net, from );
-      fromname = mint_str_new( mint_nodes_get_name( n ) );
+    from = mint_network_nodes_find( net, mint_str_char(fromname) );
+    mint_check( from != -1, "cannot find 'from' nodes %s in network", 
+		mint_str_char(fromname) );
+    n = mint_network_nodes( net, from );
+    if( cols ) {
+      mint_check( cols == mint_nodes_size( n ),
+		  "'cols' and 'from' give different sizes!" );
     }
-    if( n ) {
-      if( cols )
-	mint_check( cols == mint_nodes_size( n ),
-		    "'cols' and 'from' specify different sizes!" );
-      cols = mint_nodes_size( n );
-    }
+    cols = mint_nodes_size( n );
   }
-  if( !fromname && from == -1 && cols == 0 )
-    mint_check( 0, "cannot determine matrix columns" );
+  mint_check( cols != 0, "cannot determine matrix columns" );
 
-  /* now try to determine matrix rows, same algorithms as before */
+  /* now try to determine matrix rows, either thorugh the rows op
+     or through the toname info, if net is provided */
   n = 0;
   if( net ) {
-    if( toname ) {
-      i = mint_network_nodes_find( net, mint_str_char(toname) );
-      n = mint_network_nodes( net, i );
-      to = i;
-    } else if( to > -1 ) {
-      n = mint_network_nodes( net, to );
-      toname = mint_str_new( mint_nodes_get_name( n ) );
+    to = mint_network_nodes_find( net, mint_str_char(toname) );
+    mint_check( to != -1, "cannot find 'to' nodes %s in network", 
+		mint_str_char(toname) );
+    n = mint_network_nodes( net, to );
+    if( rows ) {
+      mint_check( rows == mint_nodes_size( n ),
+		  "'rows' and 'from' give different sizes!" );
     }
-    if( n ) {
-      if( rows )
-	mint_check( rows == mint_nodes_size( n ),
-		    "'rows' and 'to' specify different sizes!");
-      rows = mint_nodes_size( n );
-    }
+    rows = mint_nodes_size( n );
   }
-  if( !toname && to == -1 && rows == 0 )
-    mint_check( 0, "cannot determine matrix rows" );
+  mint_check( rows != 0, "cannot determine matrix rows" );
 
   /* now we add cols and rows op for completeness, if not already
      present -- this is important if the matrix is later saved
@@ -375,8 +377,8 @@ mint_weights mint_weights_load( FILE *file, struct mint_network *net ) {
 
   mint_weights_load_values( w, file );
 
-  free( fromname );
-  free( toname );
+  mint_str_del( fromname );
+  mint_str_del( toname );
 
   return w;
 }
