@@ -27,7 +27,6 @@ void mint_network_asynchronous( struct mint_network *, float *param );
 
 /* These are undocumented function that should not be called by
     users. */
-void mint_network_init_spread( struct mint_network *, float *p );
 void mint_network_spread( struct mint_network *, float *p );
 
 /** This network update op clocks the number of updated to at most n

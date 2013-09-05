@@ -122,12 +122,6 @@ mint_nodes mint_nodes_load( FILE *file ) {
   mint_str_del( nstr->name ); /* default set in mint_nodes_new */
   nstr->name = name;
   nstr->ops = ops;
-
-  /* add identity update op if no update op specified */
-  if( mint_ops_count( nstr->ops, mint_op_nodes_update ) < 1 ) {
-    op = mint_op_new( "identity" );
-    mint_ops_append( nstr->ops, op );
-  }
   
   /* load values if on file */
   if( mint_values_waiting( file ) ) {
@@ -176,7 +170,7 @@ void mint_nodes_set( mint_nodes n, unsigned int i, float x ) {
   unsigned int j;
   struct mint_nodes_str *nstr;
   nstr = _STR(n);
-  mint_check( i>=0 && i<2 + nstr->states, "index out of range" );
+  mint_check( i>=0 && i<2+nstr->states, "index out of range" );
   for( j=0; j<nstr->size; j++ )
     n[i][j] = x;
 }

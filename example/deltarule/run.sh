@@ -1,6 +1,5 @@
 #!/bin/sh -ex
-make
-time -p ./deltarule
+./deltarule
 Rscript deltarule.R
-dot -Tpdf output/deltaruleArc.dot > output/deltaruleArc.pdf
+dot -Tpdf deltaruleArc.dot > deltaruleArc.pdf
 

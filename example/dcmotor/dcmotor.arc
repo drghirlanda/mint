@@ -1,5 +1,5 @@
 network 1 0
-nodes 1 0 identity dcmotor 4 17 27
+nodes n1 size 1 identity dcmotor 4 17 27
 
 
 

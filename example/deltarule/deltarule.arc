@@ -1,7 +1,9 @@
-network 2 1
-nodes 5 0
-nodes 1 0 update sigmoid .1 1
-weights 1 5 0 0 1 random 0 1 update delta .1 0
-
+network 3 2
+feedforward
+nodes receptors size 5
+nodes effectors size 1 states 1 sigmoid .1 1
+nodes value size 1
+weights receptors-effectors delta .1
+weights value-effectors target 2 random 0 0 1
 
 

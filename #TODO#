@@ -2,56 +2,20 @@
 
   - uninstall
 
-- update examples to new file format before merging names with master
-
-- update management of op types to allow search by type and name
-  rather than name only
-
-- file format redesign! it will look like this:
-
-network nodes 3 matrices 3
-nodes eye size 10
-nodes brain size 5
-nodes muscles size 2
-weights eye-brain
-weights eye-brain.2
-weights brain-muscles 
-spread 6
-eye eye-brain eye-brain.2 brain brain-muscles muscles
-
-RESERVED WORDS: network, nodes, matrices, size, states, rows, cols,
-from, to, spread + the names of all ops.
-
-Loading of the differnt objects works this way:
-
-NODES: 
-syntax: 'nodes' <name> size <num> [states <num>] ...
-
-WEIGHTS:
-syntax: 'weights' <name> [from <name>] [to <name>] [rows <num>] 
-	[cols <num>] [states <num>]
-
-either 'to' or 'rows' MUST be present
-either 'from' or 'cols' MUST be present
-
-when to and from are specified, size must be resolved looking at the
-connected nodes, hence mint_weights_load must get network
-information. if rows and cols are specified, network parameter can be
-null.
-
 - known bugs or poorly designed features:
 
-  - spread is now accepted in either numeric or symbolic mode, but it
-    is always saved as numeric!
+  - threads is incompatible with camera because it deletes network
+    operations - camera should be redesigned so that it is not a
+    network operation, or threads should only overwrite the do_spread
+    op?
+
+  - make sparse an op rather than a keyword
+
+  - update management of op types to allow search by type and name
+    rather than name only
 
   - mint_weights_set assumes indices in sparse matrix cind variables
     are sorted, but mint_weights_set_row does not check...
-
-  - the design of the MINT arc files should be documented better. note
-    especially how spread is set and why it is at the end
-    (network_init ops need to have the matrices and nodes loaded, and
-    might ant to set a spread, but the user-specified spread should
-    take precedence and so it is last to override spreads set by ops).
 
   - better docs for network_camera op
 

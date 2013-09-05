@@ -1,11 +1,11 @@
 network 4 3
-nodes 78600 0
-nodes 78600 0
-nodes 78600 0
-nodes 1 0 sigmoid .1 1
-weights 1 78600 0 from 0 to 1 random
-weights 1 78600 0 from 0 to 1 random
-weights 1 78600 0 from 0 to 1 random
+nodes n1 size 78600
+nodes n2 size 78600
+nodes n3 size 78600
+nodes n4 size 1 sigmoid .1 1
+weights n1-n4 random
+weights n2-n4 random
+weights n3-n4 random
 
 
 

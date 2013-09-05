@@ -8,7 +8,7 @@
 #define MINT_NAME_LENGTH 255
 #define MINT_NAME_LENGTH_STRING "255"
 
-#define mint_check( test, ... ) if(!(test)) { fprintf( stderr, "%s (%s:%d): ", __FUNCTION__, __FILE__, __LINE__ ); fprintf( stderr, __VA_ARGS__ ); abort(); }
+#define mint_check( test, ... ) if(!(test)) { fprintf( stderr, "%s (%s:%d): ", __FUNCTION__, __FILE__, __LINE__ ); fprintf( stderr, __VA_ARGS__ ); fprintf( stderr, "\n" ); abort(); }
 
 /* check whether a specific string is on file. if yes, return 1 and
    advance file position past the string. if no, return 0 and do not

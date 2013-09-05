@@ -20,7 +20,7 @@ dev.off()
 
 pdf( "time-matlevel.pdf", width=5, height=5 )
 plot(threads14$n, threads14$time, type="b", pch=19,
-     xlab="Threads", ylim=c(0,16),
+     xlab="Threads", 
      ylab="Time (s)", main="1 4000x4000 matrix" )
 abline( h=4, lty=2 )
 dev.off()

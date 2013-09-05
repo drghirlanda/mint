@@ -223,12 +223,12 @@ void mint_image_paste( const struct mint_image *image,
       idx = y+ypos + nrows*(x+xpos);
       if( idx>=0 && idx<size ) {
 	if( !ngreen ) {
-	  nred[var][ idx ] = ( bits[FI_RGBA_RED] + bits[FI_RGBA_GREEN] +
+	  nred[var][ idx ] += ( bits[FI_RGBA_RED] + bits[FI_RGBA_GREEN] +
 			       bits[FI_RGBA_BLUE] ) / 255.0;
 	} else {
-	  nred[var][ idx ] = bits[FI_RGBA_RED] / 255.0;
-	  ngreen[var][ idx ] = bits[FI_RGBA_GREEN] / 255.0;
-	  nblue[var][ idx ] = bits[FI_RGBA_BLUE] / 255.0;
+	  nred[var][ idx ] += bits[FI_RGBA_RED] / 255.0;
+	  ngreen[var][ idx ] += bits[FI_RGBA_GREEN] / 255.0;
+	  nblue[var][ idx ] += bits[FI_RGBA_BLUE] / 255.0;
 	}
       }
       bits += stride;

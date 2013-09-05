@@ -24,7 +24,7 @@ int main( void ) {
   mint_network_operate( net );
 
   img = mint_image_nodes( R, G, B, 1 );
-  mint_image_save( img, "capture.bmp", FIF_BMP );
+  mint_image_save( img, "image.jpg", FIF_JPEG );
   mint_image_del( img );
   
   mint_network_del( net );

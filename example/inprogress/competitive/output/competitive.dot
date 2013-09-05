@@ -1,0 +1,12 @@
+digraph network {
+rankdir=LR
+spread [label="\N \nw: 0 1 -1 -1 \nn: -1 -1 0 1 ", fontsize=12, shape=none]
+n0 [label="\N 8 0 size 8 states 0 
+"]
+n1 [label="\N 8 1 size 8 states 1 integrator 10 0.2 2 
+"]
+n0 -> n1 [label="w0 8 8 0 random 0 1 1 hebbian 0.005 0.5 0.2 0.0005 states 0 cols 8 rows 8 
+"]
+n1 -> n1 [label="w1 8 8 0 random 0 0 1 states 0 cols 8 rows 8 
+"]
+}

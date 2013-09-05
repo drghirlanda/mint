@@ -1,0 +1,14 @@
+digraph network {
+rankdir=LR
+spread [label="\N \nw: -1 -1 0 1 -1 \nn: 0 2 -1 -1 1 ", fontsize=12, shape=none]
+n0 [label="\N 5 0 size 5 states 0 
+"]
+n1 [label="\N 1 1 size 1 states 1 sigmoid 0.1 1 
+"]
+n2 [label="\N 1 0 size 1 states 0 
+"]
+n0 -> n1 [label="w0 1 5 0 delta 0.1 2 states 0 cols 5 rows 1 
+"]
+n2 -> n1 [label="w1 1 1 0 target 2 random 0 0 1 states 0 cols 1 rows 1 
+"]
+}

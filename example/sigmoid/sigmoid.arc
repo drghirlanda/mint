@@ -1,2 +1,2 @@
-nodes 1 0 sigmoid .1 1
+nodes n1 size 1 sigmoid .1 1.5
 
