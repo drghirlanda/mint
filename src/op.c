@@ -508,6 +508,13 @@ int mint_ops_del_name( struct mint_ops *ops, const char *name ) {
   return k;
 }
 
+struct mint_op *mint_ops_get_name( struct mint_ops *ops, 
+				   const char *name ) {
+  int i;
+  i = mint_ops_find( ops, name );
+  return i>=0 ? ops->p[i] : 0;
+}
+
 int mint_ops_count( struct mint_ops *ops, int type ) {
   int i, count;
   mint_check( ops!=0, "null ops object" );

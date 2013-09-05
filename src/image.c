@@ -1,6 +1,7 @@
 #include "image.h"
 #include "utils.h"
 #include "op.h"
+#include "str.h"
 
 #include <stdlib.h>
 #include <math.h>
@@ -181,34 +182,82 @@ void mint_image_paste( const struct mint_image *image,
 		       mint_nodes nred,
 		       mint_nodes ngreen, 
 		       mint_nodes nblue,
-		       int var, int xpos, int ypos ) {
+		       int varr, int varg, int varb, 
+		       int xpos, int ypos ) {
+  int i, k, irows, icols, nrows, ncols, size, x, y, stride, idx;
+  BYTE *bits;
+  FIBITMAP *fib;
+  struct mint_ops *ops;
+  mint_nodes n;
+  mint_nodes nodes[] = {0, 0, 0};
+  int component[] = { FI_RGBA_RED, FI_RGBA_GREEN, FI_RGBA_BLUE };
+  int var[3];
+
+  var[0] = varr;
+  var[1] = varg;
+  var[2] = varb;
+
+  nodes[0] = nred;
+  nodes[1] = ngreen;
+  nodes[2] = nblue;
+
+  irows = FreeImage_GetHeight( image->ptr );
+  icols = FreeImage_GetWidth( image->ptr );
+
+  for( k=0; k<3; k++ ) {
+    n = nodes[k];
+    if( n ) {
+      size = mint_nodes_size( n );
+      ops = mint_nodes_get_ops( n );
+      i = mint_ops_find( ops, "rows" );
+      mint_check( i>=0, "rows is not set for node group %s",
+		  mint_str_char( mint_nodes_get_name(n) ) );
+      nrows = mint_op_get_param( mint_ops_get(ops, i), 0 );
+      ncols = size / nrows;
+
+      if( nrows != irows || ncols != icols )
+	fib = FreeImage_Rescale( image->ptr, ncols, nrows, FILTER_BOX );
+      else
+	fib = image->ptr;
+
+      stride = FreeImage_GetLine(fib) / FreeImage_GetWidth(fib);
+
+      for ( y=0; y<nrows; y++ ) {
+	bits = FreeImage_GetScanLine( fib, y );
+	for ( x=0; x<ncols; x++ ) {
+	  idx = y+ypos + nrows*(x+xpos);
+	  if( idx>=0 && idx<size ) {
+	    n[ var[k] ][ idx ] += bits[ component[k] ] / 255.0;
+	  }
+	  bits += stride;
+	}
+      }
+      if( fib != image->ptr )
+	FreeImage_Unload( fib );
+    }
+  }
+}
+
+void mint_image_paste_gray( const struct mint_image *image, 
+			    mint_nodes ngray,
+			    int var,
+			    int xpos, int ypos ) {
   int i, irows, icols, nrows, ncols, size, x, y;
   int stride, idx;
   BYTE *bits;
   FIBITMAP *fib;
   struct mint_ops *ops;
 
-  mint_check( xpos>=0 && ypos>=0, "negative xpos/ypos unimlemented" );
-
-  size = mint_nodes_size( nred );
-
-  if( ngreen && nblue ) {
-    i = mint_nodes_size( ngreen );
-    mint_check( i==size, "ngreen size (%d) != nred size (%d)", size, i );
-    i = mint_nodes_size( nblue );
-    mint_check( i==size, "nblue size (%d) != nred size (%d)", size, i );
-  } else {
-    mint_check( 0, "must provide 1 or 3 node arguments, not 2" );
-  } 
-
-  /* set node rows and columns, then image rows and columns */
-  ops = mint_nodes_get_ops( nred );
-  i = mint_ops_find( ops, "rows" );
-  mint_check( i>=0, "rows is not set for first node group" );
-  nrows = mint_op_get_param( mint_ops_get(ops, i), 0 );
-  ncols = size / nrows;
   irows = FreeImage_GetHeight( image->ptr );
   icols = FreeImage_GetWidth( image->ptr );
+
+  size = mint_nodes_size( ngray );
+  ops = mint_nodes_get_ops( ngray );
+  i = mint_ops_find( ops, "rows" );
+  mint_check( i>=0, "rows is not set for node group %s",
+	      mint_str_char( mint_nodes_get_name(ngray) ) );
+  nrows = mint_op_get_param( mint_ops_get(ops, i), 0 );
+  ncols = size / nrows;
 
   if( nrows != irows || ncols != icols )
     fib = FreeImage_Rescale( image->ptr, ncols, nrows, FILTER_BOX );
@@ -222,17 +271,10 @@ void mint_image_paste( const struct mint_image *image,
     for ( x=0; x<ncols; x++ ) {
       idx = y+ypos + nrows*(x+xpos);
       if( idx>=0 && idx<size ) {
-	if( !ngreen ) {
-	  nred[var][ idx ] += ( bits[FI_RGBA_RED] + bits[FI_RGBA_GREEN] +
-			       bits[FI_RGBA_BLUE] ) / 255.0;
-	} else {
-	  nred[var][ idx ] += bits[FI_RGBA_RED] / 255.0;
-	  ngreen[var][ idx ] += bits[FI_RGBA_GREEN] / 255.0;
-	  nblue[var][ idx ] += bits[FI_RGBA_BLUE] / 255.0;
-	}
+	ngray[ var ][ idx ] += ( bits[ FI_RGBA_RED ] + bits[ FI_RGBA_GREEN ] + bits[ FI_RGBA_BLUE ] ) / (3*255.0);
       }
-      bits += stride;
     }
+    bits += stride;
   }
 
   if( fib != image->ptr )

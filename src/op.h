@@ -135,6 +135,11 @@ int mint_ops_del_type( struct mint_ops *ops, int type );
     with mint_op_del. */
 int mint_ops_del_name( struct mint_ops *ops, const char *name );
 
+
+/** Retrieve the (first) op with a given name, or 0 if no such op. */
+struct mint_op *mint_ops_get_name( struct mint_ops *ops, 
+				   const char *name );
+
 /** Count how many ops of a given type are in an ops object. */
 int mint_ops_count( struct mint_ops *ops, int type );
 

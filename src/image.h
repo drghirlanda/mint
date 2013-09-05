@@ -93,7 +93,11 @@ struct mint_image *mint_image_weights( const mint_weights w,
     of the image not falling on the retina are ignored. */
 void mint_image_paste( const struct mint_image *, mint_nodes nred,
 		       mint_nodes ngreen, mint_nodes nblue,
-		       int var, int xpos, int ypos );
+		       int varr, int varg, int varb, 
+		       int xpos, int ypos );
+
+void mint_image_paste_gray( const struct mint_image *, mint_nodes ngray,
+			    int var, int xpos, int ypos );
 
 /** Scale an image to 'scale' times its current size. */
 void mint_image_scale( struct mint_image *, float scale );

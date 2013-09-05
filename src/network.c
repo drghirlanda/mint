@@ -288,6 +288,19 @@ int mint_network_nodes_find( struct mint_network *net, char *name ) {
   return -1;
 }
 
+int mint_network_nodes_find_op( struct mint_network *net, char *name ) {
+  int i, j;
+  struct mint_ops *ops;
+
+  for( i=0; i<net->groups; i++ ) {
+    ops = mint_nodes_get_ops( net->n[i] );
+    j = mint_ops_find( ops, name );
+    if( j != -1 )
+      return i;
+  }
+  return -1;
+}
+
 mint_weights mint_network_weights( struct mint_network *net, int i ) {
   mint_check( i>=0 && i<net->matrices, "index %d out of range 0-%d",
 	      i, net->matrices - 1);

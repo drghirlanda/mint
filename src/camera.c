@@ -19,7 +19,8 @@ static pid_t mint_camera_pid = 0;  /* pid of camshot process */
 static char mint_camera_pipe[256]; /* filename of camshot pipe */
 static int mint_camera_lock = 0;   /* 1 thread only accesses camera */
 
-static float mint_network_camera_default[4] = {-1, -1, -1};
+static float mint_network_camera_default[4] = { -2, -2, -2, -2 };
+static float mint_node_camera_default[1] = { 1 };
 
 /* since this function is called through atexit(), errors can be
    non-fatal */
@@ -43,6 +44,13 @@ void mint_camera_close( void ) {
   }
 
   mint_camera_pid = 0;
+}
+
+void mint_node_camera( mint_nodes n, float *p ) {
+  int states;
+  states = mint_nodes_states( n );
+  mint_check( p[0]>=0 && p[0]<2+states,
+	      "parameter 0 out of range 0-%d", 1+states )
 }
 
 /* this function initializes the camera by forking off an instance of
@@ -95,8 +103,16 @@ void mint_camera_init( void ) {
 	      mint_camera_pipe );
   
   /* now we register ops that make use of the camera */
-  mint_op_add( "camera", mint_op_network_operate, mint_network_camera, 4, 
-	       mint_network_camera_default );
+  mint_op_add( "camera", mint_op_network_operate, mint_network_camera, 
+	       4, mint_network_camera_default ); 
+  mint_op_add( "red", mint_op_nodes_init, mint_node_camera, 1, 
+	       mint_node_camera_default );
+  mint_op_add( "green", mint_op_nodes_init, mint_node_camera, 1, 
+	       mint_node_camera_default );
+  mint_op_add( "blue", mint_op_nodes_init, mint_node_camera, 1, 
+	       mint_node_camera_default );
+  mint_op_add( "gray", mint_op_nodes_init, mint_node_camera, 1, 
+	       mint_node_camera_default );
 } 
 
 struct mint_image *mint_camera_image( void ) {
@@ -137,40 +153,52 @@ struct mint_image *mint_camera_image( void ) {
   return img;
 }
 
-void mint_camera_paste( mint_nodes nred, mint_nodes ngreen, mint_nodes nblue,
-			int var, int xpos, int ypos ) {
-  struct mint_image *img;
-  img = mint_camera_image();
-  mint_image_paste( img, nred, ngreen, nblue, var, xpos, ypos );
-  mint_image_del( img );
-}
-
 void mint_network_camera( struct mint_network *net, float *p ) {
-  int var, R, G, B, groups;
-  mint_nodes nred = 0;
-  mint_nodes ngreen = 0;
-  mint_nodes nblue = 0;
+  int varR, varG, varB, varGR, R, G, B, GR;
+  struct mint_image *img;
+  struct mint_ops *ops;
+  mint_nodes nred, ngreen, nblue, ngray;
 
-  var = p[0];
-  R = p[1];
-  G = p[2];
-  B = p[3];
+  nred = ngreen = nblue = ngray = 0;
+  varR = varG = varB = varGR = -1;
 
-  groups = mint_network_groups( net );
+  /* these are run only the first time and store in the op parameters
+     which nodes are involved */
+  if( p[0] == -2 )
+    R = p[0] = mint_network_nodes_find_op( net, "red" );
+  if( p[1] == -2 )
+    G = p[1] = mint_network_nodes_find_op( net, "green" );
+  if( p[2] == -2 )
+    B = p[2] = mint_network_nodes_find_op( net, "blue" );
+  if( p[3] == -2 )
+    GR = p[3] = mint_network_nodes_find_op( net, "gray" );
 
-  mint_check( R>=0 && R<groups,
-	       "node group %d out of range 0-%d", R, groups-1 );
-  nred = mint_network_nodes( net, R );
-
-  if( G!=-1 && B!=-1 ) {
-    mint_check( G>=0 && G<groups,
-		 "node group %d out of range 0-%d", G, groups-1 );
-    mint_check( B>=0 && B<groups,
-		 "node group %d out of range 0-%d", B, groups-1 );
+  /* now we can set node pointers and variable indices - null node
+     pointers are handled OK by image_paste */
+  if( R >= 0 ) {
+    nred = mint_network_nodes( net, R );
+    ops = mint_nodes_get_ops(nred);
+    varR = mint_op_get_param( mint_ops_get_name(ops, "red"), 0 );
+  }
+  if( G >= 0 ) {
     ngreen = mint_network_nodes( net, G );
+    ops = mint_nodes_get_ops(ngreen);
+    varG = mint_op_get_param( mint_ops_get_name(ops, "green"), 0 );
+  }
+  if( B >= 0 ) {
     nblue = mint_network_nodes( net, B );
+    ops = mint_nodes_get_ops(nblue);
+    varB = mint_op_get_param( mint_ops_get_name(ops, "blue"), 0 );
+  }
+  if( GR >= 0 ) {
+    ngray = mint_network_nodes( net, GR );
+    ops = mint_nodes_get_ops(ngray);
+    varGR = mint_op_get_param( mint_ops_get_name(ops, "gray"), 0 );
   }
 
-  mint_camera_paste( nred, ngreen, nblue, var, 0, 0 );
- 
+  img = mint_camera_image();
+  mint_image_paste( img, nred, ngreen, nblue, varR, varG, varB, 0, 0 );
+  if( ngray )
+    mint_image_paste_gray( img, ngray, varGR, 0, 0 );
+  mint_image_del( img );
 }
