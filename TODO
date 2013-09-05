@@ -4,10 +4,10 @@
 
 - known bugs or poorly designed features:
 
-  - spread semantic tuning: - re-introduce run_spread op as default
-    operate op (last in op list); - have threads_spread delete only
-    run_spread; - arrange for threads_spread and run_spread not to be
-    saved
+  - DOCUMENT THIS: network init ops may set spread. if spread is set,
+    run_spread op is added and the spread is performed. other network
+    operate ops are run prior to spreading (threaded spread overrides
+    the default run spread - see network_load)
 
   - make sparse an op rather than a keyword
 

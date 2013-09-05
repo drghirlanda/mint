@@ -252,7 +252,7 @@ struct mint_network *mint_network_load( FILE *file ) {
 
   /* if there is no spread and no asynchronous op at this point, set
      synchronous spread, which works for all networks */
-  if( !net->spread && mint_ops_find( net->ops, "asynchronous" )<0 ) {
+  if( !net->spread && mint_ops_find( net->ops, "asynchronous" ) == -1 ) {
     op = mint_op_new( "synchronous" );
     mint_ops_append( net->ops, op );
     mint_op_run( op, net );
@@ -260,8 +260,9 @@ struct mint_network *mint_network_load( FILE *file ) {
   }
 
   /* if there is a spread (possibly created by synchronour op that
-     might ahve just run), add the run_spread op */
-  if( net->spread ) {
+     might ahve just run), add the run_spread op, unless threaded
+     spread is set, in which case do nothign */
+  if( net->spread && mint_ops_find( net->ops, "threads" ) == -1 ) {
     op = mint_op_new( "run_spread" );
     mint_ops_append( net->ops, op );
     mint_op_del( op );
