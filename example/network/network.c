@@ -6,7 +6,7 @@
 
 int main( void ) {
   FILE *file;
-  struct mint_network *net;
+  struct mint_network *net, *net2;
 
   printf( "testing feedforward network operation\n" );
   file = fopen( "feedforward.arc", "r" );
@@ -38,7 +38,12 @@ int main( void ) {
   fclose( file );
   mint_network_operate( net );
   mint_network_save( net, stdout );
-  mint_network_del( net );
 
+  /* testing duplication */
+  net2 = mint_network_dup( net );
+  mint_network_save( net2, stdout );
+  mint_network_del( net2 );
+
+  mint_network_del( net );
   return 0;
 }

@@ -1,4 +1,4 @@
-network 4 4
+network
 nodes n0 size 10 noise 1 1 0.1
 nodes n1 size 5 sigmoid 0.01 1
 nodes n2 size 5 sigmoid 0.01 1

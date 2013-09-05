@@ -1,4 +1,4 @@
-network 4 4
+network
 feedforward
 nodes size 10 
 nodes receptors size 10 sigmoid 0.05 1

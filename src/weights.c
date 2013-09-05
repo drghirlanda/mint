@@ -226,13 +226,13 @@ mint_weights mint_weights_load( FILE *file, struct mint_network *net ) {
   int from, to, i, j;
   long pos;
 
+  if( ! mint_next_string( file, "weights", 7 ) )
+    return 0;
+
   /* sensible initial values (used for error checking) */
   fromname = toname = name = 0;
   sparse = rows = cols = states = 0;
   from = to = -1;
-
-  if( ! mint_next_string( file, "weights", 7 ) )
-    mint_check( 0, "cannot find 'weights' keyword" );
 
   /* attempt to read weights name. if 'name' turns out to be op or
      keyword, create default name and rewind file */

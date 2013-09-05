@@ -87,7 +87,7 @@ mint_nodes mint_nodes_load( FILE *file ) {
   struct mint_ops *ops;
 
   if( ! mint_next_string( file, "nodes", 5 ) )
-    mint_check( 0, "cannot find 'nodes' keyword" );
+    return 0;
     
   /* attempt to read nodes name. if 'name' turns out to be op or
      keyword, create default name and rewind file */

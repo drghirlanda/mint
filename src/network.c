@@ -53,9 +53,9 @@ static struct mint_network *mint_network_alloc( int groups,
   int i;
   struct mint_network *net;
   net = malloc( sizeof(struct mint_network) );
-  net->n = malloc( groups * sizeof(mint_nodes) );
+  net->n = malloc( sizeof(mint_nodes) * groups );
   for( i=0; i<groups; i++ ) net->n[i] = 0;
-  net->w = malloc( matrices * sizeof(mint_weights) );
+  net->w = malloc( sizeof(mint_weights) * matrices );
   for( i=0; i<matrices; i++ ) net->w[i] = 0;
   net->groups = groups;
   net->matrices = matrices;
@@ -68,7 +68,6 @@ struct mint_network *mint_network_dup( const struct mint_network *net1 ) {
   int i;
   struct mint_network *net2;
   net2 = mint_network_alloc( net1->groups, net1->matrices );
-  net2->size = net1->size;
   mint_spread_del( net2->spread );
   net2->spread = mint_spread_dup( net1->spread );
   for( i=0; i<net1->groups; i++ ) 
@@ -105,7 +104,6 @@ void mint_network_cpy( struct mint_network *net1,
     mint_network_del( net1 );
     net1 = mint_network_alloc( net2->groups, net2->matrices );
   }
-  net1->size = net2->size;
   mint_spread_del( net1->spread );
   net1->spread = mint_spread_dup( net2->spread );
   for( i=0; i<net1->groups; i++ ) 
@@ -207,31 +205,36 @@ void mint_network_check_names( struct mint_network *net ) {
 }
 
 struct mint_network *mint_network_load( FILE *file ) {
-  int i, groups, matrices, read, from, to;
+  int from, to;
   struct mint_network *net;
   struct mint_op *op;
   struct mint_spread *spread;
+  mint_nodes n;
+  mint_weights w;
 
-  read = fscanf( file, " network %d", &groups );
-  mint_check( read==1, "cannot read number of node groups" );
-  read = fscanf( file, " %d", &matrices );
-  mint_check( read==1, "cannot read number of weight matrices" );
+  if( ! mint_next_string( file, "network", 7 ) )
+    return 0;
 
-  net = mint_network_alloc( groups, matrices );
+  net = mint_network_alloc( 0, 0 );
 
   net->ops = mint_ops_load( file );
 
-  for( i=0; i<net->groups; i++ )
-    net->n[i] = mint_nodes_load( file );
+  while( (n = mint_nodes_load(file)) ) {
+    net->groups++;
+    net->n = realloc( net->n, sizeof(mint_nodes) * net->groups );
+    net->n[ net->groups - 1 ] = n;
+  }
 
   /* for each matrix: load, check compatibility, run connect ops */
-  for( i=0; i<net->matrices; i++ ) {
-    net->w[i] = mint_weights_load( file, net );
-    from = mint_weights_get_from( net->w[i] );
-    to = mint_weights_get_to( net->w[i] );
-    mint_weights_compatibility( net->w[i], net->n[from], net->n[to] );
-    mint_weights_connect( net->w[i], net->n[from], net->n[to], 
-			  0, mint_weights_rows( net->w[i] ) );
+  while( (w = mint_weights_load( file, net )) ) {
+    net->matrices++;
+    net->w = realloc( net->w, sizeof(mint_weights) * net->matrices );
+    net->w[ net->matrices - 1 ] = w;
+    from = mint_weights_get_from( w );
+    to = mint_weights_get_to( w );
+    mint_weights_compatibility( w, net->n[from], net->n[to] );
+    mint_weights_connect( w, net->n[from], net->n[to], 
+			  0, mint_weights_rows( w ) );
   }
 
   /* check that all groups and matrices have distinct names */
@@ -332,12 +335,10 @@ int mint_network_matrices( const struct mint_network *n ) {
 }
 
 int mint_network_size( struct mint_network *net ) {
-  int i;
-  if( !net->size ) {
-    for( i=0; i<net->groups; i++ )
-      net->size += mint_nodes_size( net->n[i] );
-  }
-  return net->size;
+  int i, size = 0;
+  for( i=0; i<net->groups; i++ )
+    size += mint_nodes_size( net->n[i] );
+  return size;
 }
 
 void mint_network_add( struct mint_network *net1,
@@ -562,13 +563,10 @@ void mint_network_replace_weights( struct mint_network *net,
 /* some network ops defined here for efficiency / ease of coding */
 
 void mint_network_asynchronous( struct mint_network *net, float *p ) {
-  int i, j, k, steps, from;
+  int i, j, k, steps, from, size;
   mint_nodes n;
 
-  if( !net->size ) {
-    for( i=0; i<net->groups; i++ )
-      net->size += mint_nodes_size( net->n[i] );
-  }
+  size = mint_network_size( net );
 
   /* this sets the number of updates to the number of nodes the first
      time the op executes, and unless the user has specified a number
@@ -577,13 +575,13 @@ void mint_network_asynchronous( struct mint_network *net, float *p ) {
   if( p[0] )
     steps = p[0];
   else
-    steps = net->size;
+    steps = size;
 
   while( steps-- ) {
     /* pick node group at random, weighing by size and only taking
        into account nodes with an update op */
     i = j = 0; 
-    k = mint_random_int( 0, net->size );
+    k = mint_random_int( 0, size );
     while( j<=k ) {
       n = mint_network_nodes( net, i );
       if( mint_ops_count(mint_nodes_get_ops(n),mint_op_nodes_update)>0 ) 
