@@ -1,9 +1,0 @@
-env = Environment( LIBS=['-lmint-debug','-lm','-lfreeimage'],
-                   CFLAGS=['-O0','-g'] )
-
-object = env.Object('phototaxis.c')
-program = env.Program( 'phototaxis', object )
-
-object2 = env.Object('phototaxis-evolve.c')
-program2 = env.Program( 'phototaxis-evolve', object2 )
-

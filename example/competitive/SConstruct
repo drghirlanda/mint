@@ -1,2 +1,0 @@
-env = Environment( parse_flags = '-lmint -pthread -lm -lfreeimage' )
-program = env.Program( 'competitive', Object('competitive.c') )

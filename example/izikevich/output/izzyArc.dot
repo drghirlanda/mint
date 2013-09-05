@@ -1,9 +1,0 @@
-digraph network {
-rankdir=LR
-spread [label="\N \nw: 0 1 2 -1 -1 \nn: -1 -1 -1 0 1 ", fontsize=12, shape=none]
-n0 [label="\N 2400 5 noise 0 0 7  izzy 0.02 0.2 -70 7  "]
-n1 [label="\N 600 2 noise 0 0 2  izzy 0.06 0.225 -65 2  "]
-n0 -> n0 [label="w0 2400 2400 0 from 0  to 0  random 0 0.5 0.1  diagonal 0  "]
-n1 -> n0 [label="w1 2400 600 0 from 1  to 0  random -1 0 0.1  "]
-n0 -> n1 [label="w2 600 2400 0 from 0  to 1  random 0 0.5 0.1  "]
-}
