@@ -403,41 +403,27 @@ void mint_network_add( struct mint_network *net1,
 }
 
 void mint_network_graph( const struct mint_network *net, FILE *f ) {
-  int g, m, i, len;
+  int g, m, i;
   mint_nodes n;
   mint_weights w;
 
   fprintf( f, "digraph network {\n" );
   fprintf( f, "rankdir=LR\n" );
-  fprintf( f, "spread [label=\"\\N " );
-  len = mint_spread_len( net->spread );
-  if( len>0 ) {
-    fprintf( f, "\\nw: " ); 
-    for( i=0; i<len; i++ )
-      fprintf( f, "%d ", mint_spread_get_weights( net->spread, i ) );
-    fprintf( f, "\\nn: " );
-    for( i=0; i<len; i++ )
-      fprintf( f, "%d ", mint_spread_get_nodes( net->spread, i ) );
-  } else
-    fprintf( f, "async %d", -len );
-  fprintf( f, "\", fontsize=12, shape=none]\n" );
+  fprintf( f, "node [fixedsize=true height=1 shape=circle]\n" );
+  fprintf( f, "edge [fontsize=10]\n" );
   g = mint_network_groups( net );
   for( i=0; i<g; i++ ) {
     n = mint_network_nodes( (struct mint_network *)net, i );
-    fprintf( f, "n%d [label=\"\\N %d %d ", i, mint_nodes_size(n),
-	     mint_nodes_states(n) );
-    mint_ops_save( mint_nodes_get_ops(n), f );
-    fprintf( f, "\"]\n" );
+    fprintf( f, "n%d [label=\"%s\\n%d\"]\n", i, 
+	     mint_str_char( mint_nodes_get_name(n) ),
+	     mint_nodes_size(n) );
   }
   m = mint_network_matrices( net );
   for( i=0; i<m; i++ ) {
     w = mint_network_weights( (struct mint_network *)net, i );
-    fprintf( f, "n%d -> n%d [label=\"w%d %d %d %d ", 
-	     mint_weights_get_from(w), mint_weights_get_to(w), i,
-	     mint_weights_rows(w), mint_weights_cols(w),
-	     mint_weights_states(w) );
-    mint_ops_save( mint_weights_get_ops(w), f );
-    fprintf( f, "\"]\n" );
+    fprintf( f, "n%d -> n%d [label=\"\"]\n", 
+	     mint_weights_get_from(w),
+	     mint_weights_get_to(w) );
   }
   fprintf( f, "}\n" );
 }
