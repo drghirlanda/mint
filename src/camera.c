@@ -95,7 +95,7 @@ void mint_camera_init( void ) {
 	      mint_camera_pipe );
   
   /* now we register ops that make use of the camera */
-  mint_op_add( "camera", mint_op_network_update, mint_network_camera, 4, 
+  mint_op_add( "camera", mint_op_network_operate, mint_network_camera, 4, 
 	       mint_network_camera_default );
 } 
 

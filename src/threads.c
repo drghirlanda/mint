@@ -204,7 +204,7 @@ void mint_network_init_threads( struct mint_network *net, float *p ) {
 		   (void *)mint_threads_spread, 1, &default_threads );
 
     ops = mint_network_get_ops( net );
-    mint_ops_del_type( ops, mint_op_network_operate );
+    mint_ops_del_name( ops, "run_spread" );
     op = mint_op_new( "threads_spread" );
     mint_op_set_param( op, 0, num_threads );
     mint_ops_append( ops, op );

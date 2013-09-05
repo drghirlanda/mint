@@ -4,6 +4,11 @@
 
 - known bugs or poorly designed features:
 
+  - spread semantic tuning: - re-introduce run_spread op as default
+    operate op (last in op list); - have threads_spread delete only
+    run_spread; - arrange for threads_spread and run_spread not to be
+    saved
+
   - make sparse an op rather than a keyword
 
   - update management of op types to allow search by type and name

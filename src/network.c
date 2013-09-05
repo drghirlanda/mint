@@ -138,9 +138,16 @@ int mint_network_frozen( struct mint_network *net ) {
 
 void mint_network_save( const struct mint_network *net, FILE *dest ) {
   int i;
+  struct mint_ops *ops;
   fprintf( dest, "network %d %d\n", net->groups, net->matrices );
 
-  mint_ops_save( net->ops, dest );
+  /* we do not save run_spread (default) or threads_spread (will be
+     added back by threads) */
+  ops = mint_ops_dup( net->ops );
+  mint_ops_del_name( ops, "run_spread" );
+  mint_ops_del_name( ops, "threads_spread" );
+  mint_ops_save( ops, dest );
+  mint_ops_del( ops );
 
   for( i=0; i<net->groups; i++ ) 
     mint_nodes_save( net->n[i], dest );
@@ -236,20 +243,28 @@ struct mint_network *mint_network_load( FILE *file ) {
      takes no spread), we add synchronous spread as a default. */
   mint_network_init( net );
 
-  /* if there is a spread on file, it takes precedence */
+  /* a spread on file overrides an existing spread */
   spread = mint_spread_load( file, net );
   if( spread ) {
-    fprintf( stderr, "mint_network_load:" 
-	     "spread on file overrides existing spread\n" );
     mint_spread_del( net->spread );
     net->spread = spread;
   }
 
+  /* if there is no spread and no asynchronous op at this point, set
+     synchronous spread, which works for all networks */
   if( !net->spread && mint_ops_find( net->ops, "asynchronous" )<0 ) {
     op = mint_op_new( "synchronous" );
     mint_ops_append( net->ops, op );
     mint_op_run( op, net );
     mint_op_del( op ); /* a copy has been stored in net->ops */
+  }
+
+  /* if there is a spread (possibly created by synchronour op that
+     might ahve just run), add the run_spread op */
+  if( net->spread ) {
+    op = mint_op_new( "run_spread" );
+    mint_ops_append( net->ops, op );
+    mint_op_del( op );
   }
 
   return net;
@@ -635,5 +650,4 @@ void mint_network_operate( struct mint_network *net ) {
     if( mint_op_type( op ) == mint_op_network_operate )
       mint_op_run( op, net );
   }
-  mint_network_spread( net );
 }

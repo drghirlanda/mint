@@ -58,7 +58,7 @@ static float network_clocked_param[2] = { 25, 0 };
 
     NOTE: change this whenever adding or removing from the table
     above, otherwise crashes can occur when adding ops! */
-#define mint_nop_builtin 30
+#define mint_nop_builtin 32
 
 /* built-in ops */
 static struct mint_op mint_op_static_table[ mint_nop_builtin+1 ] = {
@@ -168,7 +168,9 @@ static struct mint_op mint_op_static_table[ mint_nop_builtin+1 ] = {
     1,network_asynchronous_param },
 
   { "clocked", mint_op_network_operate,mint_network_clocked,2,
-    network_clocked_param }
+    network_clocked_param },
+
+  { "run_spread", mint_op_network_operate, mint_network_spread, 0, 0 }
 
 };
 

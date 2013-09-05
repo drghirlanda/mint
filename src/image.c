@@ -33,7 +33,6 @@ struct mint_image *mint_image_load( char *filename ) {
   mint_check( fif != FIF_UNKNOWN, "cannot determine image type" );
   mint_check( FreeImage_FIFSupportsReading(fif),"unsopported image type" ); 
   image->ptr = FreeImage_Load( fif, filename, 0 );
-  image->done_red = image->done_green = image->done_blue = 0;
   return image;
 }
 
