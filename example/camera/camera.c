@@ -9,7 +9,7 @@ int main( void ) {
   struct mint_network *net;
   struct mint_image *img;
   FILE *file;
-  mint_nodes R, G, B;
+  mint_nodes R, G, B, GR;
 
   mint_camera_init();
 
@@ -20,6 +20,7 @@ int main( void ) {
   R = mint_network_nodes( net, 0 );
   G = mint_network_nodes( net, 1 );
   B = mint_network_nodes( net, 2 );
+  GR = mint_network_nodes( net, 2 );
 
   mint_network_operate( net );
 
@@ -27,6 +28,10 @@ int main( void ) {
   mint_image_save( img, "image.jpg", FIF_JPEG );
   mint_image_del( img );
   
+  img = mint_image_nodes_gray( GR, 1 );
+  mint_image_save( img, "image-gray.jpg", FIF_JPEG );
+  mint_image_del( img );
+
   mint_network_del( net );
 
   return 0;
