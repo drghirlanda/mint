@@ -17,6 +17,9 @@ int main( void ) {
   file = fopen( "feedforward.dot", "w" );
   mint_network_graph( net, file );
   fclose( file );
+  file = fopen( "feedforward_full.dot", "w" );
+  mint_network_graph_full( net, file );
+  fclose( file );
   mint_network_del( net );
 
   printf( "\n\ntesting synchronous network operation\n" );

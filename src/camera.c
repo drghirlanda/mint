@@ -161,6 +161,7 @@ void mint_network_camera( struct mint_network *net, float *p ) {
 
   nred = ngreen = nblue = ngray = 0;
   varR = varG = varB = varGR = -1;
+  R = G = B = GR = -1;
 
   /* these are run only the first time and store in the op parameters
      which nodes are involved */

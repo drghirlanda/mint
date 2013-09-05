@@ -429,7 +429,7 @@ void mint_network_graph( const struct mint_network *net, FILE *f ) {
 }
 
 void mint_network_graph_full( const struct mint_network *net_in, FILE *f ) {
-  int g, m, i, j, k, ifrom, ito, len;
+  int g, m, i, j, k, ifrom, ito;
   mint_nodes n, nfrom, nto;
   float wmax, val;
   mint_weights w;
@@ -440,22 +440,8 @@ void mint_network_graph_full( const struct mint_network *net_in, FILE *f ) {
 
   fprintf( f, "digraph network {\n" );
   fprintf(f,"graph [rankdir=LR,ranksep=1.5,fontname=Helvetica,fontsize=12,nodesep=.75]\n");
-  fprintf(f,"node [shape=circle, fontname=Helvetica,fontsize=12]\n");
-  fprintf(f,"edge [fontname=Helvetica,fontsize=12]\n");
-
-  /* spread */
-  fprintf( f, "spread [label=\"\\N " );
-  len = mint_spread_len( net->spread );
-  if( len>0 ) {
-    fprintf( f, "\\nw: " ); 
-    for( i=0; i<len; i++ )
-      fprintf( f, "%d ", mint_spread_get_weights( net->spread, i ) );
-    fprintf( f, "\\nn: " );
-    for( i=0; i<len; i++ )
-      fprintf( f, "%d ", mint_spread_get_nodes( net->spread, i ) );
-  } else
-    fprintf( f, "async %d", -len );
-  fprintf( f, "\", shape=none]\n" );
+  fprintf(f,"node [fixedsize=true shape=circle, fontname=Helvetica,fontsize=12]\n");
+  fprintf(f,"edge [fontname=Helvetica,fontsize=10]\n");
 
   /* node groups */
   g = mint_network_groups( net );
