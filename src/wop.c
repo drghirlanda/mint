@@ -39,10 +39,10 @@ void mint_weights_mult( const mint_weights w, const mint_nodes from,
   float *toptr, *wptr, *fromptr;
   target = mint_weights_get_target(w);
   cols = mint_weights_cols(w);
-  wptr = w[0][rmin]; /* first weight matrix memory location */
-  toptr = to[target] + rmin; /* start of input value of "to" nodes */
+  wptr = w[0][rmin]; /* memory location of first weight value */
+  toptr = to[target] + rmin; /* first target value of "to" nodes */
   for( i=rmin; i<rmax; i++ ) {
-    fromptr = from[1]; /* start of output values of "from" nodes */
+    fromptr = from[1]; /* first output value of "from" nodes */
     for( j=0; j<cols; j++ )
       *toptr += *(wptr++) * *(fromptr++);
     toptr++; /* every matrix row we advance to next "to" node */

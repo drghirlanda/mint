@@ -128,6 +128,9 @@ cmd_mint() {
     for F in $FILES; do
 	ar crs $LIBRARY $BUILD/$F.o
     done 
+    if [[ $LIBRARY == "libmint.a" ]]; then
+	strip $LIBRARY
+    fi
 }
 
 

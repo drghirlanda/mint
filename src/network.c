@@ -22,32 +22,6 @@ struct mint_network {
 };
 
 
-/* internal function used to check compatiblity of dimensions between
-   weight matrix and connected node groups */
-void mint_weights_compatibility( mint_weights w, mint_nodes from, 
-				 mint_nodes to ) {
-  int rows, cols, fromsize, tosize;
-
-  rows = mint_weights_rows( w );
-  cols = mint_weights_cols( w );
-  fromsize = mint_nodes_size( from );
-  tosize = mint_nodes_size( to );
-
-  if( rows != tosize ) {
-    fprintf( stderr, 
-	     "mint_network_load: weight rows (%d) != 'to' node size (%d)\n",
-	     rows, tosize );
-    abort();
-  }
-
-  if( cols != fromsize ) {
-    fprintf( stderr, 
-	     "mint_network_load: weight cols (%d) != 'from' nodes size (%d)\n",
-	     cols, fromsize );
-    abort();
-  }
-}
-
 static struct mint_network *mint_network_alloc( int groups, 
 						int matrices ) {
   int i;
@@ -137,7 +111,7 @@ int mint_network_frozen( struct mint_network *net ) {
 void mint_network_save( const struct mint_network *net, FILE *dest ) {
   int i;
   struct mint_ops *ops;
-  fprintf( dest, "network %d %d\n", net->groups, net->matrices );
+  fprintf( dest, "network\n" );
 
   /* we do not save run_spread (default) or threads_spread (will be
      added back by threads) */
@@ -204,6 +178,23 @@ void mint_network_check_names( struct mint_network *net ) {
   }
 }
 
+void mint_weights_compatibility( mint_weights w, 
+				 mint_nodes nfrom, mint_nodes nto ) {
+  int fromsize, tosize, rows, cols;
+  fromsize = mint_nodes_size( nfrom );
+  tosize = mint_nodes_size( nto );
+  rows = mint_weights_rows(w);
+  cols = mint_weights_cols(w);
+  mint_check( rows == tosize, 
+	      "matrix %s has %d rows, but group %s has %d nodes",
+	      mint_str_char( mint_weights_get_name(w) ), rows,
+	      mint_str_char( mint_nodes_get_name(nto) ), tosize );
+  mint_check( cols == fromsize, 
+	      "matrix %s has %d cols, but group %s has %d nodes",
+	      mint_str_char( mint_weights_get_name(w) ), cols,
+	      mint_str_char( mint_nodes_get_name(nfrom) ), fromsize );
+}
+
 struct mint_network *mint_network_load( FILE *file ) {
   int from, to;
   struct mint_network *net;
@@ -212,8 +203,10 @@ struct mint_network *mint_network_load( FILE *file ) {
   mint_nodes n;
   mint_weights w;
 
-  if( ! mint_next_string( file, "network", 7 ) )
-    return 0;
+  mint_check( file != 0, "file argument is invalid" );
+
+  mint_check( mint_next_string( file, "network", 7 ),
+	      "'network' keyword not found" );
 
   net = mint_network_alloc( 0, 0 );
 
