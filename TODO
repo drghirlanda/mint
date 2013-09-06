@@ -4,11 +4,9 @@
 
 - known bugs or poorly designed features:
 
-  - red, blue, green, gray ops could be moved to op.c, they could be
-    useful outside of the camera module, e.g. for image processing.
-
-  - image: redo nodes and weights image following the spirit of
-    image_paste and image_paste_gray
+  - inner loop in image_paste and image_paste_gray could be optimized
+    by replacing the if on the index with a calculation to begin and
+    end loops at appropriate indices...
 
   - DOCUMENT THIS: network init ops may set spread. if spread is set,
     run_spread op is added and the spread is performed. other network

@@ -2,9 +2,7 @@
 #define MINT_CAMERA_H
 
 #include "nodes.h"
-#include "image.h"
 
-/* forward declaration */
 struct mint_network;
 
 /** \file camera.h

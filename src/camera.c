@@ -2,9 +2,10 @@
 #define _POSIX_C_SOURCE 199309L
 
 #include "camera.h"
-#include "utils.h"
+#include "image.h"
 #include "network.h"
 #include "op.h"
+#include "utils.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -20,7 +21,6 @@ static char mint_camera_pipe[256]; /* filename of camshot pipe */
 static int mint_camera_lock = 0;   /* 1 thread only accesses camera */
 
 static float mint_network_camera_default[4] = { -2, -2, -2, -2 };
-static float mint_node_camera_default[1] = { 1 };
 
 /* since this function is called through atexit(), errors can be
    non-fatal */
@@ -44,13 +44,6 @@ void mint_camera_close( void ) {
   }
 
   mint_camera_pid = 0;
-}
-
-void mint_node_camera( mint_nodes n, float *p ) {
-  int states;
-  states = mint_nodes_states( n );
-  mint_check( p[0]>=0 && p[0]<2+states,
-	      "parameter 0 out of range 0-%d", 1+states )
 }
 
 /* this function initializes the camera by forking off an instance of
@@ -105,14 +98,6 @@ void mint_camera_init( void ) {
   /* now we register ops that make use of the camera */
   mint_op_add( "camera", mint_op_network_operate, mint_network_camera, 
 	       4, mint_network_camera_default ); 
-  mint_op_add( "red", mint_op_nodes_init, mint_node_camera, 1, 
-	       mint_node_camera_default );
-  mint_op_add( "green", mint_op_nodes_init, mint_node_camera, 1, 
-	       mint_node_camera_default );
-  mint_op_add( "blue", mint_op_nodes_init, mint_node_camera, 1, 
-	       mint_node_camera_default );
-  mint_op_add( "gray", mint_op_nodes_init, mint_node_camera, 1, 
-	       mint_node_camera_default );
 } 
 
 struct mint_image *mint_camera_image( void ) {

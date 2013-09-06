@@ -152,4 +152,14 @@ void mint_node_states( mint_nodes n, int min, int max, float *p );
     Parameters: 0: The number of nodes. */
 void mint_node_size( mint_nodes n, int min, int max, float *p );
 
+/** Marks a node group as being involved in image processing (the
+    actual op names are "red", "green", "blue", and "gray" depending
+    on which image channel the node group should be associated
+    with. See documentation in image.h and camera.h.
+
+    State variables: non required.  
+    Parameters: 0: The variable to which image information is added
+                   (default: 1, i.e., node output). */
+void mint_node_color( mint_nodes n, float *p );
+ 
 #endif

@@ -160,3 +160,10 @@ void mint_node_states( mint_nodes n, int min, int max, float *p ) {
 void mint_node_size( mint_nodes n, int min, int max, float *p ) {
   mint_check( p[0]>0, "size argument negative" );
 }
+
+void mint_node_color( mint_nodes n, float *p ) {
+  int states;
+  states = mint_nodes_states( n );
+  mint_check( p[0]>=0 && p[0]<2+states,
+	      "parameter 0 out of range 0-%d", 1+states );
+}
