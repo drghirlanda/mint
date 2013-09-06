@@ -14,6 +14,9 @@ void mint_weights_init_cols( mint_weights w, int rmin, int rmax,
 void mint_weights_init_states( mint_weights w, int rmin, int rmax,
 			       float *p ); 
 
+void mint_weights_init_sparse( mint_weights w, int rmin, int rmax,
+			       float *p ); 
+
 /** Perform a matrix-vector multiplication between the values of w and
     the outputs of nfrom, and add the result to the input of nto. This
     is the typical operation performed when operating a network; only

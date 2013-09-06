@@ -20,7 +20,7 @@
   - mint_weights_set assumes indices in sparse matrix cind variables
     are sorted, but mint_weights_set_row does not check...
 
-  - better docs for network_camera op
+  - redo docs for network_camera op
 
   - all ops that need state should allow the user to configure which
     state variables are used, so that multiple ops can coexist without

@@ -38,8 +38,8 @@ int mint_values_waiting( FILE *file ) {
   return isdigit(c) || c=='.' || c=='-' || c=='+';
 }
 
-static const char *keywords[7] = {
-  "weights", "nodes", "spread", "network", "from", "to", "sparse" };
+static const char *keywords[6] = {
+  "weights", "nodes", "spread", "network", "from", "to" };
 
 int mint_keyword( char *string ) {
   int i, len1, len2;
@@ -49,7 +49,7 @@ int mint_keyword( char *string ) {
   
   len1 = strlen(string);
 
-  for( i=0; i<7; i++ ) {
+  for( i=0; i<6; i++ ) {
     len2 = strlen( keywords[i] );
     if( len1 < len2 ) len2 = len1;
     if( strncmp( string, keywords[i], len2 ) == 0 ) {

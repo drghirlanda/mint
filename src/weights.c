@@ -276,10 +276,11 @@ mint_weights mint_weights_load( FILE *file, struct mint_network *net ) {
 		mint_str_char(name) );
   }
 
-  if( mint_next_string( file, "sparse", 6 ) )
-    sparse = 1;
-
   ops = mint_ops_load( file );
+
+  /* have been asked for a sparse matrix? */
+  if( mint_ops_find( ops, "sparse" ) != -1 )
+    sparse = 1;
 
   /* check whether rows, cols, and states are specified in ops: */
   i = mint_ops_find( ops, "rows" );

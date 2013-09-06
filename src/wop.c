@@ -24,6 +24,10 @@ void mint_weights_init_states( mint_weights w, int rmin, int rmax,
   mint_check( p[0] > 0, "states argument negative" );
 }
 
+void mint_weights_init_sparse( mint_weights w, int rmin, int rmax,
+			       float *p ) {
+};
+
 /* matrix-vector multiplication. using some explicit pointer
    arithmetic allows for a speedup since the compiler can optimize
    more (see test/mult_test). we exploit the fact that all w, to, and
