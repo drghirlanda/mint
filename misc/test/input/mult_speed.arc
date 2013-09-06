@@ -1,4 +1,4 @@
-network 2 1
-nodes 10000 0 
-nodes 10000 0 sigmoid
-weights 10000 10000 0 from 0 to 1 random 0 1 1
+network
+nodes n1 size 10000 
+nodes n2 size 10000 sigmoid
+weights n1-n2 uniform 0 1 1

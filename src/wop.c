@@ -197,7 +197,7 @@ void mint_weights_init_random_dense( mint_weights w,
   }
 }
 
-void mint_weights_init_random( mint_weights w, int rmin, int rmax, 
+void mint_weights_init_uniform( mint_weights w, int rmin, int rmax, 
 			       float *p ) {
   if( mint_weights_is_sparse(w) )
     mint_weights_init_random_sparse( w, rmin, rmax, p, 

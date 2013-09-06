@@ -1,6 +1,6 @@
-network 3 2
-nodes 20000 0
-nodes 20000 0 sigmoid 0.5 1
-nodes 1 0 identity
-weights 20000 20000 0 from 0 to 1 random -.1 .1 1
-weights 1 20000 0 from 1 to 2 random -.1 .1 1
+network
+nodes n0 size 20000
+nodes n1 size 20000 sigmoid 0.5 1
+nodes n2 size 1 identity
+weights n0-n2 uniform -.1 .1 1
+weights n1-n2 uniform -.1 .1 1

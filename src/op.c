@@ -40,7 +40,7 @@ static float weights_delta_param[2] = { 0.05, 2 };
 static float weights_stdp_param[5] = { 0.05, .1, -.12, -.1, .1 };
 static float weights_lateral_param[4] = {0, 0, 0, 0};
 
-static float weights_init_random_param[3] = { 0., 1., 1. };
+static float weights_init_uniform_param[3] = { 0., 1., 1. };
 static float weights_init_normal_param[3] = { 0., 0.01, 1. };
 static float weights_init_diagonal_param[1] = { 0. };
 static float weights_init_target_param[1] = { 0. };
@@ -140,8 +140,8 @@ static struct mint_op mint_op_static_table[] = {
   { "states", mint_op_weights_init, mint_weights_init_states, 1, 
     weights_init_states_param },
 
-  { "random",mint_op_weights_init,mint_weights_init_random,3,
-    weights_init_random_param },
+  { "uniform",mint_op_weights_init,mint_weights_init_uniform,3,
+    weights_init_uniform_param },
 
   { "normal",mint_op_weights_init,mint_weights_init_normal,3,
     weights_init_normal_param },

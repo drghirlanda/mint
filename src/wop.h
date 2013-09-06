@@ -70,7 +70,7 @@ void mint_weights_stdp( mint_weights w, mint_nodes pre,
 /** Set all weight values to uniformly distributed random values
     between min and max. Use the 'diagonal' op to set self-recurrent
     weights to zero if needed. */
-void mint_weights_init_random( mint_weights w, int rmin, int rmax, 
+void mint_weights_init_uniform( mint_weights w, int rmin, int rmax, 
 			       float *p );
 
 /** Set all weight values to x normally distributed random values with

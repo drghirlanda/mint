@@ -1,6 +1,6 @@
-network 1 1
+network
 clocked 10 1
-nodes 10000 0
-weights 10000 10000 0 from 0 to 0 random -.5 .15
+nodes n0 size 10000
+weights n0-n0 uniform -.5 .15
 
 
