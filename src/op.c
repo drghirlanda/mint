@@ -121,6 +121,9 @@ static struct mint_op mint_op_static_table[ mint_nop_builtin+1 ] = {
 
   { "frozen", mint_op_weights_update,0,0,0 },
 
+
+  /* weights init */
+
   { "rows", mint_op_weights_init, mint_weights_init_rows, 1, 
     weights_init_rows_param },
 
@@ -129,8 +132,6 @@ static struct mint_op mint_op_static_table[ mint_nop_builtin+1 ] = {
 
   { "states", mint_op_weights_init, mint_weights_init_states, 1, 
     weights_init_states_param },
-
-  /* weights init */
 
   { "random",mint_op_weights_init,mint_weights_init_random,3,
     weights_init_random_param },
@@ -195,23 +196,24 @@ static void mint_op_atexit( void ) {
   }
 }
 
-/* looks up a rule id by name. returns mint_nop if not found */
-static int mint_op_id( const char *name ) {
+/* looks up a rule id by name and type. returns mint_nop if not
+   found */
+static int mint_op_id( const char *name, int type ) {
   int len1, len2, id;
   mint_check( name != 0, "'name' is null" ); 
   len1 = strlen(name);
   for( id=0; id<mint_nop; id++ ) {
     len2 = strlen( mint_op_table[id].name );
-    if( len1==len2 &&
+    if( type & mint_op_table[id].type &&
 	strncmp(name,mint_op_table[id].name, len1 )==0 )
       return id;
   }
   return id;
 }
 
-int mint_op_exists( const char *name ) {
+int mint_op_exists( const char *name, int type ) {
   if( !name ) return 0;
-  return mint_op_id(name) < mint_nop;
+  return mint_op_id(name, type) < mint_nop;
 }
 
 static struct mint_op *mint_op_alloc( const char *name, 
@@ -224,10 +226,10 @@ static struct mint_op *mint_op_alloc( const char *name,
   return h;
 }
 
-struct mint_op *mint_op_new( const char *name ) {
+struct mint_op *mint_op_new( const char *name, int type ) {
   struct mint_op *h, *hsrc;
   int i, len;
-  i = mint_op_id( name );
+  i = mint_op_id( name, type );
   mint_check( i<mint_nop, "invalid op name: %s", name );
   hsrc = mint_op_table + i;
   h = mint_op_alloc( hsrc->name, hsrc->nparam );
@@ -251,7 +253,7 @@ void mint_op_del( struct mint_op *h ) {
 struct mint_op *mint_op_dup( const struct mint_op *h1 ) {
   struct mint_op *h2;
   mint_check( h1!=0, "attempt to duplicate null op" );
-  h2 = mint_op_new( h1->name );
+  h2 = mint_op_new( h1->name, h1->type );
   memcpy( h2->param, h1->param, h2->nparam * sizeof(float) );
   return h2;
 }
@@ -264,7 +266,7 @@ void mint_op_save( const struct mint_op *u, FILE *dest ) {
     fprintf( dest, "%g ", u->param[i] );
 }
 
-struct mint_op *mint_op_load( FILE *file ) {
+struct mint_op *mint_op_load( FILE *file, int type ) {
   int i, j;
   long pos;
   struct mint_op *h;
@@ -281,7 +283,7 @@ struct mint_op *mint_op_load( FILE *file ) {
     return 0;
   }
 
-  h = mint_op_new( mint_str_char( name ) );
+  h = mint_op_new( mint_str_char( name ), type );
 
   /* load parameters (missing ones already got a default value */
   j = 0;
@@ -443,11 +445,11 @@ void mint_ops_save( const struct mint_ops *ops, FILE *dest ) {
     fprintf( dest, "\n" );
 }
 
-struct mint_ops *mint_ops_load( FILE *file ) {
+struct mint_ops *mint_ops_load( FILE *file, int type ) {
   struct mint_ops *ops;
   struct mint_op *op;
   ops = mint_ops_new();
-  while( (op = mint_op_load(file)) ) {
+  while( (op = mint_op_load(file, type)) ) {
     mint_ops_append( ops, op ); 
     mint_op_del( op );
   }
@@ -510,9 +512,10 @@ int mint_ops_del_name( struct mint_ops *ops, const char *name ) {
 }
 
 struct mint_op *mint_ops_get_name( struct mint_ops *ops, 
-				   const char *name ) {
+				   const char *name,
+				   int type ) {
   int i;
-  i = mint_ops_find( ops, name );
+  i = mint_ops_find( ops, name, type );
   return i>=0 ? ops->p[i] : 0;
 }
 
@@ -521,17 +524,20 @@ int mint_ops_count( struct mint_ops *ops, int type ) {
   mint_check( ops!=0, "null ops object" );
   count = 0;
   for( i=0; i<ops->n; i++ ) 
-    count += ops->p[i]->type == type;
+    count += ops->p[i]->type & type;
   return count;
 }
 
-int mint_ops_find( struct mint_ops *ops, const char *name ) {
+int mint_ops_find( struct mint_ops *ops, const char *name, 
+		   int type ) {
   int i;
   const char *opname;
   mint_check( ops!=0, "null ops object" );
   for( i=0; i<ops->n; i++ ) {
     opname = mint_op_name( ops->p[i] );
-    if( strncmp( opname, name, strlen(opname) ) == 0 )
+    if( ops->p[i]->type & type 
+	&&
+	strncmp( opname, name, strlen(opname) ) == 0 )
       return i;
   }
   return -1;
@@ -569,7 +575,7 @@ void mint_weights_update( mint_weights w, mint_nodes pre, mint_nodes post,
   struct mint_ops *ops;
   ops = mint_weights_get_ops( w );
 
-  if( mint_ops_find( ops, "frozen" ) >= 0 )
+  if( mint_ops_find( ops, "frozen", mint_op_weights_update ) >= 0 )
     return;
 
   for( i=0; i<ops->n; i++ ) {

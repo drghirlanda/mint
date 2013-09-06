@@ -93,23 +93,23 @@ mint_nodes mint_nodes_load( FILE *file ) {
      keyword, create default name and rewind file */
   pos = ftell( file );
   name = mint_str_load( file );
-  if( mint_op_exists( mint_str_char(name) ) ||
+  if( mint_op_exists( mint_str_char(name), mint_op_nodes_any) ||
       mint_keyword( mint_str_char(name) ) ) {
     mint_str_del( name );
     name = mint_str_new( "n" );
     fseek( file, pos, SEEK_SET );
   }
 
-  ops = mint_ops_load( file );
+  ops = mint_ops_load( file, mint_op_nodes_any );
   
-  i = mint_ops_find( ops, "size" );
+  i = mint_ops_find( ops, "size", mint_op_nodes_init );
   mint_check( i>=0, "cannot read nodes size" );
   size = mint_op_get_param( mint_ops_get(ops, i), 0 );
 
-  i = mint_ops_find( ops, "states" );
+  i = mint_ops_find( ops, "states", mint_op_nodes_init );
   if( i == -1 ) {
     states = 0;
-    op = mint_op_new( "states" );
+    op = mint_op_new( "states", mint_op_nodes_init );
     mint_op_set_param( op, 0, states );
     mint_ops_append( ops, op );
     mint_op_del( op );

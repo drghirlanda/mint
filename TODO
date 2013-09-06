@@ -4,6 +4,9 @@
 
 - known bugs or poorly designed features:
 
+  - red, blue, green, gray ops could be moved to op.c, they could be
+    useful outside of the camera module, e.g. for image processing.
+
   - image: redo nodes and weights image following the spirit of
     image_paste and image_paste_gray
 

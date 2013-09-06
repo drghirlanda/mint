@@ -217,7 +217,7 @@ struct mint_network *mint_network_load( FILE *file ) {
 
   net = mint_network_alloc( 0, 0 );
 
-  net->ops = mint_ops_load( file );
+  net->ops = mint_ops_load( file, mint_op_network_any );
 
   while( (n = mint_nodes_load(file)) ) {
     net->groups++;
@@ -255,8 +255,10 @@ struct mint_network *mint_network_load( FILE *file ) {
 
   /* if there is no spread and no asynchronous op at this point, set
      synchronous spread, which works for all networks */
-  if( !net->spread && mint_ops_find( net->ops, "asynchronous" ) == -1 ) {
-    op = mint_op_new( "synchronous" );
+  if( !net->spread && 
+      mint_ops_find( net->ops, "asynchronous", 
+		     mint_op_network_operate ) == -1 ) {
+    op = mint_op_new( "synchronous", mint_op_network_init );
     mint_ops_append( net->ops, op );
     mint_op_run( op, net );
     mint_op_del( op ); /* a copy has been stored in net->ops */
@@ -265,8 +267,10 @@ struct mint_network *mint_network_load( FILE *file ) {
   /* if there is a spread (possibly created by synchronour op that
      might ahve just run), add the run_spread op, unless threaded
      spread is set, in which case do nothign */
-  if( net->spread && mint_ops_find( net->ops, "threads" ) == -1 ) {
-    op = mint_op_new( "run_spread" );
+  if( net->spread && 
+      mint_ops_find( net->ops, "threads", 
+		     mint_op_network_operate ) == -1 ) {
+    op = mint_op_new( "run_spread", mint_op_network_operate );
     mint_ops_append( net->ops, op );
     mint_op_del( op );
   }
@@ -297,7 +301,8 @@ int mint_network_nodes_find_op( struct mint_network *net, char *name ) {
 
   for( i=0; i<net->groups; i++ ) {
     ops = mint_nodes_get_ops( net->n[i] );
-    j = mint_ops_find( ops, name );
+    j = mint_ops_find( ops, name, 
+		       mint_op_nodes_init + mint_op_nodes_update );
     if( j != -1 )
       return i;
   }

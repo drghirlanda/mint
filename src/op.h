@@ -13,14 +13,17 @@
     changes) and initialized (setting up how the network is
     operated). */
 enum {
-  mint_op_nodes_update = 0,
+  mint_op_nodes_update = 1,
   mint_op_nodes_init = 2,
+  mint_op_nodes_any = 1+2,
   mint_op_weights_update = 4,
   mint_op_weights_init = 8,
   mint_op_weights_operate = 16,
   mint_op_weights_connect = 32,
+  mint_op_weights_any = 4+8+16+32,
   mint_op_network_init = 64,
-  mint_op_network_operate = 128
+  mint_op_network_operate = 128,
+  mint_op_network_any = 64+128  
 };
 
 /** An op describes an operation that can be performed on nodes or
@@ -43,9 +46,9 @@ typedef void (*mint_winit_t)( mint_weights, int, int, float * );
 /** Function prototype for network ops. */
 typedef void (*mint_netop_t)( struct mint_network *, float * );
 
-/** Create a op by name. Aborts if the name cannot be found. To
+/** Create a op by name and type. Aborts if the op cannot be found. To
     check whether a op name exists use mint_op_exists. */
-struct mint_op *mint_op_new( const char *name );
+struct mint_op *mint_op_new( const char *name, int type );
 
 /** Delete op object. */
 void mint_op_del( struct mint_op *h );
@@ -57,11 +60,11 @@ struct mint_op *mint_op_dup( const struct mint_op *h1 );
 void mint_op_save( const struct mint_op *h, FILE *dest );
 
 /** Load a op from file. */
-struct mint_op *mint_op_load( FILE *file );
+struct mint_op *mint_op_load( FILE *file, int type );
 
-/** Returns 1 if a op by this name exists in the library. Returns 0
-    otherwise.*/
-int mint_op_exists( const char *name );
+/** Returns 1 if an op by this name and type exists in the
+    library. Returns 0 otherwise.*/
+int mint_op_exists( const char *name, int type );
 
 /** Return op name. */
 const char *mint_op_name( const struct mint_op *h );
@@ -108,10 +111,9 @@ void mint_ops_del( struct mint_ops *ops );
 /** Duplicate ops. */
 struct mint_ops *mint_ops_dup( const struct mint_ops *ops );
 
-/** Load as many ops as possible from file. The nops pointer will
-    contain the number of ops loaded, which will be the number of
-    places allocated in the returned array of op pointers. */ 
-struct mint_ops *mint_ops_load( FILE *file );
+/** Load as many ops as possible from file of the given type(s). To
+    load multiple types, use type1 + type2 + ...  */ 
+struct mint_ops *mint_ops_load( FILE *file, int type );
 
 /** Save ops to file. */
 void mint_ops_save( const struct mint_ops *ops, FILE *dest );
@@ -136,14 +138,16 @@ int mint_ops_del_type( struct mint_ops *ops, int type );
 int mint_ops_del_name( struct mint_ops *ops, const char *name );
 
 
-/** Retrieve the (first) op with a given name, or 0 if no such op. */
+/** Retrieve the (first) op with a given name and type, or 0 if no
+    such op. */
 struct mint_op *mint_ops_get_name( struct mint_ops *ops, 
-				   const char *name );
+				   const char *name, int type );
 
 /** Count how many ops of a given type are in an ops object. */
 int mint_ops_count( struct mint_ops *ops, int type );
 
-/** Return index of an op in an op list, or -1 if not found. */
-int mint_ops_find( struct mint_ops *ops, const char *name );
+/** Return index of an op with given name and type, or -1 if not
+    found. */
+int mint_ops_find( struct mint_ops *ops, const char *name, int type );
 
 #endif

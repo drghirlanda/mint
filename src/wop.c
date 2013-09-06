@@ -21,7 +21,7 @@ void mint_weights_init_cols( mint_weights w, int rmin, int rmax,
 void mint_weights_init_states( mint_weights w, int rmin, int rmax, 
 			       float *p ) {
   mint_check( p[0] != -1, "states argument missing (parameter 0)" );
-  mint_check( p[0] > 0, "states argument negative" );
+  mint_check( p[0] >= 0, "states argument negative" );
 }
 
 void mint_weights_init_sparse( mint_weights w, int rmin, int rmax,
@@ -126,12 +126,12 @@ void mint_weights_stdp( mint_weights w, mint_nodes pre,
 
   /* figure out where the spike counters are */
   ops = mint_nodes_get_ops( pre );
-  i = mint_ops_find( ops, "counter" );
+  i = mint_ops_find( ops, "counter", mint_op_nodes_update );
   mint_check( i>-1, "no counter defined for pre-synaptic nodes" );
   precount = mint_op_get_param( mint_ops_get(ops,i), 1 );
 
   ops = mint_nodes_get_ops( post );
-  i = mint_ops_find( ops, "counter" );
+  i = mint_ops_find( ops, "counter", mint_op_nodes_update );
   mint_check( i>-1, "no counter defined for post-synaptic nodes" );
   postcount = mint_op_get_param( mint_ops_get(ops,i), 1 );
 
@@ -244,7 +244,7 @@ void mint_weights_lateral( mint_weights w, mint_nodes nfrom, mint_nodes nto,
   mint_check( nfrom == nto, "from and to nodes must be the same!" );
 
   ops = mint_nodes_get_ops( nfrom );
-  i = mint_ops_find( ops, "rows" );
+  i = mint_ops_find( ops, "rows", mint_op_weights_init );
   if( i > -1 ) {
     nrows = mint_op_get_param( mint_ops_get( ops, i ), 0 );
   } else

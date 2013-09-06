@@ -238,7 +238,7 @@ mint_weights mint_weights_load( FILE *file, struct mint_network *net ) {
      keyword, create default name and rewind file */
   pos = ftell( file );
   name = mint_str_load( file );
-  if( mint_op_exists( mint_str_char(name) ) ||
+  if( mint_op_exists( mint_str_char(name), mint_op_weights_any ) ||
       mint_keyword( mint_str_char(name) ) ) {
     mint_str_del( name );
     name = mint_str_new( "w" );
@@ -276,30 +276,30 @@ mint_weights mint_weights_load( FILE *file, struct mint_network *net ) {
 		mint_str_char(name) );
   }
 
-  ops = mint_ops_load( file );
+  ops = mint_ops_load( file, mint_op_weights_any );
 
   /* have been asked for a sparse matrix? */
-  if( mint_ops_find( ops, "sparse" ) != -1 )
+  if( mint_ops_find( ops, "sparse", mint_op_weights_init ) != -1 )
     sparse = 1;
 
   /* check whether rows, cols, and states are specified in ops: */
-  i = mint_ops_find( ops, "rows" );
+  i = mint_ops_find( ops, "rows", mint_op_weights_init );
   if( i > -1 ) {
     op = mint_ops_get( ops, i );
     rows = mint_op_get_param( op, 0 );
   }
-  i = mint_ops_find( ops, "cols" );
+  i = mint_ops_find( ops, "cols", mint_op_weights_init );
   if( i > -1 ) {
     op = mint_ops_get( ops, i );
     cols = mint_op_get_param( op, 0 );
   }
-  i = mint_ops_find( ops, "states" );
+  i = mint_ops_find( ops, "states", mint_op_weights_init );
   if( i > -1 ) {
     op = mint_ops_get( ops, i );
     states = mint_op_get_param( op, 0 );
   } else {
     states = 0;
-    op = mint_op_new( "states" );
+    op = mint_op_new( "states", mint_op_weights_init );
     mint_op_set_param( op, 0, states );
     mint_ops_append( ops, op );
     mint_op_del( op );
@@ -340,16 +340,16 @@ mint_weights mint_weights_load( FILE *file, struct mint_network *net ) {
   /* now we add cols and rows op for completeness, if not already
      present -- this is important if the matrix is later saved
      separate from the network */
-  i = mint_ops_find( ops, "cols" );
+  i = mint_ops_find( ops, "cols", mint_op_weights_init );
   if( i == -1 ) {
-    op = mint_op_new( "cols" );
+    op = mint_op_new( "cols", mint_op_weights_init );
     mint_op_set_param( op, 0, cols );
     mint_ops_append( ops, op );
     mint_op_del( op );
   }
-  i = mint_ops_find( ops, "rows" );
+  i = mint_ops_find( ops, "rows", mint_op_weights_init );
   if( i == -1 ) {
-    op = mint_op_new( "rows" );
+    op = mint_op_new( "rows", mint_op_weights_init );
     mint_op_set_param( op, 0, rows );
     mint_ops_append( ops, op );
     mint_op_del( op );
@@ -374,11 +374,11 @@ mint_weights mint_weights_load( FILE *file, struct mint_network *net ) {
   /* set default operate if not on file */
   if( !mint_ops_count(wstr->ops, mint_op_weights_operate) ) {
     if( mint_weights_is_sparse(w) ) {
-      op = mint_op_new( "mult_sparse" );
+      op = mint_op_new( "mult_sparse", mint_op_weights_operate );
       mint_ops_append( wstr->ops, op );
       mint_op_del( op );
     } else { /* full */
-      op = mint_op_new( "mult" );
+      op = mint_op_new( "mult", mint_op_weights_operate );
       mint_ops_append( wstr->ops, op );
       mint_op_del( op );
     }
@@ -681,16 +681,17 @@ mint_weights mint_weights_prune( mint_weights src, float cutoff, int sparse ) {
 
   /* replace mult op if appropriate */
   if( sparse ) {
-    i = mint_ops_find( dstr->ops, "mult" );
+    i = mint_ops_find( dstr->ops, "mult", mint_op_weights_operate );
     if( i != -1 ) {
-      op = mint_op_new( "mult_sparse" );
+      op = mint_op_new( "mult_sparse", mint_op_weights_operate );
       mint_ops_set( dstr->ops, i, op );
       mint_op_del( op );
     }
   } else {
-    i = mint_ops_find( dstr->ops, "mult_sparse" );
+    i = mint_ops_find( dstr->ops, "mult_sparse", 
+		       mint_op_weights_operate );
     if( i != -1 ) {
-      op = mint_op_new( "mult" );
+      op = mint_op_new( "mult", mint_op_weights_operate );
       mint_ops_set( dstr->ops, i, op );
       mint_op_del( op );
     }
@@ -708,9 +709,9 @@ void mint_weights_freeze( mint_weights w, int f ) {
   struct mint_ops *ops = mint_weights_get_ops( w );
 
   if( f ) {
-    if( mint_ops_find( ops, "frozen" ) >= 0 )
+    if( mint_ops_find( ops, "frozen", mint_op_weights_update ) >= 0 )
       return; /* don't add if op already there */
-    frz = mint_op_new( "frozen" );
+    frz = mint_op_new( "frozen", mint_op_weights_update );
     mint_ops_append( ops, frz );
     mint_op_del( frz );
   } else
@@ -719,7 +720,7 @@ void mint_weights_freeze( mint_weights w, int f ) {
 
 int mint_weights_frozen( mint_weights w ) {
   struct mint_ops *ops = mint_weights_get_ops( w );
-  return mint_ops_find( ops, "frozen" ) >= 0;
+  return mint_ops_find( ops, "frozen", mint_op_weights_init ) >= 0;
 }
 
 

@@ -179,22 +179,30 @@ void mint_network_camera( struct mint_network *net, float *p ) {
   if( R >= 0 ) {
     nred = mint_network_nodes( net, R );
     ops = mint_nodes_get_ops(nred);
-    varR = mint_op_get_param( mint_ops_get_name(ops, "red"), 0 );
+    varR = mint_op_get_param( mint_ops_get_name(ops, "red", 
+						mint_op_nodes_init), 
+			      0 );
   }
   if( G >= 0 ) {
     ngreen = mint_network_nodes( net, G );
     ops = mint_nodes_get_ops(ngreen);
-    varG = mint_op_get_param( mint_ops_get_name(ops, "green"), 0 );
+    varG = mint_op_get_param( mint_ops_get_name(ops, "green", 
+						mint_op_nodes_init), 
+			      0 );
   }
   if( B >= 0 ) {
     nblue = mint_network_nodes( net, B );
     ops = mint_nodes_get_ops(nblue);
-    varB = mint_op_get_param( mint_ops_get_name(ops, "blue"), 0 );
+    varB = mint_op_get_param( mint_ops_get_name(ops, "blue", 
+						mint_op_nodes_init ), 
+			      0 );
   }
   if( GR >= 0 ) {
     ngray = mint_network_nodes( net, GR );
     ops = mint_nodes_get_ops(ngray);
-    varGR = mint_op_get_param( mint_ops_get_name(ops, "gray"), 0 );
+    varGR = mint_op_get_param( mint_ops_get_name(ops, "gray", 
+						 mint_op_nodes_init ), 
+			       0 );
   }
 
   img = mint_camera_image();

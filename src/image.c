@@ -58,7 +58,7 @@ struct mint_image *mint_image_nodes( const mint_nodes nred,
   BYTE *bits;
 
   ops = mint_nodes_get_ops( nred );
-  i = mint_ops_find( ops, "rows" );
+  i = mint_ops_find( ops, "rows", mint_op_nodes_init );
   mint_check( i>=0, "rows is not set for first node group" );
   rows = mint_op_get_param( mint_ops_get(ops, i), 0 );
 
@@ -209,7 +209,7 @@ void mint_image_paste( const struct mint_image *image,
     if( n ) {
       size = mint_nodes_size( n );
       ops = mint_nodes_get_ops( n );
-      i = mint_ops_find( ops, "rows" );
+      i = mint_ops_find( ops, "rows", mint_op_nodes_init );
       mint_check( i>=0, "rows is not set for node group %s",
 		  mint_str_char( mint_nodes_get_name(n) ) );
       nrows = mint_op_get_param( mint_ops_get(ops, i), 0 );
@@ -253,7 +253,7 @@ void mint_image_paste_gray( const struct mint_image *image,
 
   size = mint_nodes_size( ngray );
   ops = mint_nodes_get_ops( ngray );
-  i = mint_ops_find( ops, "rows" );
+  i = mint_ops_find( ops, "rows", mint_op_nodes_init );
   mint_check( i>=0, "rows is not set for node group %s",
 	      mint_str_char( mint_nodes_get_name(ngray) ) );
   nrows = mint_op_get_param( mint_ops_get(ops, i), 0 );

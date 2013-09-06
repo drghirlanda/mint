@@ -199,13 +199,13 @@ void mint_network_init_threads( struct mint_network *net, float *p ) {
 
   if( threaded_spread ) {
 
-    if( !mint_op_exists( "threads_spread" ) )
+    if( !mint_op_exists( "threads_spread", mint_op_network_operate ) )
       mint_op_add( "threads_spread", mint_op_network_operate,
 		   (void *)mint_threads_spread, 1, &default_threads );
 
     ops = mint_network_get_ops( net );
     mint_ops_del_name( ops, "run_spread" ); /* not there by default, but... */
-    op = mint_op_new( "threads_spread" );
+    op = mint_op_new( "threads_spread", mint_op_network_operate );
     mint_op_set_param( op, 0, num_threads );
     mint_ops_append( ops, op );
     mint_op_del( op );
@@ -213,11 +213,11 @@ void mint_network_init_threads( struct mint_network *net, float *p ) {
 
   if( threaded_mult ) {
 
-    if( !mint_op_exists( "threads_mult" ) )
+    if( !mint_op_exists( "threads_mult", mint_op_weights_operate ) )
       mint_op_add( "threads_mult", mint_op_weights_operate,
 		   (void *)mint_threads_mult, 1, &default_threads );
 
-    op = mint_op_new( "threads_mult" );
+    op = mint_op_new( "threads_mult", mint_op_weights_operate );
     mint_op_set_param( op, 0, num_threads );
 
     for( i=0; i<mint_network_matrices( net ); i++ ) {
