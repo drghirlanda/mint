@@ -15,11 +15,6 @@
     operate ops are run prior to spreading (threaded spread overrides
     the default run spread - see network_load)
 
-  - make sparse an op rather than a keyword
-
-  - update management of op types to allow search by type and name
-    rather than name only
-
   - mint_weights_set assumes indices in sparse matrix cind variables
     are sorted, but mint_weights_set_row does not check...
 
@@ -41,8 +36,6 @@
 
   - freezing/unfreezing of weight matrices and networks
   - multi-threaded spread
-  - network acalc
-
 
 -mint_pi:
 
@@ -61,7 +54,7 @@
     nodes, and given that the diversity of node updates prevents the
     approach used for weights.
 
-  - spread threading is suboptimal, see FIX at threads.c:156
+  - spread threading is suboptimal, see FIX in threads.c
 
 
 - ops system:
@@ -76,10 +69,6 @@
 
   - more convenient ways to manipulate ops lists? like add op of a
     given type and params by name?
-
-
-- dot output: print each nodes and weights op on a separate line?
-  maybe with record nodes? simplify?
 
 
 - weights init functions that build receptive fields and topographic
@@ -113,10 +102,6 @@ mint_nodes mint_2d_stim( int size, float x, float h, float d ) {
 
 - worth it? 
 
-  - make it possible to set spread len if async spread EASY
-
-  - add count array to spread to allow steps to be repeated EASY
-
   - grow/shrink node arrays and weight matrices (cf. nodes_resize)
     MEDIUM
 
@@ -147,5 +132,3 @@ mint_nodes mint_2d_stim( int size, float x, float h, float d ) {
 - MPI: 
 
   - think about it!
-
- 
