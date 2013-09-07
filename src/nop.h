@@ -155,11 +155,24 @@ void mint_node_size( mint_nodes n, int min, int max, float *p );
 /** Marks a node group as being involved in image processing (the
     actual op names are "red", "green", "blue", and "gray" depending
     on which image channel the node group should be associated
-    with. See documentation in image.h and camera.h.
+    with. See also documentation in image.h and camera.h.
 
     State variables: non required.  
-    Parameters: 0: The variable to which image information is added
-                   (default: 1, i.e., node output). */
+    Parameters: 0: A fixed multiplier for image input (default 1).
+                1: The variable to which image information is added
+                   (default: 1, i.e., node output). 
+		   
+    NOTE: More than one color component can be added to a node
+    group. For example, "nodes n1 size 100 red green" would create
+    nodes that receive both the red and the green
+    component. Furthermore, the different components can be wighed
+    differently: "nodes n1 size 100 red .5 green .5 blue -1" would
+    give nodes that receive the sum of the red and green channels
+    (half value of each) minus the blue channel. This would make these
+    nodes operate as a yellon-blue opponent color process. Lastly, an
+    additional parameter can be given to direct input to a given state
+    variable. Thus "nodes n1 size 100 red 1 0" would direct the red
+    channel to node input rather than node output. */
 void mint_node_color( mint_nodes n, float *p );
  
 #endif
