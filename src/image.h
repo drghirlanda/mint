@@ -82,22 +82,17 @@ struct mint_image *mint_image_nodes( const mint_nodes nred,
 struct mint_image *mint_image_weights( const mint_weights w, 
 				       int irows, int var );
 
-/** Paste an image on the 'var' variable of 1 or 3 node objects (1
-    node while treat the image as grayscale, 3 will paste the RGB
-    components on different nodes. The nodes are interpreted as
+/** Paste an image onto a node object. The nodes are interpreted as
     rectangular artificial retinas, with a number of rows equal to
-    their row value (see mint_op_rows) and number of columns equal to
-    size)/nrows columns (if size is not an exact multiple of rows,
-    some columns will be unaffected by image pasting). The image can
-    be translated by xpos and ypos pixels (can be negative). Any parts
-    of the image not falling on the retina are ignored. */
-void mint_image_paste( const struct mint_image *, mint_nodes nred,
-		       mint_nodes ngreen, mint_nodes nblue,
-		       int varr, int varg, int varb, 
-		       int xpos, int ypos );
-
-void mint_image_paste_gray( const struct mint_image *, mint_nodes ngray,
-			    int var, int xpos, int ypos );
+    parameter 0 of the "rows" op (see mint_op_rows) and number of
+    columns = size/rows columns. The image can be translated by xpos
+    and ypos pixels (can be negative). Any parts of the image not
+    falling on the retina are ignored. If the scale argument is 1, the
+    image is first scaled to be as close as possible to the size of
+    the grid formed by the node group (it will not be the same size if
+    the aspect ratio differs). */
+void mint_image_paste( const struct mint_image *, mint_nodes n,
+		       int xpos, int ypos, int scale );
 
 /** Scale an image to 'scale' times its current size. */
 void mint_image_scale( struct mint_image *, float scale );

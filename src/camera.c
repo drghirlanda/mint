@@ -139,60 +139,15 @@ struct mint_image *mint_camera_image( void ) {
 }
 
 void mint_network_camera( struct mint_network *net, float *p ) {
-  int varR, varG, varB, varGR, R, G, B, GR;
+  int i, groups;
   struct mint_image *img;
-  struct mint_ops *ops;
-  mint_nodes nred, ngreen, nblue, ngray;
+  mint_nodes n;
 
-  nred = ngreen = nblue = ngray = 0;
-  varR = varG = varB = varGR = -1;
-  R = G = B = GR = -1;
-
-  /* these are run only the first time and store in the op parameters
-     which nodes are involved */
-  if( p[0] == -2 )
-    R = p[0] = mint_network_nodes_find_op( net, "red" );
-  if( p[1] == -2 )
-    G = p[1] = mint_network_nodes_find_op( net, "green" );
-  if( p[2] == -2 )
-    B = p[2] = mint_network_nodes_find_op( net, "blue" );
-  if( p[3] == -2 )
-    GR = p[3] = mint_network_nodes_find_op( net, "gray" );
-
-  /* now we can set node pointers and variable indices - null node
-     pointers are handled OK by image_paste */
-  if( R >= 0 ) {
-    nred = mint_network_nodes( net, R );
-    ops = mint_nodes_get_ops(nred);
-    varR = mint_op_get_param( mint_ops_get_name(ops, "red", 
-						mint_op_nodes_init), 
-			      0 );
-  }
-  if( G >= 0 ) {
-    ngreen = mint_network_nodes( net, G );
-    ops = mint_nodes_get_ops(ngreen);
-    varG = mint_op_get_param( mint_ops_get_name(ops, "green", 
-						mint_op_nodes_init), 
-			      0 );
-  }
-  if( B >= 0 ) {
-    nblue = mint_network_nodes( net, B );
-    ops = mint_nodes_get_ops(nblue);
-    varB = mint_op_get_param( mint_ops_get_name(ops, "blue", 
-						mint_op_nodes_init ), 
-			      0 );
-  }
-  if( GR >= 0 ) {
-    ngray = mint_network_nodes( net, GR );
-    ops = mint_nodes_get_ops(ngray);
-    varGR = mint_op_get_param( mint_ops_get_name(ops, "gray", 
-						 mint_op_nodes_init ), 
-			       0 );
-  }
-
+  groups = mint_network_groups( net );
   img = mint_camera_image();
-  mint_image_paste( img, nred, ngreen, nblue, varR, varG, varB, 0, 0 );
-  if( ngray )
-    mint_image_paste_gray( img, ngray, varGR, 0, 0 );
+  for( i=0; i<groups; i++ ) {
+    n = mint_network_nodes( net, i );
+    mint_image_paste( img, n, 0, 0, 1 );
+  }
   mint_image_del( img );
 }

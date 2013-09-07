@@ -592,7 +592,7 @@ simply increment these pointers because we know that all memory
 locations are contiguous. The C compiler, on the other hand, cannot do
 this because it does not know that \lstinline{w[0][1]} points to a
 location that is next to \lstinline{w[0][0][cols]}. Thus the compiler
-has to generate additional instructions to look-up memory addresses.
+has to generate additional instructions to look-up memory addresses. 
 
 Efficiency considerations have also influenced the design of node and
 weight update functions. The approach that first comes to mind to
