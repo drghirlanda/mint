@@ -4,6 +4,9 @@
 
 - known bugs or poorly designed features:
 
+  - move mult_naive to mult, since it does not make much difference
+    with -O2, also amend manual.
+
   - inner loop in image_paste and image_paste_gray could be optimized
     by replacing the if on the index with a calculation to begin and
     end loops at appropriate indices...

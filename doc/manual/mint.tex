@@ -274,7 +274,9 @@ information necessary to recreate an exact copy of the network:
   REF.
 \end{itemize}
 
+\section{Where to go from here}
 
+The next chapter 
 \chapter{How to get \mint, and what you get}
 \label{sec:install}
 
@@ -316,11 +318,11 @@ you will want to work with ops, very rarely you will have to use
 spreads in your C code.
 
 Neural network computations are implemented as operations on nodes,
-weights, and networks. Once a network is set up, there are three kinds
-of operations that are most typical.
-\begin{description}
-\item[Node input calculations]  
-\end{description}
+weights, and networks. These operations are programmed through
+functions with a specific interface (see REF) and they can all be
+specified in network architecture files. For example, we saw in
+\ref{sec:first-mint} that the \lstinline{sigmoid} operation instructs
+mint to calculate node output as a sigmoid function of node input.
 
 
 A typical operation is, for instance, to

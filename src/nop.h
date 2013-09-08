@@ -30,6 +30,8 @@ void mint_node_identity( mint_nodes n, int min, int max, float *p );
     of hyperbola together.  */
 void mint_node_sigmoid( mint_nodes n, int min, int max, float *p );
 
+void mint_node_logistic( mint_nodes n, int min, int max, float *p );
+
 /** Leaky integrator.  with time constant T=param[0] and leak
     L=param[1]. The update performed is: output += ( input -
     L*old_output)/T.

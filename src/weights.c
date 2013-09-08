@@ -533,7 +533,7 @@ void mint_weights_set_row( mint_weights w, int r, int newlen,
   unsigned int *ind;
   struct mint_weights_str *wstr = _STR(w);
 
-  mint_check( newlen>0, "newlen is negative" );
+  mint_check( newlen >= 0, "newlen is negative" );
 
   states = mint_weights_states( w );
 
@@ -554,8 +554,10 @@ void mint_weights_set_row( mint_weights w, int r, int newlen,
 	w[i][r] = realloc( w[i][r], newlen*sizeof(float) );
     }
     /* copy new values */
-    memcpy( wstr->cind[r], ind, newlen*sizeof(unsigned int) );
-    memcpy( w[ var ][r], newval, newlen*sizeof(float) );
+    if( newlen ) {
+      memcpy( wstr->cind[r], ind, newlen*sizeof(unsigned int) );
+      memcpy( w[ var ][r], newval, newlen*sizeof(float) );
+    }
     wstr->rlen[r] = newlen;
 
   } else {
@@ -564,12 +566,14 @@ void mint_weights_set_row( mint_weights w, int r, int newlen,
     for( i=0; i<wstr->cols; i++ )
       w[ var ][r][i] = 0;
     /* set new values */
-    if( !newind )
-      memcpy( w[ var ][r], newval, newlen );
-    else {
-      for( i=0; i<newlen; i++ ) {
-	mint_check( ind[i] < wstr->cols, "index too large" );
-	w[ var ][r][ ind[i] ] = newval[i];
+    if( newlen ) {
+      if( !newind )
+	memcpy( w[ var ][r], newval, newlen );
+      else {
+	for( i=0; i<newlen; i++ ) {
+	  mint_check( ind[i] < wstr->cols, "index too large" );
+	  w[ var ][r][ ind[i] ] = newval[i];
+	}
       }
     }
 

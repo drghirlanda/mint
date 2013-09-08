@@ -33,6 +33,15 @@ void mint_node_sigmoid( mint_nodes n, int min, int max, float *p ) {
   }
 }
 
+void mint_node_logistic( mint_nodes n, int min, int max, float *p ) {
+  int i;
+  float slope, offset;
+  slope = p[0];
+  offset = p[1];
+  for( i=min; i<max; i++ )
+    n[1][i] = 1 / ( 1 + exp( - slope * ( n[0][i] - offset ) ) );
+}
+
 /* leaky integrator */
 void mint_node_integrator( mint_nodes n, int min, int max, float *p ) {
   int i;

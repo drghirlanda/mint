@@ -129,7 +129,7 @@ cmd_mint() {
 	ar crs $LIBRARY $BUILD/$F.o
     done 
     if [[ $LIBRARY == "libmint.a" ]]; then
-	strip $LIBRARY
+    	strip --strip-unneeded $LIBRARY
     fi
 }
 

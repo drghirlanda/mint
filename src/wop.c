@@ -171,14 +171,18 @@ void mint_weights_init_random_sparse( mint_weights w, int rmin,
   cols = mint_weights_cols(w);
   for( r=rmin; r<rmax; r++ ) {
     len = mint_random_binomial( p[2], cols );
-    val = malloc( len*sizeof(float) );
-    for( i=0; i<len; i++ )
-      val[i] = rnd( p[0], p[1] );
-    ind = malloc( len*sizeof(ind) );
-    mint_random_subset( ind, len, 0, cols, 1 );
-    mint_weights_set_row( w, r, len, val, ind, 0 );
-    free( val );
-    free( ind );
+    if( len ) {
+      val = malloc( len*sizeof(float) );
+      for( i=0; i<len; i++ )
+	val[i] = rnd( p[0], p[1] );
+      ind = malloc( len*sizeof(ind) );
+      mint_random_subset( ind, len, 0, cols, 1 );
+      mint_weights_set_row( w, r, len, val, ind, 0 );
+      free( val );
+      free( ind );
+    } else {
+      mint_weights_set_row( w, r, 0, 0, 0, 0 );
+    }
   }
 }
 
