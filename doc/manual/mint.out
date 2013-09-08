@@ -5,31 +5,32 @@
 \BOOKMARK [1][-]{section.1.3}{Space and speed}{chapter.1}% 5
 \BOOKMARK [1][-]{section.1.4}{The very basics}{chapter.1}% 6
 \BOOKMARK [1][-]{section.1.5}{Your first MINT network}{chapter.1}% 7
-\BOOKMARK [0][-]{chapter.2}{How to get MINT, and what you get}{}% 8
-\BOOKMARK [1][-]{section.2.1}{How}{chapter.2}% 9
-\BOOKMARK [1][-]{section.2.2}{What}{chapter.2}% 10
-\BOOKMARK [1][-]{section.2.3}{Installation}{chapter.2}% 11
-\BOOKMARK [0][-]{chapter.3}{Data Structures}{}% 12
-\BOOKMARK [0][-]{chapter.4}{Cookbook}{}% 13
-\BOOKMARK [1][-]{section.4.1}{How do i create a feed-forward network?}{chapter.4}% 14
-\BOOKMARK [1][-]{section.4.2}{How do I create a recurrent network?}{chapter.4}% 15
-\BOOKMARK [1][-]{section.4.3}{How do I run a network?}{chapter.4}% 16
-\BOOKMARK [1][-]{section.4.4}{How can a network learn?}{chapter.4}% 17
-\BOOKMARK [1][-]{section.4.5}{How do I choose node transfer functions?}{chapter.4}% 18
-\BOOKMARK [1][-]{section.4.6}{How do I set learning rules?}{chapter.4}% 19
-\BOOKMARK [1][-]{section.4.7}{How do I set up how a network is updated?}{chapter.4}% 20
-\BOOKMARK [1][-]{section.4.8}{How do I use images as network stimuli?}{chapter.4}% 21
-\BOOKMARK [1][-]{section.4.9}{How do I simulate a sense organ?}{chapter.4}% 22
-\BOOKMARK [1][-]{section.4.10}{How do I simulate hormones, neuromodulators, etc.?}{chapter.4}% 23
-\BOOKMARK [1][-]{section.4.11}{How do I simulate hunger, thirst, and other body states?}{chapter.4}% 24
-\BOOKMARK [1][-]{section.4.12}{How do I simulate spiking neurons?}{chapter.4}% 25
-\BOOKMARK [1][-]{section.4.13}{How do I simulate continuous time?}{chapter.4}% 26
-\BOOKMARK [1][-]{section.4.14}{How do I control a robot or some kind of hardware with a network?}{chapter.4}% 27
-\BOOKMARK [1][-]{section.4.15}{How do I visualize networks, node groups and weight matrices?}{chapter.4}% 28
-\BOOKMARK [1][-]{section.4.16}{Input file syntax}{chapter.4}% 29
-\BOOKMARK [1][-]{section.4.17}{Node update functions}{chapter.4}% 30
-\BOOKMARK [1][-]{section.4.18}{Spreading schemes}{chapter.4}% 31
-\BOOKMARK [1][-]{section.4.19}{Debugging}{chapter.4}% 32
-\BOOKMARK [1][-]{section.4.20}{Replacing the stock matrix-vector multiplication}{chapter.4}% 33
-\BOOKMARK [0][-]{chapter.5}{Space and speed}{}% 34
-\BOOKMARK [1][-]{section.5.1}{Benchmarks}{chapter.5}% 35
+\BOOKMARK [1][-]{section.1.6}{Where to go from here}{chapter.1}% 8
+\BOOKMARK [0][-]{chapter.2}{How to get MINT, and what you get}{}% 9
+\BOOKMARK [1][-]{section.2.1}{How}{chapter.2}% 10
+\BOOKMARK [1][-]{section.2.2}{What}{chapter.2}% 11
+\BOOKMARK [1][-]{section.2.3}{Installation}{chapter.2}% 12
+\BOOKMARK [0][-]{chapter.3}{Data Structures}{}% 13
+\BOOKMARK [0][-]{chapter.4}{Cookbook}{}% 14
+\BOOKMARK [1][-]{section.4.1}{How do i create a feed-forward network?}{chapter.4}% 15
+\BOOKMARK [1][-]{section.4.2}{How do I create a recurrent network?}{chapter.4}% 16
+\BOOKMARK [1][-]{section.4.3}{How do I run a network?}{chapter.4}% 17
+\BOOKMARK [1][-]{section.4.4}{How can a network learn?}{chapter.4}% 18
+\BOOKMARK [1][-]{section.4.5}{How do I choose node transfer functions?}{chapter.4}% 19
+\BOOKMARK [1][-]{section.4.6}{How do I set learning rules?}{chapter.4}% 20
+\BOOKMARK [1][-]{section.4.7}{How do I set up how a network is updated?}{chapter.4}% 21
+\BOOKMARK [1][-]{section.4.8}{How do I use images as network stimuli?}{chapter.4}% 22
+\BOOKMARK [1][-]{section.4.9}{How do I simulate a sense organ?}{chapter.4}% 23
+\BOOKMARK [1][-]{section.4.10}{How do I simulate hormones, neuromodulators, etc.?}{chapter.4}% 24
+\BOOKMARK [1][-]{section.4.11}{How do I simulate hunger, thirst, and other body states?}{chapter.4}% 25
+\BOOKMARK [1][-]{section.4.12}{How do I simulate spiking neurons?}{chapter.4}% 26
+\BOOKMARK [1][-]{section.4.13}{How do I simulate continuous time?}{chapter.4}% 27
+\BOOKMARK [1][-]{section.4.14}{How do I control a robot or some kind of hardware with a network?}{chapter.4}% 28
+\BOOKMARK [1][-]{section.4.15}{How do I visualize networks, node groups and weight matrices?}{chapter.4}% 29
+\BOOKMARK [1][-]{section.4.16}{Input file syntax}{chapter.4}% 30
+\BOOKMARK [1][-]{section.4.17}{Node update functions}{chapter.4}% 31
+\BOOKMARK [1][-]{section.4.18}{Spreading schemes}{chapter.4}% 32
+\BOOKMARK [1][-]{section.4.19}{Debugging}{chapter.4}% 33
+\BOOKMARK [1][-]{section.4.20}{Replacing the stock matrix-vector multiplication}{chapter.4}% 34
+\BOOKMARK [0][-]{chapter.5}{Space and speed}{}% 35
+\BOOKMARK [1][-]{section.5.1}{Benchmarks}{chapter.5}% 36

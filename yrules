@@ -159,10 +159,10 @@ cmd_install() {
 }
 
 
-# remove all build and library files, and built docs
+# remove all build and library files
 
 cmd_clean() {
-    /bin/rm -rf ./libmint* build/* doc/manual/mint.pdf doc/html/*
+    /bin/rm -rf ./libmint* build/*
 }
 
 
