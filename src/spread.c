@@ -37,7 +37,7 @@ void mint_spread_del( struct mint_spread *s ) {
    same groups, and mark them as done.  */
 void mint_network_init_feedforward( struct mint_network *net,
 				    float *p ) {
-  int i, j, g, m, ndone, ndone_old, step, from, to;
+  int i, j, g, m, ndone, ndone_old, step, from, to, pass;
   int *done; 
   struct mint_spread *s;
   mint_weights w;
@@ -49,12 +49,15 @@ void mint_network_init_feedforward( struct mint_network *net,
   done = malloc( g*sizeof(int) );
   for( i=0; i<g; i++ ) done[i] = 0;
   ndone = 0;
-  ndone_old = -1;
+  ndone_old = 0;
   
-  step = 0;
+  step = pass = 0;
   while( ndone<g ) {
     /* if no progress (and no bugs :), topology is not right: */
-    mint_check( ndone>ndone_old, "network is not feedforward");
+    mint_check( pass==0 || /* first time */
+		ndone > ndone_old, 
+		"network is not feedforward");
+    pass++;
     for( i=0; i<g; i++ ) {
       if( !done[i] ) {
 	/* loop over weight matrices: group is ready for update only
