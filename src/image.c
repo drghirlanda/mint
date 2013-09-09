@@ -179,45 +179,6 @@ void mint_image_rotate( struct mint_image *image, float angle ) {
   image->ptr = fib;  
 }
 
-/* internal helper function for mint_image_paste. NOTE: does not
-   perform any checks on dimensions and ops since all those checks
-   have been performed by mint_image_paste */ 
-void mint_image_paste_gray( const struct mint_image *image, 
-			    mint_nodes ngray,
-			    int xpos, int ypos ) {
-  int i, irows, icols, nrows, ncols, size, x, y, var;
-  int stride, idx;
-  BYTE *bits;
-  struct mint_ops *ops;
-
-  irows = FreeImage_GetHeight( image->ptr );
-  icols = FreeImage_GetWidth( image->ptr );
-
-  size = mint_nodes_size( ngray );
-  ops = mint_nodes_get_ops( ngray );
-  i = mint_ops_find( ops, "rows", mint_op_nodes_init );
-  nrows = mint_op_get_param( mint_ops_get(ops, i), 0 );
-  ncols = size / nrows;
-
-  i = mint_ops_find( ops, "gray", mint_op_nodes_init );
-  var = mint_op_get_param( mint_ops_get(ops, i), 0 );
-
-  stride = FreeImage_GetLine( image->ptr ) / 
-    FreeImage_GetWidth( image->ptr );
-
-  for ( y=0; y<nrows; y++ ) {
-    bits = FreeImage_GetScanLine( image->ptr, y );
-    for ( x=0; x<ncols; x++ ) {
-      idx = y+ypos + nrows*(x+xpos);
-      if( idx>=0 && idx<size ) {
-	ngray[ var ][ idx ] += ( bits[ FI_RGBA_RED ] + bits[ FI_RGBA_GREEN ] 
-				 + bits[ FI_RGBA_BLUE ] ) / 255.0;
-      }
-    }
-    bits += stride;
-  }
-}
-
 void mint_image_paste( const struct mint_image *image, mint_nodes n,
 		       int xpos, int ypos, int scale ) {
   int i, j, irows, icols, nrows, ncols, size, x, y, stride, idx, 
@@ -235,7 +196,7 @@ void mint_image_paste( const struct mint_image *image, mint_nodes n,
   irows = FreeImage_GetHeight( image->ptr );
   icols = FreeImage_GetWidth( image->ptr );
     
-  /* go through all ops and process red, green, blue, and gray ops only */
+  /* go through all ops and process red, green, and blue ops only */
   ops = mint_nodes_get_ops( n );
   for( i=0; i < mint_ops_size( ops ); i++ ) {
     component = -1;
@@ -247,12 +208,8 @@ void mint_image_paste( const struct mint_image *image, mint_nodes n,
       component = FI_RGBA_GREEN;
     else if( strcmp( name, "blue" ) == 0 )
       component = FI_RGBA_BLUE;
-    else if( strcmp( name, "gray" ) == 0 ) {
-      mint_image_paste_gray( image, n, xpos, ypos );
-      break;
-    }
     if( component != -1 ) { /* if red/green/blue op found */
-
+      
       j = mint_ops_find( ops, "rows", mint_op_nodes_init );
       mint_check( j != -1, "rows not set for node group %s",
 		  mint_str_char( mint_nodes_get_name(n) ) );
