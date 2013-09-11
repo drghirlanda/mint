@@ -20,8 +20,6 @@ static pid_t mint_camera_pid = 0;  /* pid of camshot process */
 static char mint_camera_pipe[256]; /* filename of camshot pipe */
 static int mint_camera_lock = 0;   /* 1 thread only accesses camera */
 
-static float mint_network_camera_default[4] = { -2, -2, -2, -2 };
-
 /* since this function is called through atexit(), errors can be
    non-fatal */
 void mint_camera_close( void ) {
@@ -97,7 +95,7 @@ void mint_camera_init( void ) {
   
   /* now we register ops that make use of the camera */
   mint_op_add( "camera", mint_op_network_operate, mint_network_camera, 
-	       4, mint_network_camera_default ); 
+	       0, 0 ); 
 } 
 
 struct mint_image *mint_camera_image( void ) {
