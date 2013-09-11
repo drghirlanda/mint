@@ -33,6 +33,10 @@ void mint_network_cpy( struct mint_network *net1,
 /** Save a network to an open file */
 void mint_network_save( const struct mint_network *net, FILE *dest );
 
+/** Save a network to an open file, apart from weight and node
+    values. */
+void mint_network_info( const struct mint_network *net, FILE *dest );
+
 /** Load a network from an open file. The file format is:
 
    network g m \n

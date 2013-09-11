@@ -74,6 +74,10 @@ void mint_weights_load_values( mint_weights w, FILE *f );
 void mint_weights_save( mint_weights , FILE *,
 			struct mint_network *net );
 
+/** Save a weight matrix to file, aprt from the values. */
+void mint_weights_info( mint_weights , FILE *,
+			struct mint_network *net );
+
 /** Get the number of rows */
 unsigned int mint_weights_rows( mint_weights  );
 

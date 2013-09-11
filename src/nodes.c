@@ -147,10 +147,15 @@ void mint_nodes_save( const mint_nodes n, FILE *f ) {
   unsigned int k;
   struct mint_nodes_str *nstr = _STR( n );
 
-  fprintf( f, "nodes %s\n", mint_str_char( nstr->name ) );
-  mint_ops_save( nstr->ops, f );
+  mint_nodes_info( n, f );
   for( k=0; k<2+nstr->states; k++ )
     mint_nodes_save_var( n, k, f );
+}
+
+void mint_nodes_info( const mint_nodes n, FILE *f ) {
+  struct mint_nodes_str *nstr = _STR( n );
+  fprintf( f, "nodes %s\n", mint_str_char( nstr->name ) );
+  mint_ops_save( nstr->ops, f );
 }
 
 unsigned int mint_nodes_size( const mint_nodes n ) {

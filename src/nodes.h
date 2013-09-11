@@ -68,6 +68,9 @@ mint_nodes mint_nodes_load( FILE * );
 /** Saves a node group to file, see mint_nodes_load for the format. */
 void mint_nodes_save( const mint_nodes, FILE * );
 
+/** Saves a node group to file, apart from the values */
+void mint_nodes_info( const mint_nodes, FILE * );
+
 /** Saves to file only variable k of a node group. Useful to save
     outputs, for instance. */
 void mint_nodes_save_var( const mint_nodes, int var, FILE * );

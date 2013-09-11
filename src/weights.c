@@ -414,7 +414,7 @@ void mint_weights_save_values( const mint_weights w, FILE *f ) {
   }
 }
 
-void mint_weights_save( const mint_weights w, FILE *f,
+void mint_weights_info( const mint_weights w, FILE *f,
 			struct mint_network *net ) {
   struct mint_weights_str *wstr = _STR( w );
   mint_nodes n;
@@ -436,12 +436,14 @@ void mint_weights_save( const mint_weights w, FILE *f,
     }
   }
 
-  if( mint_weights_is_sparse(w) )
-    fprintf( f, " sparse" );
-
   fprintf( f, "\n" );
   mint_ops_save( wstr->ops, f );
-  mint_weights_save_values( w, f );
+}
+
+void mint_weights_save( const mint_weights w, FILE *f,
+			struct mint_network *net ) {
+  mint_weights_info( w, f, net );
+  mint_weights_save_values( w ,f );
 }
 
 unsigned int mint_weights_rows( const mint_weights w ) {

@@ -108,11 +108,10 @@ int mint_network_frozen( struct mint_network *net ) {
   return frozen;
 }
 
-void mint_network_save( const struct mint_network *net, FILE *dest ) {
-  int i;
+void mint_network_save_ops( const struct mint_network *net, 
+			    FILE *dest ) {
   struct mint_ops *ops;
-  fprintf( dest, "network\n" );
-
+  
   /* we do not save run_spread (default) or threads_spread (will be
      added back by threads) */
   ops = mint_ops_dup( net->ops );
@@ -120,12 +119,35 @@ void mint_network_save( const struct mint_network *net, FILE *dest ) {
   mint_ops_del_name( ops, "threads_spread" );
   mint_ops_save( ops, dest );
   mint_ops_del( ops );
+}
+
+
+void mint_network_save( const struct mint_network *net, FILE *dest ) {
+  int i;
+
+  fprintf( dest, "network\n" );
+  mint_network_save_ops( net, dest );
 
   for( i=0; i<net->groups; i++ ) 
     mint_nodes_save( net->n[i], dest );
 
   for( i=0; i<net->matrices; i++ )
     mint_weights_save( net->w[i], dest, (struct mint_network *)net );
+
+  mint_spread_save( net->spread, dest, (struct mint_network *)net );
+}
+
+void mint_network_info( const struct mint_network *net, FILE *dest ) {
+  int i;
+
+  fprintf( dest, "network\n" );
+  mint_network_save_ops( net, dest );
+
+  for( i=0; i<net->groups; i++ ) 
+    mint_nodes_info( net->n[i], dest );
+
+  for( i=0; i<net->matrices; i++ )
+    mint_weights_info( net->w[i], dest, (struct mint_network *)net );
 
   mint_spread_save( net->spread, dest, (struct mint_network *)net );
 }
