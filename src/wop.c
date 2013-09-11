@@ -28,29 +28,8 @@ void mint_weights_init_sparse( mint_weights w, int rmin, int rmax,
 			       float *p ) {
 };
 
-/* matrix-vector multiplication. using some explicit pointer
-   arithmetic allows for a speedup since the compiler can optimize
-   more (see test/mult_test). we exploit the fact that all w, to, and
-   from locations are contiguous in memory so we can just increment
-   pointers rather than using indices. */   
-void mint_weights_mult( const mint_weights w, const mint_nodes from,
-			mint_nodes to, int rmin, int rmax, float *p ) {
-  int i, j, cols, target;
-  float *toptr, *wptr, *fromptr;
-  target = mint_weights_get_target(w);
-  cols = mint_weights_cols(w);
-  wptr = w[0][rmin]; /* memory location of first weight value */
-  toptr = to[target] + rmin; /* first target value of "to" nodes */
-  for( i=rmin; i<rmax; i++ ) {
-    fromptr = from[1]; /* first output value of "from" nodes */
-    for( j=0; j<cols; j++ )
-      *toptr += *(wptr++) * *(fromptr++);
-    toptr++; /* every matrix row we advance to next "to" node */
-  }
-}
-
-void mint_weights_mult_naive( mint_weights w, mint_nodes from, mint_nodes to,
-			      int rmin, int rmax, float *p ) {
+void mint_weights_mult( mint_weights w, mint_nodes from, mint_nodes to,
+			int rmin, int rmax, float *p ) {
   unsigned int i, j, cols, target;
   target = mint_weights_get_target(w);
   cols = mint_weights_cols(w);
@@ -234,6 +213,28 @@ void mint_weights_init_diagonal( mint_weights w, int rmin, int rmax,
 void mint_weights_init_target( mint_weights w, int rmin, int rmax,
 				 float *p ) {
   mint_weights_set_target( w, p[0] );
+}
+
+void mint_weights_init_normalize( mint_weights w, int rmin, int rmax, 
+				   float *p ) {
+  float sum, total;
+  int rows, cols, i, j, rowlen;
+  rows = mint_weights_rows( w );
+  cols = mint_weights_cols( w );
+  total = p[0];
+  for( i=0; i<rows; i++ ) {
+    sum = 0;
+    rowlen = mint_weights_rowlen( w, i );
+    for( j=0; j<rowlen; j++ )
+      sum += w[0][i][j];
+    if( sum ) {
+      for( j=0; j<rowlen; j++ )
+	w[0][i][j] *= total / sum;
+    } else {
+      for( j=0; j<rowlen; j++ )
+	w[0][i][j] *= total / rowlen;
+    }
+  }
 }
 
 void mint_weights_lateral( mint_weights w, mint_nodes nfrom, mint_nodes nto, 

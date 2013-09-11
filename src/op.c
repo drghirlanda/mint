@@ -48,6 +48,7 @@ static float weights_init_target_param[1] = { 0. };
 static float weights_init_states_param[1] = { 0 };
 static float weights_init_cols_param[1] = { -1 };
 static float weights_init_rows_param[1] = { -1 };
+static float weights_init_normalize_param[1] = { 1 };
 
 static float network_init_threads_param[3] = { 1, 0, 0 };
 static float network_asynchronous_param[1] = { 0 };
@@ -111,8 +112,6 @@ static struct mint_op mint_op_static_table[] = {
 
   { "mult",mint_op_weights_operate,mint_weights_mult,0,0 },
 
-  { "mult_naive",mint_op_weights_operate,mint_weights_mult_naive,0,0 },
-
   { "mult_sparse",mint_op_weights_operate,
     mint_weights_mult_sparse,0,0 },
 
@@ -155,6 +154,10 @@ static struct mint_op mint_op_static_table[] = {
     weights_init_target_param },
 
   { "sparse",mint_op_weights_init,mint_weights_init_sparse,0,0 },
+
+  {"normalize",mint_op_weights_init,mint_weights_init_normalize,1,
+   weights_init_normalize_param },
+
 
   /* weights connect */
 
@@ -208,13 +211,11 @@ static void mint_op_atexit( void ) {
 /* looks up a rule id by name and type. returns mint_nop if not
    found */
 static int mint_op_id( const char *name, int type ) {
-  int len1, len2, id;
+  int id;
   mint_check( name != 0, "'name' is null" ); 
-  len1 = strlen(name);
   for( id=0; id<mint_nop; id++ ) {
-    len2 = strlen( mint_op_table[id].name );
     if( type & mint_op_table[id].type &&
-	strncmp(name,mint_op_table[id].name, len1 )==0 )
+	strcmp( name,mint_op_table[id].name ) == 0 )
       return id;
   }
   return id;
