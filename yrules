@@ -154,7 +154,7 @@ cmd_install() {
     install -d "$INSTALL/include/mint"
     for F in $FILES; do 
 	install -m 0644 src/$F.h "$INSTALL/include/mint"
-	echo "#include \"$F.h\"" >> "$INSTALL/include/mint.h" 
+	echo "#include \"mint/$F.h\"" >> "$INSTALL/include/mint.h" 
     done
 }
 
