@@ -27,8 +27,13 @@ int mint_next_string( FILE *file, char *string, int len ) {
 
 int mint_skip_space( FILE *file ) {
   char c;
-  do c = fgetc( file );
-  while( isspace(c) );
+  do {
+    c = fgetc( file );
+    if( c == '#' ) {
+      do c = fgetc( file );
+      while( c != '\n' && !feof( file ) );
+    }
+  } while( isspace(c) && !feof( file ) );
   ungetc( c, file );
   return c;
 }
