@@ -373,15 +373,9 @@ mint_weights mint_weights_load( FILE *file, struct mint_network *net ) {
 
   /* set default operate if not on file */
   if( !mint_ops_count(wstr->ops, mint_op_weights_operate) ) {
-    if( mint_weights_is_sparse(w) ) {
-      op = mint_op_new( "mult_sparse", mint_op_weights_operate );
-      mint_ops_append( wstr->ops, op );
-      mint_op_del( op );
-    } else { /* full */
-      op = mint_op_new( "mult", mint_op_weights_operate );
-      mint_ops_append( wstr->ops, op );
-      mint_op_del( op );
-    }
+    op = mint_op_new( "mult", mint_op_weights_operate );
+    mint_ops_append( wstr->ops, op );
+    mint_op_del( op );
   }
 
   mint_weights_init( w, 0, wstr->rows );
@@ -684,24 +678,6 @@ mint_weights mint_weights_prune( mint_weights src, float cutoff, int sparse ) {
   sstr = _STR(src);
 
   dstr->ops = mint_ops_dup( sstr->ops );
-
-  /* replace mult op if appropriate */
-  if( sparse ) {
-    i = mint_ops_find( dstr->ops, "mult", mint_op_weights_operate );
-    if( i != -1 ) {
-      op = mint_op_new( "mult_sparse", mint_op_weights_operate );
-      mint_ops_set( dstr->ops, i, op );
-      mint_op_del( op );
-    }
-  } else {
-    i = mint_ops_find( dstr->ops, "mult_sparse", 
-		       mint_op_weights_operate );
-    if( i != -1 ) {
-      op = mint_op_new( "mult", mint_op_weights_operate );
-      mint_ops_set( dstr->ops, i, op );
-      mint_op_del( op );
-    }
-  }
 
   return dst;
 }

@@ -30,32 +30,23 @@ void mint_weights_init_sparse( mint_weights w, int rmin, int rmax,
 
 void mint_weights_mult( mint_weights w, mint_nodes from, mint_nodes to,
 			int rmin, int rmax, float *p ) {
-  unsigned int i, j, cols, target;
+  unsigned int i, j, cols, target, jmax;
+  unsigned int *colind; 
   target = mint_weights_get_target(w);
   cols = mint_weights_cols(w);
-  for( i=rmin; i<rmax; i++ ) { 
-    for( j=0; j<cols; j++ ) {
-      to[target][i] += w[0][i][j] * from[1][j];  
+  if( mint_weights_is_sparse( w ) ) {
+    for( i=rmin; i<rmax; i++ ) {
+      colind = mint_weights_colind( w, i );
+      jmax = mint_weights_rowlen( w, i );
+      for( j=0; j<jmax; j++ )
+	to[ target ][ i ] += w[0][i][j] * from[ 1 ] [ colind[j] ];
     }
-  }
-}
-
-/* multiplication for sparse matrices. see mint_weights_mult for
-   pointer arithmetic. */
-void mint_weights_mult_sparse( const mint_weights w, const mint_nodes from, 
-			       mint_nodes to, int rmin, int rmax, float *p ) {
-  unsigned int i, j, jmax, target;
-  float *toptr, *wptr, *fromptr;
-  unsigned int *cindptr;
-  target = mint_weights_get_target(w);
-  fromptr = from[1];
-  for( i=rmin; i<rmax; i++ ) { 
-    toptr = to[target]+i;
-    cindptr = mint_weights_colind( w, i );
-    wptr = w[0][i];
-    jmax = mint_weights_rowlen( w, i );
-    for( j=0; j<jmax; j++ )
-      *toptr += *(wptr++) * *( fromptr + *(cindptr++) );
+  } else {
+    for( i=rmin; i<rmax; i++ ) { 
+      for( j=0; j<cols; j++ ) {
+	to[target][i] += w[0][i][j] * from[1][j];  
+      }
+    }
   }
 }
 

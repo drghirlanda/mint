@@ -34,14 +34,6 @@ void mint_weights_mult_naive( const mint_weights w,
 			      mint_nodes nto,
 			      int rmin, int rmax, float *p );
 
-/** Matrix-vector multiplication for sparse weight matrices. It is set
-    as the appropriate operation when a sparse matrix is created (see
-    mint_weighs_operate). */ 
-void mint_weights_mult_sparse( const mint_weights w,
-			       const mint_nodes nfrom,
-			       mint_nodes to,
-			       int rmin, int rmax, float *p );
-
 void mint_weights_hebbian( mint_weights w, mint_nodes pre, 
 			   mint_nodes post, int rmin, int rmax, 
 			   float *p );

@@ -177,14 +177,13 @@ void mint_weights_set( mint_weights w, int s, int r, int c, float x );
 /** Create a copy of matrix w, keeping only weights whose values are
     larger than cutoff in absolute value.  State variables for these
     wieghts are also copied. The returned matrix is sparse if
-    sparse==1, and dense if sparse==0. The multiplication op is set to
-    mult or mult_sparse as appropriate. All other ops are copied
-    unmodified.
+    sparse==1, and dense if sparse==0.
 
     NOTE: This function can be used to convert between sparse and
     dense matrices, by using cutoff=Inf and setting sparse as
     appropriate. */
-mint_weights mint_weights_prune( mint_weights w, float cutoff, int sparse );
+mint_weights mint_weights_prune( mint_weights w, float cutoff, 
+				 int sparse );
 
 /** Freeze (f true) or unfreeze (f false) weight matrix w. When a
     matrix is frozen, calss to mint_weights_update have no effect. */

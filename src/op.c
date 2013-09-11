@@ -60,7 +60,7 @@ static float network_clocked_param[2] = { 25, 0 };
 
     NOTE: change this whenever adding or removing from the table
     above, otherwise crashes can occur when adding ops! */
-#define mint_nop_builtin 37
+#define mint_nop_builtin 36
 
 /* built-in ops */
 static struct mint_op mint_op_static_table[] = {
@@ -111,9 +111,6 @@ static struct mint_op mint_op_static_table[] = {
   /* weights operate */
 
   { "mult",mint_op_weights_operate,mint_weights_mult,0,0 },
-
-  { "mult_sparse",mint_op_weights_operate,
-    mint_weights_mult_sparse,0,0 },
 
 
   /* weights update */
