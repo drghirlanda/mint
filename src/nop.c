@@ -1,6 +1,8 @@
 #include "nop.h"
 #include "random.h"
+#include "str.h"
 #include "utils.h"
+
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
@@ -15,21 +17,18 @@ void mint_node_sigmoid( mint_nodes n, int min, int max, float *p ) {
   int i;
   float x, zero, slope;
   float x0 = 6. + 2./3.;
-  float *in, *out;
-  in = n[0];
-  out = n[1];
   zero = p[0];
   slope = p[1];
   for( i=min; i<max; i++ ) {
-    x = *(in+i);
+    x = n[0][i];
     x *= slope;                       /* scaling */
     x -= (.5 - zero) / (.075 + zero); /* translation */
     if( x < -x0 ) 
-      *(out+i) = 0.;
+      n[1][i] = 0.;
     else if( x < x0 ) 
-      *(out+i) = .5 + .575 * x / ( 1 + fabs(x) );
+      n[1][i] = .5 + .575 * x / ( 1 + fabs(x) );
     else 
-      *(out+i) = 1.;
+      n[1][i] = 1.;
   }
 }
 
@@ -57,14 +56,14 @@ void mint_node_integrator( mint_nodes n, int min, int max, float *p ) {
   leak = p[1];
 
   for( i=min; i<max; i++ ) {
-    *(state+i) += ( *(in+i) - leak * *(state+i) ) / tstep;
-    *(out+i) = *(state+i);
+    state[i] += ( in[i] - leak * state[i] ) / tstep;
+    out[i] = state[i];
   }
 }
 
 void mint_node_izzy( mint_nodes n, int min, int max, float *p ) {
-  int i;
-  float u, v, *in, *out, *vs, *us;
+  int i, ui, vi;
+  float u, v;
 
   mint_check( p[4]>=2 && p[4]<2+mint_nodes_states(n), 
 	      "parameter 4 out of range" );
@@ -72,25 +71,23 @@ void mint_node_izzy( mint_nodes n, int min, int max, float *p ) {
 	      "parameter 5 out of range" );
   mint_check( p[4] != p[5], "parameters 4 and 5 must be different" );
 
-  in = n[0];
-  out = n[1];
-  vs = n[ (int)p[4] ];
-  us = n[ (int)p[5] ];
+  ui = p[4];
+  vi = p[5];
 
   for( i=min; i<max; i++ ) {
-    v = *(vs+i);
-    u = *(us+i);
-    if( v==30 ) {
-      *(out+i) = 1;
-      *(vs+i) = *(p+2);
-      *(us+i) += *(p+3);
+    if( n[vi][i] == 30 ) {
+      n[1][i] = 1;      /* output = 1 */
+      n[vi][i] = p[2];  /* reset */
+      n[ui][i] = p[3];  /* reset */
     } else {
-      v += 0.04 * v*v + 5*v + 140 - u + *(in+i);
-      u += *p * ( *(p+1) * v - u );
+      v = n[vi][i];
+      u = n[ui][i];
+      v += 0.04 * v*v + 5*v + 140 - u + n[0][i];
+      u += p[0] * ( p[1] * v - u );
       if( v>30 ) v = 30;
-      *(out+i) = 0;
-      *(vs+i) = v;
-      *(us+i) = u;
+      n[1][i] = 0;
+      n[vi][i] = v;
+      n[ui][i] = u;
     }
   }
 }
@@ -138,22 +135,20 @@ void mint_node_counter( mint_nodes n, int min, int max, float *p ) {
   counter = n[ (int)p[2] ];
 
   for( i=min; i<max; i++ ) {
-    if( *(state+i) >= threshold )
-      *(counter+i) = 0;
+    if( state[i] >= threshold )
+      counter[i] = 0;
     else
-      *(counter+i) += 1;
+      counter[i] += 1;
   }
 }
 
 void mint_node_spikes( mint_nodes n, int min, int max, float *p ) {
   int i;
-  float *out;
 
   mint_check( p[0]>=0, "parameter 0 must be positive" );
 
-  out = n[1];
   for( i=min; i<max; i++ )
-    *(out+i) = mint_random() < .001 * p[0];
+    n[1][i] = mint_random() < .001 * p[0];
 }
 
 void mint_node_rows( mint_nodes n, int min, int max, float *p ) {
@@ -163,11 +158,12 @@ void mint_node_rows( mint_nodes n, int min, int max, float *p ) {
 }
 
 void mint_node_states( mint_nodes n, int min, int max, float *p ) {
-  mint_check( p[0]>0, "states argument negative" );
+  mint_check( p[0]>0, "states argument %f is negative", p[0] );
 }
 
 void mint_node_size( mint_nodes n, int min, int max, float *p ) {
-  mint_check( p[0]>0, "size argument negative" );
+  mint_check( p[0]>0, "negative size for nodes %s", 
+	      mint_str_char( mint_nodes_get_name(n) ) );
 }
 
 void mint_node_color( mint_nodes n, float *p ) {
