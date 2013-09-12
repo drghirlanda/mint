@@ -104,5 +104,9 @@ struct mint_str *mint_nodes_get_name( mint_nodes s );
 /* see .c for docs */
 size_t mint_nodes_bytes( unsigned int size, unsigned int states );
 
+void mint_nodes_index2coord( mint_nodes n, int i, int *x, int *y );
+
+int mint_nodes_coord2index( mint_nodes  n, int x, int y );
+
 #endif
 

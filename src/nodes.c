@@ -200,4 +200,38 @@ struct mint_str *mint_nodes_get_name( mint_nodes n ) {
   return _STR(n)->name ;
 }
 
+void mint_nodes_index2coord( mint_nodes n, int i, int *x, int *y ) {
+  static mint_nodes nlast = 0;
+  static int rows = 0;
+  static int size = 0;
+  struct mint_op *op; 
+
+  if( n != nlast ) { /* set rows, cols, and size */
+    size = mint_nodes_size( n );
+    op = mint_ops_get_name( mint_nodes_get_ops(n), "rows", 
+			    mint_op_nodes_init );
+    rows = op ? mint_op_get_param( op, 0 ) : 0;
+    nlast = n;
+  }
+
+  *x = rows ? 0 : i/rows;
+  *y = rows ? i : i % rows;
+}
+
+int mint_nodes_coord2index( mint_nodes n, int x, int y ) {
+  static mint_nodes nlast = 0;
+  static int rows = 0;
+  static int size = 0;
+  struct mint_op *op; 
+
+  if( n != nlast ) { /* set rows, cols, and size */
+    size = mint_nodes_size( n );
+    op = mint_ops_get_name( mint_nodes_get_ops(n), "rows",
+			    mint_op_nodes_init );
+    rows = op ? mint_op_get_param( op, 0 ) : 0;
+    nlast = n;
+  }
+  return y + rows * x;
+}
+
 #undef _STR
