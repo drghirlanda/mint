@@ -1,7 +1,8 @@
 network
-nodes n1 size 10 sigmoid 0.05 1
-nodes n2 size 10 sigmoid 0.05 1
-weights n1-n2 uniform -.5 .15
-weights n2-n1 uniform -.5 .15
-weights n1-n2.2
+clocked 10 1
+nodes n0 size 10000
+weights n0-n0 uniform -.5 .15
+nodes n1 size 100
+weights n1-n1 uniform 0 1
+
 

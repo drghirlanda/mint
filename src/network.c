@@ -234,22 +234,28 @@ struct mint_network *mint_network_load( FILE *file ) {
 
   net->ops = mint_ops_load( file, mint_op_network_any );
 
-  while( (n = mint_nodes_load(file)) ) {
-    net->groups++;
-    net->n = realloc( net->n, sizeof(mint_nodes) * net->groups );
-    net->n[ net->groups - 1 ] = n;
-  }
+  /* this loop tries to load node groups and weight matrices, and
+     breaks if neither can be loaded */
+  for( ;; ) {
+    
+    if( (n = mint_nodes_load(file)) ) {
 
-  /* for each matrix: load, check compatibility, run connect ops */
-  while( (w = mint_weights_load( file, net )) ) {
-    net->matrices++;
-    net->w = realloc( net->w, sizeof(mint_weights) * net->matrices );
-    net->w[ net->matrices - 1 ] = w;
-    from = mint_weights_get_from( w );
-    to = mint_weights_get_to( w );
-    mint_weights_compatibility( w, net->n[from], net->n[to] );
-    mint_weights_connect( w, net->n[from], net->n[to], 
-			  0, mint_weights_rows( w ) );
+      net->groups++;
+      net->n = realloc( net->n, sizeof(mint_nodes) * net->groups );
+      net->n[ net->groups - 1 ] = n;
+
+    } else if( (w = mint_weights_load( file, net )) ) {
+
+      net->matrices++;
+      net->w = realloc( net->w, sizeof(mint_weights) * net->matrices );
+      net->w[ net->matrices - 1 ] = w;
+      from = mint_weights_get_from( w );
+      to = mint_weights_get_to( w );
+      mint_weights_compatibility( w, net->n[from], net->n[to] );
+      mint_weights_connect( w, net->n[from], net->n[to], 
+			    0, mint_weights_rows( w ) );
+    } else 
+      break;
   }
 
   /* check that all groups and matrices have distinct names */

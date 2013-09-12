@@ -13,7 +13,7 @@ int main( void ) {
   net = mint_network_load( file );
   fclose( file );
   mint_network_operate( net );
-  mint_network_save( net, stdout );
+  mint_network_info( net, stdout );
   file = fopen( "feedforward.dot", "w" );
   mint_network_graph( net, file );
   fclose( file );
@@ -27,7 +27,7 @@ int main( void ) {
   net = mint_network_load( file );
   fclose( file );
   mint_network_operate( net );
-  mint_network_save( net, stdout );
+  mint_network_info( net, stdout );
   mint_network_del( net );
 
   printf( "\n\ntesting asynchronous network operation\n" );
@@ -35,7 +35,7 @@ int main( void ) {
   net = mint_network_load( file );
   fclose( file );
   mint_network_operate( net );
-  mint_network_save( net, stdout );
+  mint_network_info( net, stdout );
   mint_network_del( net );
 
   printf( "\n\ntesting custom network operation\n" );
@@ -43,11 +43,11 @@ int main( void ) {
   net = mint_network_load( file );
   fclose( file );
   mint_network_operate( net );
-  mint_network_save( net, stdout );
+  mint_network_info( net, stdout );
 
   /* testing duplication */
   net2 = mint_network_dup( net );
-  mint_network_save( net2, stdout );
+  mint_network_info( net2, stdout );
   mint_network_del( net2 );
 
   mint_network_del( net );
