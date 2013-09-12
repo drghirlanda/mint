@@ -130,38 +130,42 @@ struct mint_spread *mint_spread_dup( const struct mint_spread *s1 ) {
 
 struct mint_spread *mint_spread_load( FILE *f, 
 				      struct mint_network *net ) {
-  int i, j, len;
+  int ni, wi;
   struct mint_spread *spread;
   struct mint_str *name;
 
   if( !mint_next_string(f, "spread", 6 ) )
     return 0;
 
-  i = fscanf( f, "%d", &len );
-  mint_check( i==1, "cannot read length" );
-  spread = mint_spread_new( len );
+  spread = mint_spread_new( 0 );
 
-  i = 0;
-  while( i < spread->len ) {
+  for( ;; ) {
     name = mint_str_load( f );
-    mint_check( name, "cannot load spread item %d", i ); 
-    j = mint_network_weights_find( net, mint_str_char(name) );
-    if( j >= 0 ) {
-      mint_spread_set_nodes( spread, i, -1 );
-      mint_spread_set_weights( spread, i, j );
+    if( !name || mint_keyword( mint_str_char(name) ) ) 
+      break;
+    ni = mint_network_nodes_find( net, mint_str_char(name) );
+    if( ni >= 0 ) {
+      wi = -1;
     } else {
-      j = mint_network_nodes_find( net, mint_str_char(name) );
-      if( j >= 0 ) { 
-	mint_spread_set_nodes( spread, i, j );
-	mint_spread_set_weights( spread, i, -1 );
-      } else 
+      wi = mint_network_weights_find( net, mint_str_char(name) );
+      if( wi >= 0 ) { 
+	ni = -1;
+      } else {
 	mint_check( 0, "no such group or matrix: %s", 
 		    mint_str_char(name) );
+      }
     }
-    i++;
+    spread->len++;
+    spread->n = realloc( spread->n, spread->len * sizeof(int) );
+    spread->w = realloc( spread->w, spread->len * sizeof(int) );
+    spread->n[ spread->len - 1 ] = ni;
+    spread->w[ spread->len - 1 ] = wi;
   }
 
-  return spread;
+  if( spread->len )
+    return spread;
+  else
+    return 0;
 }
 
 void mint_spread_save( struct mint_spread *s, FILE *f,
