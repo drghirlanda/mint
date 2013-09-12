@@ -310,7 +310,7 @@ int mint_network_nodes_find( struct mint_network *net, char *name ) {
   struct mint_str *nname;
   for( i=0; i<net->groups; i++ ) {
     nname = mint_nodes_get_name( net->n[i] );
-    if( strncmp( mint_str_char(nname), name, mint_str_size(nname) ) == 0 )
+    if( strcmp( mint_str_char(nname), name ) == 0 )
       return i;
   }
   return -1;
@@ -344,8 +344,7 @@ int mint_network_weights_find( struct mint_network *net, char *name ) {
   for( i=0; i<net->matrices; i++ ) {
     w = mint_network_weights( net, i );
     wname = mint_weights_get_name( w );
-    if( strncmp( mint_str_char(wname), name, 
-		 mint_str_size(wname) ) == 0 )
+    if( strcmp( mint_str_char(wname), name ) == 0 )
       return i;
   }
 
