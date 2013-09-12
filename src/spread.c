@@ -173,7 +173,7 @@ void mint_spread_save( struct mint_spread *s, FILE *f,
   if( !s ) 
     return;
 
-  fprintf( f, "spread %d\n", s->len );
+  fprintf( f, "spread\n" );
 
   for( i=0; i<s->len; i++ ) {
     if( s->w[i] > -1 ) {
