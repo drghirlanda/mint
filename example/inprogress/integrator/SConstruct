@@ -1,4 +1,0 @@
-env = Environment( parse_flags = '-lmint-debug -lm -lfreeimage',
-    CFLAGS=['-O0', '-g'], LINKFLAGS=['-g'] )
-
-program = env.Program( 'integrator', env.Object('integrator.c') )
