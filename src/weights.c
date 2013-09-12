@@ -630,7 +630,6 @@ void mint_weights_set( mint_weights w, int s, int r, int c, float x ) {
 
 mint_weights mint_weights_prune( mint_weights src, float cutoff, int sparse ) {
   mint_weights dst;
-  struct mint_op *op;
   struct mint_weights_str *sstr, *dstr;
   int rows, cols, states, r, c, s, i;
   float *val;

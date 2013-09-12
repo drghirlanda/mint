@@ -35,6 +35,7 @@
      "chap:details")
     (TeX-add-symbols
      '("note" 2)
+     '("ls" 1)
      "mintversion"
      "fref")
     (TeX-run-style-hooks

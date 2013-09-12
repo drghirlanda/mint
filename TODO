@@ -4,12 +4,9 @@
 
 - known bugs or poorly designed features:
 
-  - move mult_naive to mult, since it does not make much difference
-    with -O2, also amend manual.
-
-  - inner loop in image_paste and image_paste_gray could be optimized
-    by replacing the if on the index with a calculation to begin and
-    end loops at appropriate indices...
+  - inner loop in image_paste could be optimized by replacing the if
+    on the index with a calculation to begin and end loops at
+    appropriate indices...
 
   - DOCUMENT THIS: network init ops may set spread. if spread is set,
     run_spread op is added and the spread is performed. other network
@@ -19,20 +16,9 @@
   - mint_weights_set assumes indices in sparse matrix cind variables
     are sorted, but mint_weights_set_row does not check...
 
-  - redo docs for network_camera op
-
-  - all ops that need state should allow the user to configure which
-    state variables are used, so that multiple ops can coexist without
-    clashing! the state variables will have reasonable defaults so
-    that they need not be set explicitly when the op has no potential
-    for clashing with others. DONE FOR NOP.
-
   - lateral processing weights op can be turned into receptive field
     op by allowing nfrom to be different from nto!
    
-  - object info functions to complement save functions? save is too
-    much info to look through
-
 - to be tested:
 
   - freezing/unfreezing of weight matrices and networks
@@ -57,12 +43,12 @@
 
   - spread threading is suboptimal, see FIX in threads.c
 
+  - multithreading of node operations: write auxiliary function that
+    either simply dispatches the node op or schedules it across
+    multiple threads then an init op could se this to the threaded
+    version.
 
 - ops system:
-
-  - add node operate op? can be used to turn on multi-threading on
-    nodes. (is a dedicated update op enough? if first, it could call
-    all other ops, but how to avoid that the others are also called?)
 
   - can direct-output nodes be set through an op? yes: by setting n[1]
     to the same as n[0]... carefully. is this safe? how to prevent
@@ -75,6 +61,8 @@
 - weights init functions that build receptive fields and topographic
   mappings
 
+- can we write a function that efficiently maps node index to x,y
+  position on a grid? 
 
 - make it possible to set inputs by "shallow copy" (pointer
   assignment)? would make things much faster when presenting many

@@ -47,11 +47,11 @@ if [[ $debug -eq 1 ]]; then
     BUILD=build/debug
 elif [[ $profile -eq 1 ]]; then
     LIBRARY=libmint-profile.a
-    CFLAGS="-O2 -pg $CFLAGS"
+    CFLAGS="-O2 -funroll-loops -finline-functions -pg $CFLAGS"
     BUILD=build/profile
 else
     LIBRARY=libmint.a
-    CFLAGS="-O2 -fomit-frame-pointer $CFLAGS"
+    CFLAGS="-O2 -funroll-loops -finline-functions -fomit-frame-pointer $CFLAGS"
     BUILD=build/production
 fi
 

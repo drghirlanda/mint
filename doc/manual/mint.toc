@@ -11,30 +11,32 @@
 \contentsline {section}{\numberline {2.2}What}{\sffamily 11}{section.2.2}
 \contentsline {section}{\numberline {2.3}Installation}{\sffamily 11}{section.2.3}
 \contentsline {chapter}{\chapternumberline {3}Data Structures}{\sffamily 13}{chapter.3}
-\contentsline {chapter}{\chapternumberline {4}Cookbook}{\sffamily 16}{chapter.4}
-\contentsline {section}{\numberline {4.1}How do i create a feed-forward network?}{\sffamily 16}{section.4.1}
-\contentsline {section}{\numberline {4.2}How do I create a recurrent network?}{\sffamily 16}{section.4.2}
-\contentsline {section}{\numberline {4.3}How do I run a network?}{\sffamily 16}{section.4.3}
-\contentsline {section}{\numberline {4.4}How can a network learn?}{\sffamily 16}{section.4.4}
-\contentsline {section}{\numberline {4.5}How do I choose node transfer functions?}{\sffamily 16}{section.4.5}
-\contentsline {section}{\numberline {4.6}How do I set learning rules?}{\sffamily 16}{section.4.6}
-\contentsline {section}{\numberline {4.7}How do I set up how a network is updated?}{\sffamily 16}{section.4.7}
-\contentsline {section}{\numberline {4.8}How do I use images as network stimuli?}{\sffamily 16}{section.4.8}
-\contentsline {section}{\numberline {4.9}How do I simulate a sense organ?}{\sffamily 16}{section.4.9}
-\contentsline {section}{\numberline {4.10}How do I simulate hormones, neuromodulators, etc.?}{\sffamily 16}{section.4.10}
-\contentsline {section}{\numberline {4.11}How do I simulate hunger, thirst, and other body states?}{\sffamily 16}{section.4.11}
-\contentsline {section}{\numberline {4.12}How do I simulate spiking neurons?}{\sffamily 16}{section.4.12}
-\contentsline {section}{\numberline {4.13}How do I simulate continuous time?}{\sffamily 16}{section.4.13}
-\contentsline {section}{\numberline {4.14}How do I control a robot or some kind of hardware with a network?}{\sffamily 16}{section.4.14}
-\contentsline {section}{\numberline {4.15}How do I visualize networks, node groups and weight matrices?}{\sffamily 16}{section.4.15}
-\contentsline {section}{\numberline {4.16}Input file syntax}{\sffamily 16}{section.4.16}
-\contentsline {subsection}{\numberline {4.16.1}Node model}{\sffamily 16}{subsection.4.16.1}
-\contentsline {subsection}{\numberline {4.16.2}Weight model}{\sffamily 17}{subsection.4.16.2}
-\contentsline {section}{\numberline {4.17}Node update functions}{\sffamily 17}{section.4.17}
-\contentsline {subsection}{\numberline {4.17.1}Using update functions provided with MINT\xspace }{\sffamily 17}{subsection.4.17.1}
-\contentsline {subsection}{\numberline {4.17.2}Adding update functions}{\sffamily 17}{subsection.4.17.2}
-\contentsline {section}{\numberline {4.18}Spreading schemes}{\sffamily 18}{section.4.18}
-\contentsline {section}{\numberline {4.19}Debugging}{\sffamily 18}{section.4.19}
-\contentsline {section}{\numberline {4.20}Replacing the stock matrix-vector multiplication}{\sffamily 19}{section.4.20}
-\contentsline {chapter}{\chapternumberline {5}Space and speed}{\sffamily 21}{chapter.5}
-\contentsline {section}{\numberline {5.1}Benchmarks}{\sffamily 22}{section.5.1}
+\contentsline {section}{\numberline {3.1}The neural population model}{\sffamily 13}{section.3.1}
+\contentsline {section}{\numberline {3.2}The synaptic connection model}{\sffamily 14}{section.3.2}
+\contentsline {chapter}{\chapternumberline {4}Cookbook}{\sffamily 18}{chapter.4}
+\contentsline {section}{\numberline {4.1}How do i create a feed-forward network?}{\sffamily 18}{section.4.1}
+\contentsline {section}{\numberline {4.2}How do I create a recurrent network?}{\sffamily 18}{section.4.2}
+\contentsline {section}{\numberline {4.3}How do I run a network?}{\sffamily 18}{section.4.3}
+\contentsline {section}{\numberline {4.4}How can a network learn?}{\sffamily 18}{section.4.4}
+\contentsline {section}{\numberline {4.5}How do I choose node transfer functions?}{\sffamily 18}{section.4.5}
+\contentsline {section}{\numberline {4.6}How do I set learning rules?}{\sffamily 18}{section.4.6}
+\contentsline {section}{\numberline {4.7}How do I set up how a network is updated?}{\sffamily 18}{section.4.7}
+\contentsline {section}{\numberline {4.8}How do I use images as network stimuli?}{\sffamily 18}{section.4.8}
+\contentsline {section}{\numberline {4.9}How do I simulate a sense organ?}{\sffamily 18}{section.4.9}
+\contentsline {section}{\numberline {4.10}How do I simulate hormones, neuromodulators, etc.?}{\sffamily 18}{section.4.10}
+\contentsline {section}{\numberline {4.11}How do I simulate hunger, thirst, and other body states?}{\sffamily 18}{section.4.11}
+\contentsline {section}{\numberline {4.12}How do I simulate spiking neurons?}{\sffamily 18}{section.4.12}
+\contentsline {section}{\numberline {4.13}How do I simulate continuous time?}{\sffamily 18}{section.4.13}
+\contentsline {section}{\numberline {4.14}How do I control a robot or some kind of hardware with a network?}{\sffamily 18}{section.4.14}
+\contentsline {section}{\numberline {4.15}How do I visualize networks, node groups and weight matrices?}{\sffamily 18}{section.4.15}
+\contentsline {section}{\numberline {4.16}Input file syntax}{\sffamily 18}{section.4.16}
+\contentsline {subsection}{\numberline {4.16.1}Node model}{\sffamily 18}{subsection.4.16.1}
+\contentsline {subsection}{\numberline {4.16.2}Weight model}{\sffamily 19}{subsection.4.16.2}
+\contentsline {section}{\numberline {4.17}Node update functions}{\sffamily 19}{section.4.17}
+\contentsline {subsection}{\numberline {4.17.1}Using update functions provided with MINT\xspace }{\sffamily 19}{subsection.4.17.1}
+\contentsline {subsection}{\numberline {4.17.2}Adding update functions}{\sffamily 19}{subsection.4.17.2}
+\contentsline {section}{\numberline {4.18}Spreading schemes}{\sffamily 20}{section.4.18}
+\contentsline {section}{\numberline {4.19}Debugging}{\sffamily 20}{section.4.19}
+\contentsline {section}{\numberline {4.20}Replacing the stock matrix-vector multiplication}{\sffamily 21}{section.4.20}
+\contentsline {chapter}{\chapternumberline {5}Space and speed}{\sffamily 23}{chapter.5}
+\contentsline {section}{\numberline {5.1}Benchmarks}{\sffamily 24}{section.5.1}

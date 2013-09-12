@@ -11,12 +11,14 @@
 
 \renewcommand{\familydefault}{\sfdefault}
 
+\newcommand{\ls}[1]{\lstinline{#1}}
+
 \chapterstyle{ell}
 \setsecheadstyle{\Large\sffamily\raggedright}
 \setsubsecheadstyle{\large\sffamily\raggedright}
 
 \usepackage{listings}
-\lstset{language=C,basicstyle=\ttfamily,
+\lstset{mathescape,language=C,basicstyle=\ttfamily,
   numbers=left,numberstyle=\tiny\sffamily,morekeywords={FILE}}
 
 \let\fref\relax% memoir defines  \fref
@@ -324,16 +326,146 @@ specified in network architecture files. For example, we saw in
 \ref{sec:first-mint} that the \lstinline{sigmoid} operation instructs
 mint to calculate node output as a sigmoid function of node input.
 
+\section{The neural population model}
 
-A typical operation is, for instance, to
-calculate the output of neurons based on their current input (and
-possibly internal state variables). This is called a ``node update'' 
+\mint defines a type \lstinline{mint_nodes} to manage population of
+model neurons. A variable of type \lstinline{mint_nodes} is referred
+to as a ``node group.'' A node group is typically created from a
+description contained in a text file, such as:
+\begin{lstlisting}
+nodes n1 size 100
+\end{lstlisting}
+where \lstinline{n1} is the name of the group. This line creates a node group with 100 neurons. Creating the node group from file is done like this:
+\begin{lstlisting}
+mint_nodes n;
+file = fopen( ``nodes.arc'', ``r'' );
+n = mint_nodes_load( file );
+fclose( file );
+\end{lstlisting}
+The variable \lstinline{n} can now be accessed as a two-dimensional
+array of \lstinline{float}s with the following semantics:\footnote{As
+  it is usual in C, there is no automatic check that array indices
+  make sense, although all \mint functions perform such checks.}
+\begin{itemize}
+\item \lstinline{n[0][i]} is the input received by node \lstinline{i}
+  (\lstinline{0 $\le$ i $<$ size})
+\item \lstinline{n[1][i]} is the output of node \lstinline{i}.
+\end{itemize}
 
-An explanation of operations is
-provided WHERE.
+It is also possible to endow nodes with additional state
+variables. The purpose of such variables is to enable programming of
+neuron models whose dynamics depends on more than input and output,
+e.g., spiking neuron models in which a 0/1 output is determined based
+on a continuous membrane potential. In such a case, node output would
+be set to be 0 or 1 according to the value of a state variable
+modeling membrane potential (see REF for an example). States are added
+like this:
+\begin{lstlisting}
+nodes n1 size 100 states 1
+\end{lstlisting}
+which would add one state variable, accessed in C code as
+\lstinline{n[2][i]}. That is, the $j$-th state variable of node $i$ is
+\lstinline{n[j+1][i]}.
 
+Many other directives can be added to a node group declaration. The
+following line, for example, builds a node group in which each node
+receives normally distributed noise in input (in addition to the input
+received from other nodes in the network) and computes output from input using a logistic function:
+\begin{lstlisting}
+nodes n1 size 100 noise 0 0 0.1 logistic
+\end{lstlisting}
+The three parameters following \lstinline{noise} mean that the noise
+is added to variable 0 (node input) with a mean of 0 and standard
+deviation of 0.1. The \lstinline{noise} and \lstinline{operations} are
+applied in the order given. Writing \lstinline{logistic noise 0 0 0.1}
+would result in the logistic function being applied before the noise
+is added to node input. The noise would therefore have no effect. It
+is possible to add noise to node output by changing the noise target
+variable: \lstinline{logistic noise 1 0 0.1}. As a further example,
+the following line declares spiking nodes with spontaneous activity of
+5 spikes/s:\footnote{``Per second'' implies that each node update is
+  taken to correspond to 1 ms of real time. A more precise statement
+  is that \lstinline{spikes 5} results in a node being turned on
+  (firing) with probability $5/1000$ for every update.}
+\begin{lstlisting}
+nodes n1 size 100 spikes 5
+\end{lstlisting}
+In summary, \mint defines a number of common operations on nodes that
+can be used by declaring them in a configuration file (see REF for a
+complete list). Additionally, \mint provides a framework for adding
+node operations in a way that integrates seamlessly with the rest of
+the library (see REF).
 
-The building blocks of a \mint network are:
+Lastly, everything that can be done by writing and loading
+configuration files can also be done directly in C code, but in a more
+tedious way.
+
+\section{The synaptic connection model}
+
+\mint defines a type \lstinline{mint_weights} to manage synaptic
+connections between node groups. A variable of type \ls{mint_weights}
+is referred to as a ``weight matrix.'' It can be created in two ways
+from an architecture file. The first is by providing explicitly its
+dimensions:
+\begin{lstlisting}
+weights w rows 50 cols 10
+\end{lstlisting}
+This would create a weight matrix named \ls{w}, with appropriate
+dimensions to the output of a node group of 10 nodes (the number of
+columns) to a node group of 50 nodes (the number of rows). Creating
+the weight matrix is similar to creating a node group:
+\begin{lstlisting}
+mint_weights w;
+file = fopen( ``weights.arc'', ``r'' );
+w = mint_weights_load( file );
+fclose( file );
+\end{lstlisting}
+A weight matrix created like this, however, would have to be added
+manually to a neural network and connected to node groups to several
+function calls. This is generally unnecessary as you can define weight
+matrices directly as part of a neural network (this is, after all,
+where they do their job), like this:
+\begin{lstlisting}
+network
+nodes n1 size 10
+nodes n2 size 50
+weights w n1-n2
+\end{lstlisting}
+The \ls{network} keyword introduces a neural network (see REF). Then
+two node groups are defined, and lastly a weight matrix is defined
+connecting node groups \ls{n1} and \ls{n2}. The first node group is
+the \textit{pre-synaptic one}, i.e., the one sending output, and the
+second is the \textit{post-synaptic} one, i.e., the one receiving
+input. In other words, the synaptic connections modeled by \ls{w}
+would be between the axons of \ls{n1} nodes and the dendrites of
+\ls{n2} nodes.\footnote{Can you have connections between dendrites or
+  other departures from the ``from axon to dendrite'' paradigm in
+  \mint? Yes. \mint does not enforce any particular neurobiological
+  interpretation of connections and thus you are free to model any
+  kind of neurobiological interaction between neurons through \mint
+  weight matrices. See REF for tips on how to do this.} This way of
+defining weight matrices lets \mint take care of bookkeeping such as
+what are the appropriate dimensions for matrix \ls{w} and which nodes
+it connects. The whole network can be then loaded as detailed below
+(and as already seen in \fref{sec:first-mint}).
+
+Once a weight matrix is created (let's suppose for simplicity that it
+is stored in the variable \ls{w}), it can be accessed as a
+three-dimensional array of \ls{float}s in which \ls{w[0][i][j]} is the
+value of the synaptic connection \textit{from} node $j$ in the
+pre-synaptic node group \textit{to} node $i$ in the post-synaptic
+one. The array is three-dimensional rather than two-dimensional to
+enable the use of additional state variables of synaptic connections,
+as we have seen for node groups. State variables can be used to model
+the internal dynamics of synapses. Suppose, for instance, that you
+want to take into account that neurotransmitters can deplete and need
+to be replenished. A simple way of doing so is do have a state
+variable that represents the amount of available neurotransmitter, and
+set up a weight
+
+although Node groups can be used as
+two-dimensional arrays of floats with special semantics. Let's see an
+example. Nodes The building blocks of a \mint network are:
 \begin{description}
 \item[Node groups:] They model groups of neurons. They are variables
   of type \lstinline{mint_nodes} and appear to the user as
