@@ -441,9 +441,10 @@ void mint_network_graph( const struct mint_network *net, FILE *f ) {
   m = mint_network_matrices( net );
   for( i=0; i<m; i++ ) {
     w = mint_network_weights( (struct mint_network *)net, i );
-    fprintf( f, "n%d -> n%d [label=\"\"]\n", 
+    fprintf( f, "n%d -> n%d [label=\"%d\"]\n", 
 	     mint_weights_get_from(w),
-	     mint_weights_get_to(w) );
+	     mint_weights_get_to(w),
+	     mint_weights_nonzero(w) );
   }
   fprintf( f, "}\n" );
 }
