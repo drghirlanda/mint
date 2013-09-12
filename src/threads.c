@@ -40,10 +40,7 @@ struct mint_thread_ndata {
 void *mint_threads_mult_helper( void *arg ) {
   struct mint_thread_wdata *td;
   td = (struct mint_thread_wdata *)arg;
-  if( mint_weights_is_sparse( td->w ) )
-    mint_weights_mult_sparse( td->w,td->from,td->to,td->rmin,td->rmax,0 );
-  else
-    mint_weights_mult( td->w,td->from,td->to,td->rmin,td->rmax,0 );
+  mint_weights_mult( td->w, td->from, td->to, td->rmin, td->rmax, 0 );
   return 0;
 }
 
@@ -64,10 +61,7 @@ void mint_threads_mult( mint_weights w, mint_nodes from, mint_nodes to,
   
   /* too few rows to warrant threads, do standard multiplication */
   if( rstep==0 ) {
-    if( mint_weights_is_sparse(w) )
-      mint_weights_mult_sparse( w,from,to,rmin,rmax,0 );
-    else
-      mint_weights_mult( w,from,to,rmin,rmax,0 );
+    mint_weights_mult( w,from,to,rmin,rmax,0 );
     return;
   }
 
@@ -98,10 +92,7 @@ void mint_threads_mult( mint_weights w, mint_nodes from, mint_nodes to,
   }
 
   /* this thread does the leftover work */ 
-  if( mint_weights_is_sparse(w) )
-    mint_weights_mult_sparse( w,from,to,td[nthreads-2].rmax,rmax,0 );
-  else
-    mint_weights_mult( w,from,to,td[nthreads-2].rmax,rmax,0 );
+  mint_weights_mult( w, from, to, td[nthreads-2].rmax, rmax, 0 );
 
   for( i=0; i<nthreads-1; i++ ) {
     mint_check( pthread_join( tids[i], 0 ) == 0, "thread join failed" );
