@@ -210,6 +210,7 @@ void mint_weights_init_normalize( mint_weights w, int rmin, int rmax,
 				   float *p ) {
   float sum, total;
   int rows, cols, i, j, rowlen;
+  float *val;
   rows = mint_weights_rows( w );
   cols = mint_weights_cols( w );
   total = p[0];
@@ -222,8 +223,15 @@ void mint_weights_init_normalize( mint_weights w, int rmin, int rmax,
       for( j=0; j<rowlen; j++ )
 	w[0][i][j] *= total / sum;
     } else {
-      for( j=0; j<rowlen; j++ )
-	w[0][i][j] *= total / rowlen;
+      if( mint_weights_is_sparse( w ) ) {
+	val = malloc( cols * sizeof(float) );
+	for( j=0; j<cols; j++ )
+	  mint_weights_set_row( w, i, cols, val, 0, 0 );
+	free( val );
+      } else {
+	for( j=0; j<rowlen; j++ )
+	  w[0][i][j] = total / rowlen;
+      }
     }
   }
 }
