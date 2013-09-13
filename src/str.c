@@ -109,9 +109,10 @@ struct mint_str *mint_str_substr( struct mint_str *str, int start,
   mint_check( stop>=start && stop<=str->len, "stop out of range" );
 
   substr = malloc( sizeof(struct mint_str) );
-  substr->len = stop - start;
+  substr->len = stop - start + 1;
   substr->data = malloc( substr->len );
-  memcpy( substr->data, str->data + start, substr->len );
+  memcpy( substr->data, str->data + start, substr->len - 1 );
+  substr->data[ substr->len - 1 ] = '\0';
   return substr;
 }
 
