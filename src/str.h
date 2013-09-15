@@ -28,5 +28,7 @@ struct mint_str *mint_str_substr( struct mint_str *str, int start,
 
 void mint_str_incr( struct mint_str *str );
 
+int mint_str_numlen( int n );
+
 #endif
 

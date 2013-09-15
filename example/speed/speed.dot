@@ -1,0 +1,11 @@
+digraph network {
+rankdir=LR
+node [fixedsize=true height=1 shape=circle]
+edge [fontsize=10]
+n0 [label="nose\n3000"]
+n1 [label="exc\n8000"]
+n2 [label="inh\n2000"]
+n1 -> n2 [label="1598683"]
+n2 -> n1 [label="1600042"]
+n0 -> n1 [label="2399985"]
+}

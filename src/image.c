@@ -9,25 +9,29 @@
 
 static int mint_freeimage_init_flag = 0;
 
+static float node_snapshot_param[4] = { 1, 1, 1, 0 };
+
 struct mint_image {
   FIBITMAP *ptr;
 };
 
 
-void mint_freeimage_init( void ) {
+void mint_image_init( void ) {
   if( mint_freeimage_init_flag )
     return;
   FreeImage_Initialise( FALSE );
   atexit( FreeImage_DeInitialise );
   mint_freeimage_init_flag = 1;
+
+  mint_op_add( "snapshot", mint_op_nodes_update, mint_node_snapshot,
+	       4, node_snapshot_param );
+
 }
 
 struct mint_image *mint_image_load( char *filename ) {
   struct mint_image *image;
   FREE_IMAGE_FORMAT fif;
   
-  mint_freeimage_init();
-
   image = malloc( sizeof(struct mint_image) );
   fif = FreeImage_GetFileType( filename, 0 );
   if( fif == FIF_UNKNOWN )
@@ -60,8 +64,7 @@ struct mint_image *mint_image_nodes( const mint_nodes nred,
 
   ops = mint_nodes_get_ops( nred );
   i = mint_ops_find( ops, "rows", mint_op_nodes_init );
-  mint_check( i>=0, "rows is not set for first node group" );
-  rows = mint_op_get_param( mint_ops_get(ops, i), 0 );
+  rows = i != -1 ? mint_op_get_param( mint_ops_get(ops, i), 0 ) : 1;
 
   size = mint_nodes_size( nred );
   cols = size / rows;
@@ -271,3 +274,37 @@ struct mint_image *mint_image_from_FreeImage( FIBITMAP *fib ) {
   return image;
 }
 
+void mint_node_snapshot( mint_nodes n, int min, int max, float *p ) {
+  int frequency, state, overwrite, len;
+  struct mint_image *img;
+  char *filename;
+  struct mint_str *name;
+
+  frequency = p[0];
+  state = p[1];
+  overwrite = p[2];
+
+  p[3] += 1; /* counter for number of times function called */
+
+  if( ( (int)p[3] - 1 ) % frequency )
+    return;
+
+  img = mint_image_nodes( n, 0, 0, state ); 
+
+  name = mint_nodes_get_name( n );
+  len = mint_str_size( name );
+  len += 9; /* "mint/" + ".bmp" */
+
+  if( !overwrite )
+    len += mint_str_numlen( (int)p[3] ) + 1;
+
+  filename = malloc( len + 1 );
+  
+  if( overwrite )
+    sprintf( filename, "mint/%s.bmp", mint_str_char(name) );
+  else
+    sprintf( filename, "mint/%s-%d.bmp", mint_str_char(name), (int)p[3] );
+
+  mint_image_save( img, filename, FIF_BMP );
+  mint_image_del( img );
+}

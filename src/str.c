@@ -118,10 +118,10 @@ struct mint_str *mint_str_substr( struct mint_str *str, int start,
 
 /* # of digits an integer will print to (adapted from a stackoverflow
    answer). we don't need to handle negative numbers. */
-int int_len( int n ) {
+int mint_str_numlen( int n ) {
   if (n < 10) 
     return 1;
-  return 1 + int_len( n/10 );
+  return 1 + mint_str_numlen( n/10 );
 }
 
 void mint_str_incr( struct mint_str *str ) {
@@ -134,7 +134,7 @@ void mint_str_incr( struct mint_str *str ) {
     str->len += 2;
   } else {
     sscanf( str->data + i + 1, "%d", &j );
-    added_len = int_len(j+1) - int_len(j);
+    added_len = mint_str_numlen(j+1) - mint_str_numlen(j);
     if( added_len )
       str->data = realloc( str->data, str->len + added_len );
     sprintf( str->data + i + 1, "%d", j+1 );

@@ -24,6 +24,9 @@
 /** Data structure used to manipulate images. */
 struct mint_image;
 
+/** Call this before using any image related function or op. */
+void mint_image_init( void );
+
 /** Read an image from file. */
 struct mint_image *mint_image_load( char *file );
 
@@ -111,5 +114,24 @@ FIBITMAP *mint_image_get_FreeImage( struct mint_image * );
 
 /** Create a mint_image from a FIBITMAP. */
 struct mint_image *mint_image_from_FreeImage( FIBITMAP * );
+
+
+/** Periodically save an image of node state to file. Images are saved
+    in a folder named mint (which must be created beforehand) with a
+    filename composed of node group name, state variable index, and
+    eventually a progressive number (see parameter 2 below).
+
+    State variables: none required.
+ 
+    Parameters: 0: Snapshot frequency. For example, if == 5 a snapshot
+                   will be saved every 5 node updates (default 1).
+
+                1: Which state variable to image (default 1).
+
+		2: If == 1, overwrite a single file repeatedly, if ==
+                   0 save each snapshot to a separate file, adding a
+                   progressive number at the end of the filename
+                   (default 1). */
+void mint_node_snapshot( mint_nodes n, int min, int max, float *p );
 
 #endif /* MINT_IMAGE_H */

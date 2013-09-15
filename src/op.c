@@ -36,6 +36,7 @@ static float node_size_param[1] = { -1 };
 static float node_rows_param[1] = { -1 };
 static float node_states_param[1] = { 0 };
 static float node_color_param[2] = { 1, 1 }; 
+
 static float weights_hebbian_param[4] = { 0., 0., 0., 0. };
 static float weights_delta_param[2] = { 0.05, 2 };
 static float weights_stdp_param[5] = { 0.05, .1, -.12, -.1, .1 };
