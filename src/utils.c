@@ -56,10 +56,9 @@ int mint_keyword( char *string ) {
 
   for( i=0; i<6; i++ ) {
     len2 = strlen( keywords[i] );
-    if( len1 < len2 ) len2 = len1;
-    if( strncmp( string, keywords[i], len2 ) == 0 ) {
+    if( len1 == len2 &&
+	strncmp( string, keywords[i], len2 ) == 0 )
       return 1;
-    }
   }
 
   return 0;
