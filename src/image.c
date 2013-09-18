@@ -7,50 +7,115 @@
 #include <math.h>
 #include <string.h>
 
-static int mint_freeimage_init_flag = 0;
+#include <SDL/SDL_image.h>
+#include <SDL/SDL_rotozoom.h>
+
+struct mint_image {
+  SDL_Surface *surf;
+};
+
+static int mint_image_init_flag = 0;
+static SDL_Surface *mint_screen = 0;
 
 static float node_snapshot_param[4] = { 1, 1, 1, 0 };
 
-struct mint_image {
-  FIBITMAP *ptr;
-};
+/* functions to get and set pixels in SDL surfaces, from
+   http://sdl.beuc.net/sdl.wiki/Pixel_Access */
 
+Uint32 getpixel(SDL_Surface *surface, int x, int y)
+{
+    int bpp = surface->format->BytesPerPixel;
+    /* Here p is the address to the pixel we want to retrieve */
+    Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch + x * bpp;
+
+    switch(bpp) {
+    case 1:
+        return *p;
+        break;
+
+    case 2:
+        return *(Uint16 *)p;
+        break;
+
+    case 3:
+        if(SDL_BYTEORDER == SDL_BIG_ENDIAN)
+            return p[0] << 16 | p[1] << 8 | p[2];
+        else
+            return p[0] | p[1] << 8 | p[2] << 16;
+        break;
+
+    case 4:
+        return *(Uint32 *)p;
+        break;
+
+    default:
+        return 0;       /* shouldn't happen, but avoids warnings */
+    }
+}
+
+void putpixel(SDL_Surface *surface, int x, int y, Uint32 pixel)
+{
+    int bpp = surface->format->BytesPerPixel;
+    /* Here p is the address to the pixel we want to set */
+    Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch + x * bpp;
+
+    switch(bpp) {
+    case 1:
+        *p = pixel;
+        break;
+
+    case 2:
+        *(Uint16 *)p = pixel;
+        break;
+
+    case 3:
+        if(SDL_BYTEORDER == SDL_BIG_ENDIAN) {
+            p[0] = (pixel >> 16) & 0xff;
+            p[1] = (pixel >> 8) & 0xff;
+            p[2] = pixel & 0xff;
+        } else {
+            p[0] = pixel & 0xff;
+            p[1] = (pixel >> 8) & 0xff;
+            p[2] = (pixel >> 16) & 0xff;
+        }
+        break;
+
+    case 4:
+        *(Uint32 *)p = pixel;
+        break;
+    }
+}
 
 void mint_image_init( void ) {
-  if( mint_freeimage_init_flag )
+  if( mint_image_init_flag )
     return;
-  FreeImage_Initialise( FALSE );
-  atexit( FreeImage_DeInitialise );
-  mint_freeimage_init_flag = 1;
+  mint_check( SDL_Init( SDL_INIT_VIDEO ) != 0,
+	      "cannot initialize image functions: %s",
+	      SDL_GetError() );
+  atexit( SDL_Quit );
+  mint_image_init_flag = 1;
 
   mint_op_add( "snapshot", mint_op_nodes_update, mint_node_snapshot,
 	       4, node_snapshot_param );
-
 }
 
 struct mint_image *mint_image_load( char *filename ) {
   struct mint_image *image;
-  FREE_IMAGE_FORMAT fif;
   
-  image = malloc( sizeof(struct mint_image) );
-  fif = FreeImage_GetFileType( filename, 0 );
-  if( fif == FIF_UNKNOWN )
-    fif = FreeImage_GetFIFFromFilename( filename );
-  mint_check( fif != FIF_UNKNOWN, "cannot determine image type" );
-  mint_check( FreeImage_FIFSupportsReading(fif),"unsopported image type" ); 
-  image->ptr = FreeImage_Load( fif, filename, 0 );
+  image = malloc( sizeof( struct mint_image ) );
+  image->surf = IMG_Load( filename );
+  mint_check( image->surf, "cannot load image from file %s", filename );
   return image;
 }
 
 void mint_image_del( struct mint_image *image ) {
-  FreeImage_Unload( image->ptr );
+  SDL_FreeSurface( image->surf );
   free( image );
 }
 
-void mint_image_save( const struct mint_image *image, char *filename,
-		       FREE_IMAGE_FORMAT fif ) {
-   FreeImage_Save( fif, image->ptr, filename, 0 );
- }
+void mint_image_save( const struct mint_image *image, char *filename ) {
+  SDL_SaveBMP( image->surf, filename );
+}
 
 struct mint_image *mint_image_nodes( const mint_nodes nred, 
 				     const mint_nodes ngreen, 
@@ -58,9 +123,7 @@ struct mint_image *mint_image_nodes( const mint_nodes nred,
 				     int var ) {
   struct mint_image *image;
   struct mint_ops *ops;
-  int i, rows, cols, size, x, y;
-  int stride;
-  BYTE *bits;
+  int i, rows, cols, size, x, y, R, G, B;
 
   ops = mint_nodes_get_ops( nred );
   i = mint_ops_find( ops, "rows", mint_op_nodes_init );
@@ -78,40 +141,39 @@ struct mint_image *mint_image_nodes( const mint_nodes nred,
       mint_check( 0, "must provide 1 or 3 node arguments, not 2" );
   } 
 
-  image = malloc( sizeof(struct mint_image) );
-  /* FIX hardcoded bpp in next line and in loop below */
-  image->ptr = FreeImage_Allocate( cols, rows, 24, 
-				   FI_RGBA_RED_MASK, 
-				   FI_RGBA_GREEN_MASK, 
-				   FI_RGBA_BLUE_MASK );
+  /* FIX hardcoded bpp? */
+  image = malloc( sizeof( struct mint_image ) );
+  image->surf = SDL_CreateRGBSurface( 0, cols, rows, 24, 0, 0, 0, 0 ); 
 
-  stride = FreeImage_GetLine(image->ptr) / FreeImage_GetWidth(image->ptr);
+  if( SDL_MUSTLOCK( image->surf )  )
+    SDL_LockSurface( image->surf );
 
   for ( y=0; y<rows; y++ ) {
-    bits = FreeImage_GetScanLine( image->ptr, y );
     for ( x=0; x<cols; x++ ) {
       if( !ngreen ) {
-	bits[FI_RGBA_RED] = bits[FI_RGBA_GREEN] = bits[FI_RGBA_BLUE] =
-	  255 * nred[var][ y+rows*x ];
+	R = G = B =  255 * nred[var][ y+rows*x ];
       } else {
-	bits[FI_RGBA_RED] = 255 * nred[var][ y+rows*x ];
-	bits[FI_RGBA_GREEN] = 255 * ngreen[var][ y+rows*x ];
-	bits[FI_RGBA_BLUE] = 255 * nblue[var][ y+rows*x ];
+	R = 255 * nred[var][ y+rows*x ];
+	G = 255 * ngreen[var][ y+rows*x ];
+	B = 255 * nblue[var][ y+rows*x ];
       }
-      bits += stride;
+      putpixel( image->surf, x, y, 
+		SDL_MapRGB( image->surf->format, R, G, B ) );
     }
   }
 
+  if( SDL_MUSTLOCK( image->surf )  )
+    SDL_UnlockSurface( image->surf );
+  
   return image; 
 }
 
 struct mint_image *mint_image_weights( const mint_weights w, int irows, 
 				       int var ) {
   struct mint_image *image;
-  int icols, cols, rows, x, y, wx, wy, count, stride;
-  int intensity;
+  int icols, cols, rows, x, y, wx, wy, count;
+  int intensity, R, G, B;
   float max;
-  BYTE *bits;
 
   cols = mint_weights_cols( w );
   rows = mint_weights_rows( w );
@@ -136,29 +198,29 @@ struct mint_image *mint_image_weights( const mint_weights w, int irows,
     }
   }
 
-  image = malloc( sizeof(struct mint_image) );
-  /* FIX hardcoded bpp in next line and in loop below */
-  image->ptr = FreeImage_Allocate( icols, irows, 24, 
-				   FI_RGBA_RED_MASK, 
-				   FI_RGBA_GREEN_MASK, 
-				   FI_RGBA_BLUE_MASK );
+  /* FIX hardcoded bpp? */
+  image = malloc( sizeof( struct mint_image ) );
+  image->surf = SDL_CreateRGBSurface( 0, icols, irows, 24, 0, 0, 0, 0 ); 
 
-  stride = FreeImage_GetLine(image->ptr) / FreeImage_GetWidth(image->ptr);
+  if( SDL_MUSTLOCK( image->surf )  )
+    SDL_LockSurface( image->surf );
 
   count = 0;
   for ( y=0; y<irows; y++ ) {
-    bits = FreeImage_GetScanLine( image->ptr, y );
     for ( x=0; x<icols; x++ ) {
       intensity = 255 *  *( &w[var][0][0] + count ) / max;
       if( intensity>0 )
-	bits[FI_RGBA_RED] = bits[FI_RGBA_GREEN] = intensity; 
+	R = G = intensity, B = 0; 
       else
-	bits[FI_RGBA_BLUE] = -intensity;
-      bits += stride;
+	R = G = 0, B = -intensity;
+      putpixel( image->surf, x, y, 
+		SDL_MapRGB( image->surf->format, R, G, B ) );
       count++;
     }
-    fprintf( stderr, "\n" );
   }
+
+  if( SDL_MUSTLOCK( image->surf )  )
+    SDL_UnlockSurface( image->surf );
 
   /* this sends cell 1,1 in the top left corner as it is customary in
      math */
@@ -168,109 +230,113 @@ struct mint_image *mint_image_weights( const mint_weights w, int irows,
 }
 
 void mint_image_fliph( struct mint_image *image ) {
-  FreeImage_FlipHorizontal( image->ptr );
+  mint_check( 0, "unimplemented" );
 }
 
 void mint_image_flipv( struct mint_image *image ) {
-  FreeImage_FlipVertical( image->ptr );
+  mint_check( 0, "unimplemented" );
 }
 
 void mint_image_rotate( struct mint_image *image, float angle ) {
-  FIBITMAP *fib;
-  fib = FreeImage_RotateClassic( image->ptr, angle );
-  FreeImage_Unload( image->ptr );
-  image->ptr = fib;  
+  mint_check( 0, "unimplemented" );
 }
 
 void mint_image_paste( const struct mint_image *image, mint_nodes n,
 		       int xpos, int ypos, int scale ) {
-  int i, j, irows, icols, nrows, ncols, size, x, y, stride, idx, 
-    var, component;
+  int i, j, irows, icols, nrows, ncols, size, x, y, idx, var;
   float weight;
-  BYTE *bits;
-  FIBITMAP *fib;
+  SDL_Surface *surf;
+
+  Uint8 mask, shift, loss, intensity;
+  Uint32 pixel;
   struct mint_ops *ops;
   struct mint_op *op;
   const char *name;
 
-  fib = 0;
-  stride = 0;
+  surf = 0;
 
-  irows = FreeImage_GetHeight( image->ptr );
-  icols = FreeImage_GetWidth( image->ptr );
+  irows = image->surf->h;
+  icols = image->surf->w;
     
   /* go through all ops and process red, green, and blue ops only */
   ops = mint_nodes_get_ops( n );
   for( i=0; i < mint_ops_size( ops ); i++ ) {
-    component = -1;
+    mask = -1;
     op = mint_ops_get( ops, i );
     name = mint_op_name( op );
-    if( strcmp( name, "red" ) == 0 )
-      component = FI_RGBA_RED;
-    else if( strcmp( name, "green" ) == 0 )
-      component = FI_RGBA_GREEN;
-    else if( strcmp( name, "blue" ) == 0 )
-      component = FI_RGBA_BLUE;
-    if( component != -1 ) { /* if red/green/blue op found */
+    if( strcmp( name, "red" ) == 0 ) {
+      mask = image->surf->format->Rmask;
+      shift = image->surf->format->Rshift;
+      loss =  image->surf->format->Rloss;
+    } else if( strcmp( name, "green" ) == 0 ) {
+      mask = image->surf->format->Gmask;
+      shift = image->surf->format->Gshift;
+      loss =  image->surf->format->Gloss;
+    } else if( strcmp( name, "blue" ) == 0 ) {
+      mask = image->surf->format->Bmask;
+      shift = image->surf->format->Bshift;
+      loss =  image->surf->format->Bloss;
+    }
+
+    if( mask != -1 ) { /* if red/green/blue op found */
       
       j = mint_ops_find( ops, "rows", mint_op_nodes_init );
-      mint_check( j != -1, "rows not set for node group %s",
-		  mint_str_char( mint_nodes_get_name(n) ) );
-      nrows = mint_op_get_param( mint_ops_get(ops, j), 0 );
+      if( j == -1 ) nrows = 1; 
+      else nrows = mint_op_get_param( mint_ops_get(ops, j), 0 );
       size = mint_nodes_size( n );
       ncols = size / nrows;
 
-      /* we set fib and stride only here to potentially save us an image
-	 rescale if there are no image ops for this node group */
-      if( !fib ) {
+      /* we set surf only here to potentially save us an image rescale
+	 if there are no image ops for this node group. if surf is
+	 already nonzero, the job has already been done erlier in the
+	 loop, and we can just continue  */
+      if( !surf ) {
 	if( scale && (nrows != irows || ncols != icols) )
-	  fib = FreeImage_Rescale( image->ptr, ncols, nrows, 
-				   FILTER_BOX );
+	  surf = zoomSurface( image->surf, 
+			      ((float)ncols)/icols, 
+			      ((float)nrows)/irows, SMOOTHING_ON );
 	else
-	  fib = image->ptr;
-	stride = FreeImage_GetLine(fib) / FreeImage_GetWidth(fib);
+	  surf = image->surf;
       }
       
       var = mint_op_get_param( op, 1 );
       weight = mint_op_get_param( op, 0 );
 
       for ( y=0; y<irows; y++ ) {
-	bits = FreeImage_GetScanLine( fib, y );
 	for ( x=0; x<icols; x++ ) {
 	  idx = y+ypos + nrows*(x+xpos);
 	  if( idx>=0 && idx<size ) {
-	    n[ var ][ idx ] += weight * bits[ component ] / 255.0;
+	    pixel = getpixel( surf, x, y );
+	    pixel = pixel & mask;
+	    pixel = pixel >> shift;
+	    intensity = (Uint8)( pixel << loss );
+	    n[ var ][ idx ] += weight * intensity / 255;
 	  }
-	  bits += stride;
 	}
       }
     }
   }
-  if( fib && fib != image->ptr )
-    FreeImage_Unload( fib );
+  if( surf != image->surf )
+    SDL_FreeSurface( surf );
 }
 
 
 void mint_image_scale( struct mint_image *image, float scale ) {
-  FIBITMAP *newptr;
-  int newrows, newcols;
+  SDL_Surface *newsurf;
   
-  newrows = scale * FreeImage_GetHeight( image->ptr );
-  newcols = scale * FreeImage_GetWidth( image->ptr );
-  newptr = FreeImage_Rescale( image->ptr, newcols, newrows,
-			      FILTER_BOX );
-  FreeImage_Unload( image->ptr );
-  image->ptr = newptr;
+  newsurf = rotozoomSurface( image->surf, 0, scale, SMOOTHING_ON );
+  SDL_FreeSurface( image->surf );
+  image->surf = newsurf;
 }
 
-FIBITMAP *mint_image_get_FreeImage( struct mint_image *image ) {
-  return image->ptr;
+SDL_Surface *mint_image_get_surface( struct mint_image *image ) {
+  return image->surf;
 }
 
-struct mint_image *mint_image_from_FreeImage( FIBITMAP *fib ) {
+struct mint_image *mint_image_from_surface( SDL_Surface *surf ) {
   struct mint_image *image;
   image = malloc( sizeof(struct mint_image) );
-  image->ptr = FreeImage_Clone( fib );
+  image->surf = surf;
   return image;
 }
 
@@ -305,6 +371,6 @@ void mint_node_snapshot( mint_nodes n, int min, int max, float *p ) {
   else
     sprintf( filename, "mint/%s-%d.bmp", mint_str_char(name), (int)p[3] );
 
-  mint_image_save( img, filename, FIF_BMP );
+  mint_image_save( img, filename );
   mint_image_del( img );
 }

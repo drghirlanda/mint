@@ -6,7 +6,7 @@
 #include "image.h"
 
 #include <stdio.h>
-#include <FreeImage.h>
+#include <SDL/SDL.h>
 
 /** \file image.h
 
@@ -14,10 +14,10 @@
     and weights as images as transforming images into node activity
     patterns. 
 
-    We use the FreeImage library for image functionality, providing a
+    We use the SDL library for image functionality, providing a
     simplified interface and the ability to convert mint objects to
-    and from images. The FreeImage bitmap held by a mint_image struct
-    can be retrieved to use all FreeImage functions. Note, however,
+    and from images. The SDL_Surface object held by a mint_image
+    struct can be retrieved to use all SDL functions. Note, however,
     that the scale, flip and rotate methods below allow to realize all
     2D affine transformations. */
 
@@ -33,8 +33,7 @@ struct mint_image *mint_image_load( char *file );
 /** Write image to file. The format can be any format suppported by
     FreeImage; common formats are: jpg, png, svg, tiff, gif, pnm.
     Corresponding format names are FIF_JPEG, FIF_PNG, and so on. */
-void mint_image_save( const struct mint_image *, 
-		      char *filename, FREE_IMAGE_FORMAT fif );
+void mint_image_save( const struct mint_image *, char *filename );
 
 /** Delete image object */ 
 void mint_image_del( struct mint_image * );
@@ -110,10 +109,10 @@ void mint_image_flipv( struct mint_image * );
 void mint_image_rotate( struct mint_image *, float angle );
 
 /** Access the FIBITMAP stored within a mint image. */
-FIBITMAP *mint_image_get_FreeImage( struct mint_image * );
+SDL_Surface *mint_image_get_SDL( struct mint_image * );
 
 /** Create a mint_image from a FIBITMAP. */
-struct mint_image *mint_image_from_FreeImage( FIBITMAP * );
+struct mint_image *mint_image_from_SDL( SDL_Surface * );
 
 
 /** Periodically save an image of node state to file. Images are saved
