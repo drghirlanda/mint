@@ -40,7 +40,7 @@ getlibs() {
 }
 
 # set CFLAGS according to production, debug, or profile mode
-CFLAGS="-ansi -Wall -Werror"
+CFLAGS="-ansi -Wall"
 if [[ $debug -eq 1 ]]; then
     LIBRARY=libmint-debug.a
     CFLAGS="-g -O0 $CFLAGS"
