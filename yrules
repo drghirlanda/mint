@@ -13,7 +13,7 @@ hasfeature() {
 	"threads")
 	    feature=pthread;;
 	"image")
-	    feature="FreeImage";;
+	    feature="SDL_Init";;
 	"pi")
 	    feature="mint_pi";;
 	"camera")
@@ -31,7 +31,8 @@ getlibs() {
 	LIBS="$LIBS -lpthread"
     fi
     if hasfeature $1 "image"; then
-	LIBS="$LIBS -lfreeimage"
+	SDLLIBS=$(sdl-config --libs)
+	LIBS="$LIBS $SDLLIBS -lSDL_image -lSDL_gfx"
     fi
     if hasfeature $1 "pi"; then
 	LIBS="$LIBS -lpigpio -lrt -lpthread"
@@ -243,6 +244,7 @@ cmd_compileEx() {
     E=$(basename $1)
     local C=example/$E/$E.c
     LIBS=$(getlibs $LIBRARY)
+    echo $LIBS
     cc $CFLAGS -o example/$E/$E $C -Isrc $LIBRARY -lm $LIBS
 }
 

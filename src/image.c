@@ -87,9 +87,11 @@ void putpixel(SDL_Surface *surface, int x, int y, Uint32 pixel)
 }
 
 void mint_image_init( void ) {
+  int i;
   if( mint_image_init_flag )
     return;
-  mint_check( SDL_Init( SDL_INIT_VIDEO ) != 0,
+  i = SDL_Init( SDL_INIT_VIDEO );
+  mint_check( i == 0,
 	      "cannot initialize image functions: %s",
 	      SDL_GetError() );
   atexit( SDL_Quit );
