@@ -99,6 +99,8 @@ void mint_image_init( void ) {
 
   mint_op_add( "snapshot", mint_op_nodes_update, mint_node_snapshot,
 	       4, node_snapshot_param );
+  mint_op_add( "display", mint_op_network_operate, mint_network_display,
+	       0, 0 );
 }
 
 struct mint_image *mint_image_load( char *filename ) {
@@ -145,7 +147,8 @@ struct mint_image *mint_image_nodes( const mint_nodes nred,
 
   /* FIX hardcoded bpp? */
   image = malloc( sizeof( struct mint_image ) );
-  image->surf = SDL_CreateRGBSurface( 0, cols, rows, 24, 0, 0, 0, 0 ); 
+  image->surf = SDL_CreateRGBSurface( SDL_SWSURFACE, 
+				      cols, rows, 24, 0, 0, 0, 0 ); 
 
   if( SDL_MUSTLOCK( image->surf )  )
     SDL_LockSurface( image->surf );
@@ -202,7 +205,8 @@ struct mint_image *mint_image_weights( const mint_weights w, int irows,
 
   /* FIX hardcoded bpp? */
   image = malloc( sizeof( struct mint_image ) );
-  image->surf = SDL_CreateRGBSurface( 0, icols, irows, 24, 0, 0, 0, 0 ); 
+  image->surf = SDL_CreateRGBSurface( SDL_SWSURFACE, 
+				      icols, irows, 24, 0, 0, 0, 0 ); 
 
   if( SDL_MUSTLOCK( image->surf )  )
     SDL_LockSurface( image->surf );
@@ -375,4 +379,59 @@ void mint_node_snapshot( mint_nodes n, int min, int max, float *p ) {
 
   mint_image_save( img, filename );
   mint_image_del( img );
+}
+
+void mint_image_display( struct mint_image *src, float w, float h,
+			 float x, float y ) {
+  SDL_Rect dest;
+  SDL_Surface *src_scaled;
+  int i;
+
+  if( !mint_screen ) {
+    mint_screen = SDL_SetVideoMode( 640, 480, 24, 
+				    SDL_SWSURFACE | SDL_ANYFORMAT );
+    mint_check( mint_screen, "cannot open window: %s", SDL_GetError() );
+  }
+
+  w *= mint_screen->w / src->surf->w;
+  h *= mint_screen->h / src->surf->h;
+
+  src_scaled = rotozoomSurfaceXY( src->surf, 0, w, h, SMOOTHING_ON );
+
+  dest.x = x * mint_screen->w;
+  dest.y = y * mint_screen->h;
+  
+  i = SDL_BlitSurface( src_scaled, 0, mint_screen, &dest ); 
+  mint_check( i==0, "cannot display image: %s", SDL_GetError() );
+
+  if( SDL_MUSTLOCK( mint_screen ) ) 
+    SDL_LockSurface( mint_screen );
+
+  SDL_UpdateRect( mint_screen, dest.x, dest.y, dest.w, dest.h );
+
+  if( SDL_MUSTLOCK( mint_screen ) ) 
+    SDL_UnlockSurface( mint_screen );
+
+  SDL_FreeSurface( src_scaled );
+}
+
+void mint_network_display( struct mint_network *net, float *p ) {
+  int i, groups;
+  float w, h, x, y;
+  struct mint_image *img;
+  mint_nodes n;
+
+  groups = mint_network_groups( net );
+
+  y = 0.05;
+  w = 0.9 - 0.05 * (groups-1);
+  h = 0.9;
+
+  for( i=0; i<groups; i++ ) {
+    n = mint_network_nodes( net, i );
+    img = mint_image_nodes( n, 0, 0, 1 );
+    x = 0.05 + ( 0.05 + w ) * i;
+    mint_image_display( img, w, h, x, y );
+    mint_image_del( img );
+  }
 }

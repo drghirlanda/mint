@@ -114,7 +114,13 @@ SDL_Surface *mint_image_get_SDL( struct mint_image * );
 /** Create a mint_image from a FIBITMAP. */
 struct mint_image *mint_image_from_SDL( SDL_Surface * );
 
+/** Display image on the MINT screen. */ 
+void mint_image_display( struct mint_image *, float w, float h,
+			 float x, float y );
 
+/** Display activity of network on the MINT screen */
+void mint_network_display( struct mint_network *net, float *p );
+  
 /** Periodically save an image of node state to file. Images are saved
     in a folder named mint (which must be created beforehand) with a
     filename composed of node group name, state variable index, and
