@@ -1,14 +1,26 @@
 network
-clocked 0.1
-display
+  display
+  clocked 24
 
-nodes e 
+nodes mitral 
+  size 100
+  states 1
+  rows 10
+  noise 0 1 1
+  integrator 100 0
+#  sigmoid 0.1 .1 
+
+nodes granule
   size 400
+  states 1
   rows 20
-  noise 0 .001 .002
-  sigmoid 0.1 1 
-#  snapshot 1 1 0
+  integrator 500 0
+#  sigmoid 0.1 1 
 
-weights e-e
+weights mitral-granule
   sparse
-  uniform -0.5 1 
+  uniform 0 .1 .05 
+
+weights granule-mitral
+  sparse
+  uniform -.1 0 .1 

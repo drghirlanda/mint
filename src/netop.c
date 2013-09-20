@@ -13,8 +13,7 @@ void mint_network_clocked( struct mint_network *net, float *p ) {
 
   towait = 1. / p[0];
   warn = p[1];
-  last = (float) p[2];
-
+  last = p[2];
 
   elapsed = ( (float) clock() - last ) / CLOCKS_PER_SEC;
 
@@ -29,5 +28,5 @@ void mint_network_clocked( struct mint_network *net, float *p ) {
     fprintf( stderr, "mint: you asked for %.2f Hz, you got %.2f Hz\n", 
 	     p[0], 1/elapsed );
   }
-  last = clock();
+  p[2] = (float) clock();
 }

@@ -32,7 +32,7 @@ getlibs() {
     fi
     if hasfeature $1 "image"; then
 	SDLLIBS=$(sdl-config --libs)
-	LIBS="$LIBS $SDLLIBS -lSDL_image -lSDL_gfx"
+	LIBS="$LIBS $SDLLIBS -lSDL_image -lSDL_gfx -lSDL_ttf"
     fi
     if hasfeature $1 "pi"; then
 	LIBS="$LIBS -lpigpio -lrt -lpthread"
@@ -70,6 +70,9 @@ for FEATURE in camera image threads pi; do
 		CFLAGS="$CFLAGS -DCAMSHOT=\"$INSTALL/bin/camshot\""
 		DEPS="$DEPS camshot"
 		image=1 # enable image here
+		;;
+	    "image")
+		CFLAGS="$CFLAGS -DMINT_DIR=\"$INSTALL\" -DMINT_IMAGE"
 		;;
 	    "threads")
 		CFLAGS="$CFLAGS -DMINT_USE_THREADS"
@@ -146,9 +149,6 @@ dep_install() {
 }
 
 cmd_install() {
-    if hasfeature $LIBRARY "image"; then
-	install camshot/camshot "$INSTALL/bin"
-    fi
     install -d "$INSTALL/lib"
     install -m 0644 libmint*.a "$INSTALL/lib"
     /bin/rm -f "$INSTALL/include/mint.h"
@@ -157,6 +157,10 @@ cmd_install() {
 	install -m 0644 src/$F.h "$INSTALL/include/mint"
 	echo "#include \"mint/$F.h\"" >> "$INSTALL/include/mint.h" 
     done
+    if hasfeature $LIBRARY "image"; then
+	install camshot/camshot "$INSTALL/bin"
+	install FreeSans.ttf "$INSTALL/include/mint"
+    fi
 }
 
 

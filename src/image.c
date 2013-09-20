@@ -9,6 +9,7 @@
 
 #include <SDL/SDL_image.h>
 #include <SDL/SDL_rotozoom.h>
+#include <SDL/SDL_ttf.h>
 
 struct mint_image {
   SDL_Surface *surf;
@@ -16,6 +17,7 @@ struct mint_image {
 
 static int mint_image_init_flag = 0;
 static SDL_Surface *mint_screen = 0;
+static TTF_Font *mint_font = 0;
 
 static float node_snapshot_param[4] = { 1, 1, 1, 0 };
 
@@ -381,17 +383,47 @@ void mint_node_snapshot( mint_nodes n, int min, int max, float *p ) {
   mint_image_del( img );
 }
 
+void mint_init_screen( void ) {
+  mint_screen = SDL_SetVideoMode( 480, 480, 24, 
+				  SDL_SWSURFACE | SDL_ANYFORMAT );
+  mint_check( mint_screen, "cannot open window: %s", SDL_GetError() );
+  SDL_WM_SetCaption( "MINT", "MINT" );
+
+  if( TTF_Init() != 0 )
+    return;
+
+  mint_font = TTF_OpenFont( MINT_DIR "/include/mint/FreeSans.ttf", 24 );
+  if( mint_font )
+    atexit( TTF_Quit );
+}
+
+void mint_text_display( const char *message, float x, float y ) {
+  SDL_Surface *text;
+  SDL_Color text_color = { 0, 192, 0 };
+  SDL_Rect dest;
+  int wtext, htext;
+
+  if( !mint_font || !mint_screen )
+    return;
+
+  TTF_SizeUTF8( mint_font, message, &wtext, &htext );
+  
+  dest.x = x * mint_screen->w - .5 * wtext;
+  dest.y = y * mint_screen->h - .5 * htext;
+
+  text = TTF_RenderUTF8_Blended( mint_font, message, text_color );
+  SDL_BlitSurface( text, 0, mint_screen, &dest );
+  SDL_UpdateRect( mint_screen, dest.x, dest.y, dest.w, dest.h );
+}
+
 void mint_image_display( struct mint_image *src, float w, float h,
 			 float x, float y ) {
   SDL_Rect dest;
   SDL_Surface *src_scaled;
   int i;
 
-  if( !mint_screen ) {
-    mint_screen = SDL_SetVideoMode( 640, 480, 24, 
-				    SDL_SWSURFACE | SDL_ANYFORMAT );
-    mint_check( mint_screen, "cannot open window: %s", SDL_GetError() );
-  }
+  if( !mint_screen ) 
+    mint_init_screen();
 
   w *= mint_screen->w / src->surf->w;
   h *= mint_screen->h / src->surf->h;
@@ -424,8 +456,8 @@ void mint_network_display( struct mint_network *net, float *p ) {
   groups = mint_network_groups( net );
 
   y = 0.05;
-  w = 0.9 - 0.05 * (groups-1);
-  h = 0.9;
+  w = ( 0.9 - 0.05 * (groups-1) ) / groups;
+  h = 0.85;
 
   for( i=0; i<groups; i++ ) {
     n = mint_network_nodes( net, i );
@@ -433,5 +465,8 @@ void mint_network_display( struct mint_network *net, float *p ) {
     x = 0.05 + ( 0.05 + w ) * i;
     mint_image_display( img, w, h, x, y );
     mint_image_del( img );
+    mint_text_display( mint_str_char( mint_nodes_get_name(n) ),
+		       x + .5*w, y + h + 0.05 );
   }
+
 }
