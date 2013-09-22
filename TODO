@@ -24,6 +24,11 @@
   - freezing/unfreezing of weight matrices and networks
   - multi-threaded spread
 
+- display:
+
+  - some more key-bindings, e.g., to start/stop display and change
+    framerate
+
 -mint_pi:
 
   - test sensor functions

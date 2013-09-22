@@ -266,9 +266,10 @@ struct mint_op *mint_op_dup( const struct mint_op *h1 ) {
 void mint_op_save( const struct mint_op *u, FILE *dest ) {
   int i;
   mint_check( u!=0, "attempt to save null op" );
-  fprintf( dest, "%s ", u->name );
+  fprintf( dest, "  %s ", u->name );
   for( i=0; i<u->nparam; i++ ) 
     fprintf( dest, "%g ", u->param[i] );
+  fprintf( dest, "\n" );
 }
 
 struct mint_op *mint_op_load( FILE *file, int type ) {
