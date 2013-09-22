@@ -200,17 +200,37 @@ struct mint_str *mint_nodes_get_name( mint_nodes n ) {
   return _STR(n)->name ;
 }
 
+int mint_nodes_property( mint_nodes n, const char *prop, int i,
+			 float *value ) {
+  struct mint_ops *ops;
+  struct mint_op *op;
+  int k;
+
+  ops = mint_nodes_get_ops( n );
+  k = mint_ops_find( ops, prop, mint_op_nodes_any );
+
+  if( k == -1 ) 
+    return 0;
+  else
+    *value = mint_op_get_param( mint_ops_get(ops, k), i );
+
+  return -1;
+
+}
+
 void mint_nodes_index2coord( mint_nodes n, int i, int *x, int *y ) {
   static mint_nodes nlast = 0;
   static int rows = 0;
   static int size = 0;
   struct mint_op *op; 
+  float frows;
 
   if( n != nlast ) { /* set rows, cols, and size */
     size = mint_nodes_size( n );
-    op = mint_ops_get_name( mint_nodes_get_ops(n), "rows", 
-			    mint_op_nodes_init );
-    rows = op ? mint_op_get_param( op, 0 ) : 0;
+    if( mint_nodes_property( n, "rows", 0, &frows ) )
+      rows = frows;
+    else
+      rows = 0;
     nlast = n;
   }
 
@@ -223,12 +243,14 @@ int mint_nodes_coord2index( mint_nodes n, int x, int y ) {
   static int rows = 0;
   static int size = 0;
   struct mint_op *op; 
+  float frows;
 
   if( n != nlast ) { /* set rows, cols, and size */
     size = mint_nodes_size( n );
-    op = mint_ops_get_name( mint_nodes_get_ops(n), "rows",
-			    mint_op_nodes_init );
-    rows = op ? mint_op_get_param( op, 0 ) : 0;
+    if( mint_nodes_property( n, "rows", 0, &frows ) )
+      rows = frows;
+    else
+      rows = 0;
     nlast = n;
   }
   return y + rows * x;

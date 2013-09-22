@@ -8,15 +8,8 @@
 
     \brief Node operations.
     
-    We provide a few update functions for nodes.
+    Update functions for nodes.
 */
-
-/** Identity activation function: output = total input. 
-
-    State variables: none.
-
-    Parameters: none. */
-void mint_node_identity( mint_nodes n, int min, int max, float *p );
 
 /** Sigmoidal non-linearity. 
 
@@ -24,24 +17,35 @@ void mint_node_identity( mint_nodes n, int min, int max, float *p );
 
     Parameters: 0: node output when input is zero.
                 1: maximum slope of the sigmoid function.
+		2: input state variable (default 0).
+		3: output state variable (default 1).
 
     NOTE: For speed, the nonlinearity is not a logistic function,
     i.e., we do not use an exponential. Rather, we piece two branches
     of hyperbola together.  */
 void mint_node_sigmoid( mint_nodes n, int min, int max, float *p );
 
+/** Logistic tansfer function. 
+
+    State variables: none. 
+
+    Parameters: 0: offset.
+                1: slope.
+		2: input state variable (default 0).
+		3: output state variable (default 1).
+*/
 void mint_node_logistic( mint_nodes n, int min, int max, float *p );
 
 /** Leaky integrator.  with time constant T=param[0] and leak
     L=param[1]. The update performed is: output += ( input -
     L*old_output)/T.
 
-    State variables: 1, to remember output value between updates
-                     (old_output in equation)..
+    State variables: none.
 
     Parameters: 0: Time constant (T in equation above).
                 1: Leak (L in equation).
-		2: Index of state variable to use (>=2, default 2). */
+		2: Index of input variable (default 0).
+		3: Index of output variable (default 1). */
 void mint_node_integrator( mint_nodes n, int min, int max, float *p );
 
 /** A spiking neuron model from Izikevich EM, IEEE Transactions on
@@ -65,10 +69,12 @@ void mint_node_integrator( mint_nodes n, int min, int max, float *p );
                      above. The defaults are 0.02, 0.2, -65, 8,
                      corresponding to a pyramidal neuron in the
                      mammalian cortex.
-		4: Index of state variable used to store v values
+		4: Index of input variable (default 0).
+		5: Index of output variable (default 1).
+		6: Index of state variable used to store v values
 		(>=2, default 2).
-		5: Index of state variable used to store u values
-		(>=2, default 3, must be different from parameter 4). */
+		7: Index of state variable used to store u values
+		(>=2, default 3. */
 void mint_node_izzy( mint_nodes n, int min, int max, float *p );
 
 /** Adds a normally distributed number to a state variable. Note that
@@ -79,10 +85,10 @@ void mint_node_izzy( mint_nodes n, int min, int max, float *p );
     State variables: none required, can work on any state variable
                      (see Parameters).  
 
-    Parameters: 0: State variable to add noise to.
-                1: Mean of normal distribution (default 0).
-		2: Standard deviation of normal distribution (default
+    Parameters: 0: Mean of normal distribution (default 0).
+		1: Standard deviation of normal distribution (default
                    0.01).  
+		2: State variable to add noise to.
 
      NOTE: You can use this op to simulate tonically active neurons,
      just use it with a positive mean activity and the desired
@@ -95,9 +101,9 @@ void mint_node_noise( mint_nodes n, int min, int max, float *p );
     State variables: none required, can work on any state variable (see
                      Parameters).  
 
-    Parameters: 0: State variable to bound (default 1, i.e., node output). 
-                1: Minimum value (default 0).
-		2: Maximum value (default 1). */
+    Parameters: 0: Minimum value (default 0).
+		1: Maximum value (default 1). 
+                0: State variable to bound (default 1, i.e., output). */
 void mint_node_bounded( mint_nodes n, int min, int max, float *p );
 
 /** A counter counts the number of updates since a state variable
@@ -107,23 +113,23 @@ void mint_node_bounded( mint_nodes n, int min, int max, float *p );
     State variables: 1 required, to store the counter. Works on any
                      other state variable. 
 
-    Parameters: 0: State variable to monitor (default 1, i.e., node
+    Parameters: 0: Threshold value.
+                1: State variable to monitor (default 1, i.e., node
                    output). 
-
-		1: Threshold value.
-
-		2: Index of state variable that stores the counter
-		   (must be different from parameter 0). */
+		2: State variable that stores the counter
+		   (must be different from parameter 0). 
+*/
 void mint_node_counter( mint_nodes n, int min, int max, float *p );
 
-/** Poissonian source of spikes. Sets node output to 1 or 0 at random,
-    with a given mean value.
+/** Poissonian source. Sets a state variable to 1 or 0 at random, with
+    a given mean value.
 
     State variables: none required.
 
     Parameters: 0: Mean spike rate in Hz, assuming every network
                    update corresponds to 1 ms of real time (default 5
-                   Hz). */
+                   Hz). 
+                1: Index of state variable to set (default: 1). */
 void mint_node_spikes( mint_nodes n, int min, int max, float *p );
 
 /** This is a geometry op that sets nodes geometry to a rectangular

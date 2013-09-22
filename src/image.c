@@ -18,8 +18,13 @@ struct mint_image {
 static int mint_image_init_flag = 0;
 static SDL_Surface *mint_screen = 0;
 static TTF_Font *mint_font = 0;
+static TTF_Font *mint_font_small = 0;
+
+static SDL_Color mint_color = { 0, 192, 0, 1 };
+static SDL_Color mint_background = { 0, 0, 0, 1 };
 
 static float node_snapshot_param[4] = { 1, 1, 1, 0 };
+static float network_display_param[1] = { 1 };
 
 /* functions to get and set pixels in SDL surfaces, from
    http://sdl.beuc.net/sdl.wiki/Pixel_Access */
@@ -102,7 +107,7 @@ void mint_image_init( void ) {
   mint_op_add( "snapshot", mint_op_nodes_update, mint_node_snapshot,
 	       4, node_snapshot_param );
   mint_op_add( "display", mint_op_network_operate, mint_network_display,
-	       0, 0 );
+	       1, network_display_param );
 }
 
 struct mint_image *mint_image_load( char *filename ) {
@@ -128,12 +133,13 @@ struct mint_image *mint_image_nodes( const mint_nodes nred,
 				     const mint_nodes nblue,
 				     int var ) {
   struct mint_image *image;
-  struct mint_ops *ops;
-  int i, rows, cols, size, x, y, R, G, B;
+  int rows, cols, size, x, y, R, G, B;
+  float frows;
 
-  ops = mint_nodes_get_ops( nred );
-  i = mint_ops_find( ops, "rows", mint_op_nodes_init );
-  rows = i != -1 ? mint_op_get_param( mint_ops_get(ops, i), 0 ) : 1;
+  if( mint_nodes_property( nred, "rows", 0, &frows ) )
+    rows = frows;
+  else
+    rows = 1;
 
   size = mint_nodes_size( nred );
   cols = size / rows;
@@ -302,7 +308,7 @@ void mint_image_paste( const struct mint_image *image, mint_nodes n,
 	if( scale && (nrows != irows || ncols != icols) )
 	  surf = zoomSurface( image->surf, 
 			      ((float)ncols)/icols, 
-			      ((float)nrows)/irows, SMOOTHING_ON );
+			      ((float)nrows)/irows, SMOOTHING_OFF );
 	else
 	  surf = image->surf;
       }
@@ -332,7 +338,7 @@ void mint_image_paste( const struct mint_image *image, mint_nodes n,
 void mint_image_scale( struct mint_image *image, float scale ) {
   SDL_Surface *newsurf;
   
-  newsurf = rotozoomSurface( image->surf, 0, scale, SMOOTHING_ON );
+  newsurf = rotozoomSurface( image->surf, 0, scale, SMOOTHING_OFF );
   SDL_FreeSurface( image->surf );
   image->surf = newsurf;
 }
@@ -385,7 +391,8 @@ void mint_node_snapshot( mint_nodes n, int min, int max, float *p ) {
 
 void mint_init_screen( void ) {
   mint_screen = SDL_SetVideoMode( 480, 480, 24, 
-				  SDL_SWSURFACE | SDL_ANYFORMAT );
+				  SDL_SWSURFACE | SDL_ANYFORMAT | 
+				  SDL_RESIZABLE );
   mint_check( mint_screen, "cannot open window: %s", SDL_GetError() );
   SDL_WM_SetCaption( "MINT", "MINT" );
 
@@ -393,27 +400,30 @@ void mint_init_screen( void ) {
     return;
 
   mint_font = TTF_OpenFont( MINT_DIR "/include/mint/FreeSans.ttf", 24 );
-  if( mint_font )
+  mint_font_small = TTF_OpenFont( MINT_DIR "/include/mint/FreeSans.ttf", 14 );
+  if( mint_font || mint_font_small )
     atexit( TTF_Quit );
 }
 
-void mint_text_display( const char *message, float x, float y ) {
+void mint_text_display( const char *message, float x, float y, 
+			TTF_Font *font ) {
   SDL_Surface *text;
-  SDL_Color text_color = { 0, 192, 0 };
   SDL_Rect dest;
   int wtext, htext;
 
-  if( !mint_font || !mint_screen )
+  if( !font || !mint_screen )
     return;
 
-  TTF_SizeUTF8( mint_font, message, &wtext, &htext );
+  TTF_SizeUTF8( font, message, &wtext, &htext );
   
   dest.x = x * mint_screen->w - .5 * wtext;
   dest.y = y * mint_screen->h - .5 * htext;
 
-  text = TTF_RenderUTF8_Blended( mint_font, message, text_color );
+  text = TTF_RenderUTF8_Shaded( font, message, mint_color, mint_background );
   SDL_BlitSurface( text, 0, mint_screen, &dest );
   SDL_UpdateRect( mint_screen, dest.x, dest.y, dest.w, dest.h );
+
+  SDL_FreeSurface( text );
 }
 
 void mint_image_display( struct mint_image *src, float w, float h,
@@ -428,7 +438,7 @@ void mint_image_display( struct mint_image *src, float w, float h,
   w *= mint_screen->w / src->surf->w;
   h *= mint_screen->h / src->surf->h;
 
-  src_scaled = rotozoomSurfaceXY( src->surf, 0, w, h, SMOOTHING_ON );
+  src_scaled = rotozoomSurfaceXY( src->surf, 0, w, h, SMOOTHING_OFF );
 
   dest.x = x * mint_screen->w;
   dest.y = y * mint_screen->h;
@@ -447,26 +457,93 @@ void mint_image_display( struct mint_image *src, float w, float h,
   SDL_FreeSurface( src_scaled );
 }
 
+void mint_poll_event( ) {
+  int w, h;
+  SDL_Event event;
+  SDLKey key;
+
+  while( SDL_PollEvent( &event ) ) {
+    switch( event.type ) {
+    case SDL_VIDEORESIZE:
+      SDL_SetVideoMode( event.resize.w, event.resize.h, 24,
+			SDL_SWSURFACE | SDL_ANYFORMAT | SDL_RESIZABLE );
+      break;
+    case SDL_KEYUP:
+      key = event.key.keysym.sym;
+      if( key == SDLK_COMMA ) {
+	w = .9 * mint_screen->w;
+	h = .9 * mint_screen->h;
+	SDL_SetVideoMode( w, h, 24, 
+			  SDL_SWSURFACE | SDL_ANYFORMAT | SDL_RESIZABLE );
+      } else if( key == SDLK_PERIOD ) {
+	  w = 1.1 * mint_screen->w;
+	  h = 1.1 * mint_screen->h;
+	  SDL_SetVideoMode( w, h, 24, 
+			    SDL_SWSURFACE | SDL_ANYFORMAT | SDL_RESIZABLE );
+      } else if( key == SDLK_SPACE ) {
+	/* wait for another space press */
+	while( SDL_WaitEvent( &event ) ) {
+	  if( event.type == SDL_KEYUP &&
+	      event.key.keysym.sym == SDLK_SPACE )
+	    break;
+	}
+      } else if( key == SDLK_q )
+	exit( EXIT_SUCCESS );
+      break;
+
+    case SDL_QUIT:
+      exit( EXIT_SUCCESS );
+      break;
+    }
+  }
+}
+
 void mint_network_display( struct mint_network *net, float *p ) {
-  int i, groups;
+  int i, j, groups, size, rows, rate;
   float w, h, x, y;
   struct mint_image *img;
   mint_nodes n;
+  struct mint_ops *ops;
+  char msg[256];
+ 
+  mint_poll_event();
 
   groups = mint_network_groups( net );
 
+  rate = p[0];
+  mint_check( rate>0, "invalid rate: %d", (int)rate );
+
+  p[1] += 1;
+  
+  if( ( (int)p[1] - 1 ) % rate )
+    return;
+
   y = 0.05;
   w = ( 0.9 - 0.05 * (groups-1) ) / groups;
-  h = 0.85;
 
   for( i=0; i<groups; i++ ) {
+
     n = mint_network_nodes( net, i );
+    size = mint_nodes_size( n );
+
+    ops = mint_nodes_get_ops( n );
+    j = mint_ops_find( ops, "rows", mint_op_nodes_init );
+    if( j == -1 )
+      rows = (int) sqrt( mint_nodes_size(n) );
+    else
+      rows = mint_op_get_param( mint_ops_get( ops, j ), 0 );
+
+    h = w * rows / (size/rows);
+
     img = mint_image_nodes( n, 0, 0, 1 );
     x = 0.05 + ( 0.05 + w ) * i;
     mint_image_display( img, w, h, x, y );
     mint_image_del( img );
+
     mint_text_display( mint_str_char( mint_nodes_get_name(n) ),
-		       x + .5*w, y + h + 0.05 );
+		       x + .5*w, y + h + 0.05, mint_font );
   }
 
+  sprintf( msg, "sampling = %d  frame = %d", rate, (int)p[1] );
+  mint_text_display( msg, 0.5, 0.95, mint_font_small );
 }

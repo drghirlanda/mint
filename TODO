@@ -50,13 +50,19 @@
 
 - ops system:
 
+  - make matrix target an op
+
   - can direct-output nodes be set through an op? yes: by setting n[1]
     to the same as n[0]... carefully. is this safe? how to prevent
     memory to be wasted? 
 
   - more convenient ways to manipulate ops lists? like add op of a
-    given type and params by name?
+    given type and params by name? also: 
 
+    int mint_nodes_property( mint_nodes n, char *prop, int param, 
+                             float *value )
+
+    and mint_weights_property, mint_network_property
 
 - weights init functions that build receptive fields and topographic
   mappings

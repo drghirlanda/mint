@@ -9,85 +9,82 @@
 
 struct mint_nodes_str;
 
-void mint_node_identity( mint_nodes n, int min, int max, float *p ) {
-  memcpy( n[1]+min, n[0]+min, (max-min)*sizeof(float) );
-}
+#undef SET_VAR
+#define SET_VAR( n, x, i ) \
+  mint_check( i>=0 && i<2+mint_nodes_states(n), \
+	      "parameter value %d out of bounds 0-%d", \
+	      (int)i, 2+mint_nodes_states(n) );	       \
+  x = n[ (int)i ]
 
 void mint_node_sigmoid( mint_nodes n, int min, int max, float *p ) {
   int i;
-  float x, zero, slope;
+  float x, zero, slope, *in, *out;
   float x0 = 6. + 2./3.;
+
   zero = p[0];
   slope = p[1];
+  SET_VAR( n, in, p[2] );
+  SET_VAR( n, out, p[3] );
+
   for( i=min; i<max; i++ ) {
-    x = n[0][i];
+    x = in[i];
     x *= slope;                       /* scaling */
     x -= (.5 - zero) / (.075 + zero); /* translation */
     if( x < -x0 ) 
-      n[1][i] = 0.;
+      out[i] = 0.;
     else if( x < x0 ) 
-      n[1][i] = .5 + .575 * x / ( 1 + fabs(x) );
+      out[i] = .5 + .575 * x / ( 1 + fabs(x) );
     else 
-      n[1][i] = 1.;
+      out[i] = 1.;
   }
 }
 
 void mint_node_logistic( mint_nodes n, int min, int max, float *p ) {
   int i;
-  float slope, offset;
+  float slope, offset, *in, *out;
+
   slope = p[0];
   offset = p[1];
+  SET_VAR( n, in, p[2] );
+  SET_VAR( n, out, p[3] );
+
   for( i=min; i<max; i++ )
-    n[1][i] = 1 / ( 1 + exp( - slope * ( n[0][i] - offset ) ) );
+    out[i] = 1 / ( 1 + exp( - slope * ( in[i] - offset ) ) );
 }
 
 /* leaky integrator */
 void mint_node_integrator( mint_nodes n, int min, int max, float *p ) {
   int i;
-  float leak, tstep, *in, *out, *state;
+  float leak, tstep, *in, *out;
 
-  mint_check( p[2]>=2 && p[2]<2+mint_nodes_states(n), 
-	      "parameter 2 out of range" );
-
-  in = n[0];
-  out = n[1];
-  state = n[ (int)p[2] ];
   tstep = p[0];
   leak = p[1];
+  SET_VAR( n, in, p[2] );
+  SET_VAR( n, out, p[3] );
 
-  for( i=min; i<max; i++ ) {
-    state[i] += ( in[i] - leak * state[i] ) / tstep;
-    out[i] = state[i];
-  }
+  for( i=min; i<max; i++ )
+    out[i] += ( in[i] - leak * out[i] ) / tstep;
 }
 
 void mint_node_izzy( mint_nodes n, int min, int max, float *p ) {
-  int i, ui, vi;
-  float u, v;
+  int i;
+  float *in, *out, *u, *v;
 
-  mint_check( p[4]>=2 && p[4]<2+mint_nodes_states(n), 
-	      "parameter 4 out of range" );
-  mint_check( p[5]>=2 && p[5]<2+mint_nodes_states(n), 
-	      "parameter 5 out of range" );
-  mint_check( p[4] != p[5], "parameters 4 and 5 must be different" );
-
-  ui = p[4];
-  vi = p[5];
+  SET_VAR( n, in, p[4] );
+  SET_VAR( n, out, p[5] );
+  SET_VAR( n, u, p[6] );
+  SET_VAR( n, v, p[7] );
 
   for( i=min; i<max; i++ ) {
-    if( n[vi][i] == 30 ) {
-      n[1][i] = 1;      /* output = 1 */
-      n[vi][i] = p[2];  /* reset */
-      n[ui][i] = p[3];  /* reset */
+    if( v[i] == 30 ) {
+      out[i] = 1;
+      v[i] = p[2];  /* reset */
+      u[i] = p[3];  /* reset */
     } else {
-      v = n[vi][i];
-      u = n[ui][i];
-      v += 0.04 * v*v + 5*v + 140 - u + n[0][i];
-      u += p[0] * ( p[1] * v - u );
-      if( v>30 ) v = 30;
-      n[1][i] = 0;
-      n[vi][i] = v;
-      n[ui][i] = u;
+      v[i] += 0.04 * v[i]*v[i] + 5*v[i] + 140 - u[i] + in[i];
+      u[i] += p[0] * ( p[1] * v[i] - u[i] );
+      if( v[i] > 30 ) v[i] = 30;
+      out[i] = 0;
     }
   }
 }
@@ -95,28 +92,26 @@ void mint_node_izzy( mint_nodes n, int min, int max, float *p ) {
 void mint_node_noise( mint_nodes n, int min, int max, float *p ) {
   int i;
   float *state;
-  
-  mint_check( p[0]>=0 && p[0]<2+mint_nodes_states(n), 
-	      "parameter 0 out of range" );
 
-  state = n[ (int)p[0] ];
+  SET_VAR( n, state, p[2] );
+
   for( i=min; i<max; i++ )
-    *(state+i) += mint_random_normal( p[1], p[2] );
+    state[i] += mint_random_normal( p[0], p[1] );
 }
 
 void mint_node_bounded( mint_nodes n, int min, int max, float *p ) {
   int i;
-  float *state;
+  float vmin, vmax, *state;
 
-  mint_check( p[0]>=0 && p[0]<2+mint_nodes_states(n), 
-	      "parameter 0 out of range" );
+  vmin = p[0];
+  vmax = p[1];
+  SET_VAR( n, state, p[2] );
 
-  state = n[ (int)p[0] ];
   for( i=min; i<max; i++ ) {
-    if( *(state+i) < p[1] )
-      *(state+i) = p[1];
-    else if( *(state+i) > p[2] )
-      *(state+i) = p[2];
+    if( state[i] < vmin )
+      state[i] = vmin;
+    else if( state[i] > vmax )
+      state[i] = vmax;
   }
 }
 
@@ -124,15 +119,11 @@ void mint_node_counter( mint_nodes n, int min, int max, float *p ) {
   int i;
   float threshold, *state, *counter;
 
-  mint_check( p[0]>=0 && p[0]<2+mint_nodes_states(n), 
-	      "parameter 1 out of range" );
-  mint_check( p[2]>=0 && p[2]<2+mint_nodes_states(n), 
-	      "parameter 1 out of range" );
-  mint_check( p[0] != p[2], "parameters 0 and 2 must differ" );
+  threshold = p[0];
+  SET_VAR( n, state, p[1] );
+  SET_VAR( n, counter, p[2] );
 
-  threshold = p[1];
-  state = n[ (int)p[0] ];
-  counter = n[ (int)p[2] ];
+  mint_check( p[1] != p[2], "parameters 1 and 2 must differ" );
 
   for( i=min; i<max; i++ ) {
     if( state[i] >= threshold )
@@ -144,17 +135,21 @@ void mint_node_counter( mint_nodes n, int min, int max, float *p ) {
 
 void mint_node_spikes( mint_nodes n, int min, int max, float *p ) {
   int i;
+  float *state, probability;
 
-  mint_check( p[0]>=0, "parameter 0 must be positive" );
+  probability = p[0];
+  SET_VAR( n, state, p[1] );
+
+  mint_check( probability >= 0, "parameter 0 must be positive" );
 
   for( i=min; i<max; i++ )
-    n[1][i] = mint_random() < .001 * p[0];
+    state[i] = mint_random() < 0.001 * probability;
 }
 
 void mint_node_rows( mint_nodes n, int min, int max, float *p ) {
   int size = mint_nodes_size( n );
   mint_check( p[0] != -1, "rows argument missing (parameter 0)" );
-  mint_check( p[0]>0 && p[0]<size, "rows argument negative or too large" );
+  mint_check( p[0]>0 && p[0]<size, "rows argument <0 or too large" );
 }
 
 void mint_node_states( mint_nodes n, int min, int max, float *p ) {
@@ -172,3 +167,5 @@ void mint_node_color( mint_nodes n, float *p ) {
   mint_check( p[0]>=0 && p[0]<2+states,
 	      "parameter 0 out of range 0-%d", 1+states );
 }
+
+#undef SET_VAR

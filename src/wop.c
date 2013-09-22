@@ -95,15 +95,15 @@ void mint_weights_stdp( mint_weights w, mint_nodes pre,
   float pretime, posttime, dt;
 
   /* figure out where the spike counters are */
-  ops = mint_nodes_get_ops( pre );
-  i = mint_ops_find( ops, "counter", mint_op_nodes_update );
-  mint_check( i>-1, "no counter defined for pre-synaptic nodes" );
-  precount = mint_op_get_param( mint_ops_get(ops,i), 1 );
+  if( mint_nodes_property( pre, "counter", 0, &x ) )
+    precount = x;
+  else
+    mint_check( 0, "no counter defined for pre-synaptic nodes" );
 
-  ops = mint_nodes_get_ops( post );
-  i = mint_ops_find( ops, "counter", mint_op_nodes_update );
-  mint_check( i>-1, "no counter defined for post-synaptic nodes" );
-  postcount = mint_op_get_param( mint_ops_get(ops,i), 1 );
+  if( mint_nodes_property( post, "counter", 0, &x ) )
+    postcount = x;
+  else
+    mint_check( 0, "no counter defined for post-synaptic nodes" );
 
   r = mint_weights_rows( w );
   mint_check( rmin>=0 && rmax<=r, "rmin, rmax out of range" );

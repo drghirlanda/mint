@@ -97,9 +97,15 @@ mint_nodes mint_nodes_resize( mint_nodes n, unsigned int newsize );
     all update ops in sequence. */
 void mint_nodes_update( mint_nodes n, int min, int max );
 
-/** Get nodes name string. Manipulating the returning string will
+/** Get nodes name string. Manipulating the returned string will
     directly change the name. */
 struct mint_str *mint_nodes_get_name( mint_nodes s );
+
+/** Store the value of parameter i of property prop in *value. If the
+    propert is found, return 1, if not found returns -1 (*value is not
+    modified). If invalid parameter number, aborts. */
+int mint_nodes_property( mint_nodes n, const char *prop, int i,
+			 float *value );
 
 /* see .c for docs */
 size_t mint_nodes_bytes( unsigned int size, unsigned int states );

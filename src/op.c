@@ -24,36 +24,36 @@ struct mint_ops {
 };
 
 /* default parameter values for ops that need them */
-static float node_sigmoid_param[2] = { 0.1, 1. };
-static float node_logistic_param[2] = { 1, 0 };
-static float node_integrator_param[3] = { 1., 0., 2 };
-static float node_izzy_param[6] = { 0.02, 0.2, -65., 8., 2, 3};
-static float node_noise_param[3] = { 0, 0, 0.01 };
-static float node_bounded_param[3] = { 1, 0, 1 };
-static float node_counter_param[3] = { 1, 1, 2 };
-static float node_spikes_param[1] = { 5 };
-static float node_size_param[1] = { -1 };
-static float node_rows_param[1] = { -1 };
-static float node_states_param[1] = { 0 };
-static float node_color_param[2] = { 1, 1 }; 
+static float node_sigmoid_param[] = { 0.1, 1., 0, 1 };
+static float node_logistic_param[] = { 1, 0, 0, 1 };
+static float node_integrator_param[] = { 1., 0., 0, 1 };
+static float node_izzy_param[] = { 0.02, 0.2, -65., 8., 0, 1, 2, 3};
+static float node_noise_param[] = { 0, 0.01, 0 };
+static float node_bounded_param[] = { 0, 1, 1 };
+static float node_counter_param[] = { 1, 1, 2 };
+static float node_spikes_param[] = { 5 };
+static float node_size_param[] = { -1 };
+static float node_rows_param[] = { -1 };
+static float node_states_param[] = { 0 };
+static float node_color_param[] = { 1, 1 };
 
-static float weights_hebbian_param[4] = { 0., 0., 0., 0. };
-static float weights_delta_param[2] = { 0.05, 2 };
-static float weights_stdp_param[5] = { 0.05, .1, -.12, -.1, .1 };
-static float weights_lateral_param[4] = {0, 0, 0, 0};
+static float weights_hebbian_param[] = { 0., 0., 0., 0. };
+static float weights_delta_param[] = { 0.05, 2 };
+static float weights_stdp_param[] = { 0.05, .1, -.12, -.1, .1 };
+static float weights_lateral_param[] = {0, 0, 0, 0};
 
-static float weights_init_uniform_param[3] = { 0., 1., 1. };
-static float weights_init_normal_param[3] = { 0., 0.01, 1. };
-static float weights_init_diagonal_param[1] = { 0. };
-static float weights_init_target_param[1] = { 0. };
-static float weights_init_states_param[1] = { 0 };
-static float weights_init_cols_param[1] = { -1 };
-static float weights_init_rows_param[1] = { -1 };
-static float weights_init_normalize_param[1] = { 1 };
+static float weights_init_uniform_param[] = { 0., 1., 1. };
+static float weights_init_normal_param[] = { 0., 0.01, 1. };
+static float weights_init_diagonal_param[] = { 0. };
+static float weights_init_target_param[] = { 0. };
+static float weights_init_states_param[] = { 0 };
+static float weights_init_cols_param[] = { -1 };
+static float weights_init_rows_param[] = { -1 };
+static float weights_init_normalize_param[] = { 1 };
 
-static float network_init_threads_param[3] = { 1, 0, 0 };
-static float network_asynchronous_param[1] = { 0 };
-static float network_clocked_param[2] = { 25, 0 };
+static float network_init_threads_param[] = { 1, 0, 0 };
+static float network_asynchronous_param[] = { 0 };
+static float network_clocked_param[] = { 25, 0 };
 
 /*  number of built-in ops, see mint_op_atexit. it is a #define
     and not a static variable otherwise it must be exposed in the
@@ -61,25 +61,23 @@ static float network_clocked_param[2] = { 25, 0 };
 
     NOTE: change this whenever adding or removing from the table
     above, otherwise crashes can occur when adding ops! */
-#define mint_nop_builtin 36
+#define mint_nop_builtin 35
 
 /* built-in ops */
 static struct mint_op mint_op_static_table[] = {
 
   /* nodes update */
 
-  { "identity",mint_op_nodes_update,mint_node_identity,0,0 },
-
-  { "sigmoid",mint_op_nodes_update,mint_node_sigmoid,2,
+  { "sigmoid",mint_op_nodes_update,mint_node_sigmoid,4,
     node_sigmoid_param },
 
-  { "logistic",mint_op_nodes_update,mint_node_logistic,2,
+  { "logistic",mint_op_nodes_update,mint_node_logistic,4,
     node_logistic_param },
 
-  { "integrator",mint_op_nodes_update,mint_node_integrator,3,
+  { "integrator",mint_op_nodes_update,mint_node_integrator,4,
     node_integrator_param },
 
-  { "izzy",mint_op_nodes_update,mint_node_izzy,6,node_izzy_param },
+  { "izzy",mint_op_nodes_update,mint_node_izzy,8,node_izzy_param },
 
   { "noise",mint_op_nodes_update,mint_node_noise,
     3,node_noise_param },
@@ -92,7 +90,6 @@ static struct mint_op mint_op_static_table[] = {
 
   { "spikes",mint_op_nodes_update,mint_node_spikes,
     1,node_spikes_param },
-
 
   /* nodes init */
 
