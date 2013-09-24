@@ -11,18 +11,21 @@
 #include <SDL/SDL_image.h>
 #include <SDL/SDL_rotozoom.h>
 #include <SDL/SDL_ttf.h>
+#include <SDL/SDL_gfxPrimitives.h>
 
 struct mint_image {
   SDL_Surface *surf;
 };
 
+/* SDL variables and parameters */
 static int mint_image_init_flag = 0;
 static SDL_Surface *mint_screen = 0;
+static int mint_vmode = SDL_SWSURFACE | SDL_ANYFORMAT | SDL_RESIZABLE;
+static SDL_Color mint_color = { 0, 192, 0, 255 };
+static SDL_Color mint_background = { 0, 0, 0, 255 };
 static TTF_Font *mint_font = 0;
 static TTF_Font *mint_font_small = 0;
 
-static SDL_Color mint_color = { 0, 192, 0, 255 };
-static SDL_Color mint_background = { 0, 0, 0, 255 };
 
 static float node_snapshot_param[] = { 1, 1, 1, 0 };
 static float network_display_param[] = { 1, 0, 1 };
@@ -134,7 +137,7 @@ struct mint_image *mint_image_nodes( const mint_nodes nred,
 				     const mint_nodes nblue,
 				     int var ) {
   struct mint_image *image;
-  int rows, cols, size, x, y, R, G, B;
+  int rows, cols, size, x, y, R, G, B, bpp;
   float frows;
 
   if( mint_nodes_get_property( nred, "rows", 0, &frows ) )
@@ -154,10 +157,16 @@ struct mint_image *mint_image_nodes( const mint_nodes nred,
       mint_check( 0, "must provide 1 or 3 node arguments, not 2" );
   } 
 
-  /* FIX hardcoded bpp? */
+  /* same pixel format as screen*/
+  if( mint_screen ) {
+    bpp = mint_screen->format->BitsPerPixel;
+  } else {
+    bpp = 24;
+  }
+
   image = malloc( sizeof( struct mint_image ) );
   image->surf = SDL_CreateRGBSurface( SDL_SWSURFACE, 
-				      cols, rows, 24, 0, 0, 0, 0 ); 
+				      cols, rows, bpp, 0, 0, 0, 0 ); 
 
   if( SDL_MUSTLOCK( image->surf )  )
     SDL_LockSurface( image->surf );
@@ -185,7 +194,7 @@ struct mint_image *mint_image_nodes( const mint_nodes nred,
 struct mint_image *mint_image_weights( const mint_weights w, int irows, 
 				       int var ) {
   struct mint_image *image;
-  int icols, cols, rows, x, y, wx, wy, count;
+  int icols, cols, rows, x, y, wx, wy, count, bpp;
   int intensity, R, G, B;
   float max;
 
@@ -212,10 +221,16 @@ struct mint_image *mint_image_weights( const mint_weights w, int irows,
     }
   }
 
-  /* FIX hardcoded bpp? */
+  /* same pixel format as screen*/
+  if( mint_screen ) {
+    bpp = mint_screen->format->BitsPerPixel;
+  } else {
+    bpp = 24;
+  }
+
   image = malloc( sizeof( struct mint_image ) );
   image->surf = SDL_CreateRGBSurface( SDL_SWSURFACE, 
-				      icols, irows, 24, 0, 0, 0, 0 ); 
+				      icols, irows, bpp, 0, 0, 0, 0 ); 
 
   if( SDL_MUSTLOCK( image->surf )  )
     SDL_LockSurface( image->surf );
@@ -236,10 +251,6 @@ struct mint_image *mint_image_weights( const mint_weights w, int irows,
 
   if( SDL_MUSTLOCK( image->surf )  )
     SDL_UnlockSurface( image->surf );
-
-  /* this sends cell 1,1 in the top left corner as it is customary in
-     math */
-  mint_image_flipv( image );
 
   return image; 
 }
@@ -390,20 +401,28 @@ void mint_node_snapshot( mint_nodes n, int min, int max, float *p ) {
   mint_image_del( img );
 }
 
-void mint_init_screen( void ) {
-  mint_screen = SDL_SetVideoMode( 480, 480, 24, 
-				  SDL_SWSURFACE | SDL_ANYFORMAT | 
-				  SDL_RESIZABLE );
+void mint_init_screen( int groups ) {
+  int w, h, wgroup;
+  const SDL_VideoInfo *info;
+
+  if( mint_screen ) 
+    return;
+
+  info = SDL_GetVideoInfo();
+  w = info->current_w / 3;
+  wgroup = ( w - 0.05 * w * (groups+1) ) / groups;
+  h = 1.75 * wgroup;
+
+  mint_screen = SDL_SetVideoMode( w, h, 0, mint_vmode );
   mint_check( mint_screen, "cannot open window: %s", SDL_GetError() );
   SDL_WM_SetCaption( "MINT", "MINT" );
 
-  if( TTF_Init() != 0 )
-    return;
-
-  mint_font = TTF_OpenFont( MINT_DIR "/include/mint/FreeSans.ttf", 24 );
-  mint_font_small = TTF_OpenFont( MINT_DIR "/include/mint/FreeSans.ttf", 14 );
-  if( mint_font || mint_font_small )
-    atexit( TTF_Quit );
+  if( TTF_Init() == 0 ) {
+    mint_font = TTF_OpenFont( MINT_DIR "/include/mint/FreeSans.ttf", 24 );
+    mint_font_small = TTF_OpenFont( MINT_DIR "/include/mint/FreeSans.ttf", 14 );
+    if( mint_font || mint_font_small )
+      atexit( TTF_Quit );
+  }
 }
 
 void mint_text_display( const char *message, float x, float y, 
@@ -417,8 +436,8 @@ void mint_text_display( const char *message, float x, float y,
 
   TTF_SizeUTF8( font, message, &wtext, &htext );
   
-  dest.x = x * mint_screen->w - .5 * wtext;
-  dest.y = y * mint_screen->h - .5 * htext;
+  dest.x = x - .5 * wtext;
+  dest.y = y - .5 * htext;
 
   text = TTF_RenderUTF8_Shaded( font, message, mint_color, mint_background );
   SDL_BlitSurface( text, 0, mint_screen, &dest );
@@ -434,7 +453,7 @@ void mint_image_display_status( int status ) {
   r.x = 0.05 * mint_screen->w;
   r.y = 0.90 * mint_screen->h;
   r.w = 0.05 * mint_screen->w;
-  r.h = 0.05 * mint_screen->h;
+  r.h = 0.05 * mint_screen->w;
 
   switch( status ) {
   case -1: /* simulation stopped - draw a square */
@@ -457,24 +476,24 @@ void mint_image_display_status( int status ) {
   SDL_UpdateRect( mint_screen, r.x, r.y, r.w, r.h );
 }
 
-void mint_image_display( struct mint_image *src, float w, float h,
-			 float x, float y ) {
+void mint_image_display( struct mint_image *src, 
+			 int x, int y, int w, int h ) {
   SDL_Rect dest;
-  SDL_Surface *src_scaled;
+  SDL_Surface *scaled;
   int i;
+  float xscale, yscale;
 
-  if( !mint_screen ) 
-    mint_init_screen();
+  mint_init_screen( 1 );
 
-  w *= mint_screen->w / src->surf->w;
-  h *= mint_screen->h / src->surf->h;
+  xscale = w / src->surf->w;
+  yscale = h / src->surf->h;
 
-  src_scaled = rotozoomSurfaceXY( src->surf, 0, w, h, SMOOTHING_OFF );
+  scaled = rotozoomSurfaceXY( src->surf, 0, xscale, yscale, 
+			      SMOOTHING_OFF );
 
-  dest.x = x * mint_screen->w;
-  dest.y = y * mint_screen->h;
-  
-  i = SDL_BlitSurface( src_scaled, 0, mint_screen, &dest ); 
+  dest.x = x;
+  dest.y = y;
+  i = SDL_BlitSurface( scaled, 0, mint_screen, &dest ); 
   mint_check( i==0, "cannot display image: %s", SDL_GetError() );
 
   if( SDL_MUSTLOCK( mint_screen ) ) 
@@ -485,7 +504,7 @@ void mint_image_display( struct mint_image *src, float w, float h,
   if( SDL_MUSTLOCK( mint_screen ) ) 
     SDL_UnlockSurface( mint_screen );
 
-  SDL_FreeSurface( src_scaled );
+  SDL_FreeSurface( scaled );
 }
 
 void mint_poll_event( struct mint_network *net ) {
@@ -498,8 +517,7 @@ void mint_poll_event( struct mint_network *net ) {
     switch( event.type ) {
 
     case SDL_VIDEORESIZE: /* resize MINT window */
-      SDL_SetVideoMode( event.resize.w, event.resize.h, 24,
-			SDL_SWSURFACE | SDL_ANYFORMAT | SDL_RESIZABLE );
+      SDL_SetVideoMode( event.resize.w, event.resize.h, 0, mint_vmode );
       break;
     
     case SDL_KEYUP:
@@ -508,14 +526,12 @@ void mint_poll_event( struct mint_network *net ) {
       if( key == SDLK_COMMA ) { /* reduce window size 10% */
 	w = .9 * mint_screen->w;
 	h = .9 * mint_screen->h;
-	SDL_SetVideoMode( w, h, 24, 
-			  SDL_SWSURFACE | SDL_ANYFORMAT | SDL_RESIZABLE );
+	SDL_SetVideoMode( w, h, 0, mint_vmode );
 
       } else if( key == SDLK_PERIOD ) { /* increase window size 10% */
 	  w = 1.1 * mint_screen->w;
 	  h = 1.1 * mint_screen->h;
-	  SDL_SetVideoMode( w, h, 24, 
-			    SDL_SWSURFACE | SDL_ANYFORMAT | SDL_RESIZABLE );
+	  SDL_SetVideoMode( w, h, 0, mint_vmode );
 
       } else if( key == SDLK_SPACE ) { /* pause simulation */
 	/* wait for another space press */
@@ -562,11 +578,10 @@ void mint_poll_event( struct mint_network *net ) {
 }
 
 void mint_network_display( struct mint_network *net, float *p ) {
-  int i, j, groups, size, rows, rate;
-  float w, h, x, y, active;
+  int i, groups, size, rows, rate;
+  float w, h, x, y, frows;
   struct mint_image *img;
   mint_nodes n;
-  struct mint_ops *ops;
   char msg[256];
  
   rate = p[0];
@@ -576,40 +591,43 @@ void mint_network_display( struct mint_network *net, float *p ) {
 
   mint_poll_event( net );
 
-  /* info at lower right corner */
+  groups = mint_network_groups( net );
+  mint_init_screen( groups );
+
+  /* info at lower right corner (won't do anything until MINT window
+     has been created) */
   sprintf( msg, "   1/%d, %d   ", rate, (int)p[1] );
-  mint_text_display( msg, 0.9, 0.925, mint_font_small );
+  mint_text_display( msg, 0.9 * mint_screen->w, 
+		     0.925 * mint_screen->h, mint_font_small );
 
   if( p[2] == 0 ) /* display inactive */
     return;
 
-  if( ( (int)p[1] - 1 ) % rate )
+  if( ( (int)p[1] - 1 ) % rate ) /* not a sampled step */
     return;
 
-  groups = mint_network_groups( net );
-  y = 0.05;
-  w = ( 0.9 - 0.05 * (groups-1) ) / groups;
+  y = 0.05 * mint_screen->h;
+  w = ( ( 1 - 0.05 * (groups+1) ) / groups ) * mint_screen->w;
 
   for( i=0; i<groups; i++ ) {
 
     n = mint_network_nodes( net, i );
     size = mint_nodes_size( n );
 
-    ops = mint_nodes_get_ops( n );
-    j = mint_ops_find( ops, "rows", mint_op_nodes_init );
-    if( j == -1 )
-      rows = (int) sqrt( mint_nodes_size(n) );
+    if( mint_nodes_get_property( n, "rows", 0, &frows ) )
+      rows = frows;
     else
-      rows = mint_op_get_param( mint_ops_get( ops, j ), 0 );
+      rows = (int) sqrt( mint_nodes_size(n) );
 
-    h = w * rows / (size/rows);
+    h = w * rows * rows / size;
 
     img = mint_image_nodes( n, 0, 0, 1 );
-    x = 0.05 + ( 0.05 + w ) * i;
-    mint_image_display( img, w, h, x, y );
+    x = w * i + 0.05 * (i+1) * mint_screen->w;
+    mint_image_display( img, x, y, w, h );
     mint_image_del( img );
 
     mint_text_display( mint_str_char( mint_nodes_get_name(n) ),
-		       x + .5*w, y + h + 0.05, mint_font );
+		       x + .5*w, y + h + 0.1 * mint_screen->h, 
+		       mint_font );
   }
 }

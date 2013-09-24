@@ -5,6 +5,7 @@
 
 int main( void ) {
   FILE *f; 
+  int i;
 
   mint_random_seed( time(0) );
 
@@ -16,7 +17,7 @@ int main( void ) {
   fclose( f );
   mint_network_info( net, stdout );    /* display the network */
 
-  for( ;; )
+  for( i=0; i<1000; i++ )
     mint_network_operate( net );
 
   mint_network_del( net );             /* free memory */
