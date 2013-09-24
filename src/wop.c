@@ -95,12 +95,12 @@ void mint_weights_stdp( mint_weights w, mint_nodes pre,
   float pretime, posttime, dt;
 
   /* figure out where the spike counters are */
-  if( mint_nodes_property( pre, "counter", 0, &x ) )
+  if( mint_nodes_get_property( pre, "counter", 0, &x ) )
     precount = x;
   else
     mint_check( 0, "no counter defined for pre-synaptic nodes" );
 
-  if( mint_nodes_property( post, "counter", 0, &x ) )
+  if( mint_nodes_get_property( post, "counter", 0, &x ) )
     postcount = x;
   else
     mint_check( 0, "no counter defined for post-synaptic nodes" );

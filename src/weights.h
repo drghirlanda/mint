@@ -201,5 +201,17 @@ int mint_weights_frozen( mint_weights w );
 mint_weights mint_weights_optimize( mint_weights w, mint_nodes pre, 
 				    mint_nodes post, float cutoff );
 
+/** Store the value of parameter i of property prop in *value. If the
+    propert is found, return 1, if not found returns 0 (*value is not
+    modified). If invalid parameter number, aborts. */
+int mint_weights_get_property( mint_weights w, const char *prop, int i,
+			     float *value );
+
+/** Set the value of parameter i of property prop. If the property is
+    found, return 1, if not found returns 0. If invalid parameter
+    number, aborts. */
+int mint_weights_set_property( mint_weights w, const char *prop, int i,
+			     float value );
+
 #endif
 

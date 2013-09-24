@@ -102,10 +102,16 @@ void mint_nodes_update( mint_nodes n, int min, int max );
 struct mint_str *mint_nodes_get_name( mint_nodes s );
 
 /** Store the value of parameter i of property prop in *value. If the
-    propert is found, return 1, if not found returns -1 (*value is not
+    propert is found, return 1, if not found returns 0 (*value is not
     modified). If invalid parameter number, aborts. */
-int mint_nodes_property( mint_nodes n, const char *prop, int i,
-			 float *value );
+int mint_nodes_get_property( mint_nodes n, const char *prop, int i,
+			     float *value );
+
+/** Set the value of parameter i of property prop. If the property is
+    found, return 1, if not found returns 0. If invalid parameter
+    number, aborts. */
+int mint_nodes_set_property( mint_nodes n, const char *prop, int i,
+			     float value );
 
 /* see .c for docs */
 size_t mint_nodes_bytes( unsigned int size, unsigned int states );

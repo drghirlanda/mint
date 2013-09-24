@@ -661,3 +661,35 @@ void mint_network_operate( struct mint_network *net ) {
       mint_op_run( op, net );
   }
 }
+
+int mint_network_get_property( struct mint_network *net, 
+			       const char *prop, int i,
+			       float *value ) {
+  int k;
+
+  k = mint_ops_find( net->ops, prop, mint_op_network_any );
+
+  if( k == -1 ) 
+    return 0;
+  else
+    *value = mint_op_get_param( mint_ops_get( net->ops, k ), i );
+
+  return 1;
+
+}
+
+int mint_network_set_property( struct mint_network *net, 
+			       const char *prop, int i,
+			       float value ) {
+  int k;
+
+  k = mint_ops_find( net->ops, prop, mint_op_network_any );
+
+  if( k == -1 ) 
+    return 0;
+  else
+    mint_op_set_param( mint_ops_get( net->ops, k ), i, value );
+
+  return 1;
+
+}

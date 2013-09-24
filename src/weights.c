@@ -742,4 +742,34 @@ mint_weights mint_weights_optimize( mint_weights w, mint_nodes pre,
   }
 }
 
+int mint_weights_get_property( mint_weights w, const char *prop, int i,
+			       float *value ) {
+  struct mint_ops *ops;
+  int k;
+
+  ops = mint_weights_get_ops( w );
+  k = mint_ops_find( ops, prop, mint_op_weights_any );
+
+  if( k == -1 ) 
+    return 0;
+
+  *value = mint_op_get_param( mint_ops_get(ops, k), i );
+  return 1;
+}
+
+int mint_weights_set_property( mint_weights w, const char *prop, int i,
+			       float value ) {
+  struct mint_ops *ops;
+  int k;
+
+  ops = mint_weights_get_ops( w );
+  k = mint_ops_find( ops, prop, mint_op_weights_any );
+
+  if( k == -1 ) 
+    return 0;
+
+  mint_op_set_param( mint_ops_get(ops, k), i, value );
+  return -1;
+}
+
 #undef _STR

@@ -1,10 +1,12 @@
 #include "mint.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 int main( void ) {
   FILE *f; 
-  int i;
+
+  mint_random_seed( time(0) );
 
   mint_image_init();
 
@@ -14,7 +16,7 @@ int main( void ) {
   fclose( f );
   mint_network_info( net, stdout );    /* display the network */
 
-  for( i=0; i<2000; i++ )
+  for( ;; )
     mint_network_operate( net );
 
   mint_network_del( net );             /* free memory */

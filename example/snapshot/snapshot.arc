@@ -1,22 +1,21 @@
 network
   display
-  threads 20 1 0
+  threads 40 0 1
 
 nodes mitral 
-  size 49
+  size 100
   states 1
-  rows 7
-  noise .5 .5 0
-  integrator 15 0 0 2
-  sigmoid 0.1 1 2
+  rows 10
+  noise 0.5 0.05 0
+  integrator 1 0 0 2
+  sigmoid 0.1 1 2 1
 
 nodes granule
-  size 900
+  size 400
   states 1
-  rows 30
-  noise 0 0.05 0
-  integrator 30 0 0 2
-  sigmoid 0.1 1 2
+  rows 20
+  integrator 50 0 0 2
+  sigmoid 0.1 1 2 1
 
 weights mitral-granule
   sparse
@@ -24,4 +23,4 @@ weights mitral-granule
 
 weights granule-mitral
   sparse
-  uniform -.25 0 .025 
+  uniform -.15 0 .01 

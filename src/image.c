@@ -2,6 +2,7 @@
 #include "utils.h"
 #include "op.h"
 #include "str.h"
+#include "network.h"
 
 #include <stdlib.h>
 #include <math.h>
@@ -20,11 +21,11 @@ static SDL_Surface *mint_screen = 0;
 static TTF_Font *mint_font = 0;
 static TTF_Font *mint_font_small = 0;
 
-static SDL_Color mint_color = { 0, 192, 0, 1 };
-static SDL_Color mint_background = { 0, 0, 0, 1 };
+static SDL_Color mint_color = { 0, 192, 0, 255 };
+static SDL_Color mint_background = { 0, 0, 0, 255 };
 
-static float node_snapshot_param[4] = { 1, 1, 1, 0 };
-static float network_display_param[1] = { 1 };
+static float node_snapshot_param[] = { 1, 1, 1, 0 };
+static float network_display_param[] = { 1, 0, 1 };
 
 /* functions to get and set pixels in SDL surfaces, from
    http://sdl.beuc.net/sdl.wiki/Pixel_Access */
@@ -107,7 +108,7 @@ void mint_image_init( void ) {
   mint_op_add( "snapshot", mint_op_nodes_update, mint_node_snapshot,
 	       4, node_snapshot_param );
   mint_op_add( "display", mint_op_network_operate, mint_network_display,
-	       1, network_display_param );
+	       3, network_display_param );
 }
 
 struct mint_image *mint_image_load( char *filename ) {
@@ -136,7 +137,7 @@ struct mint_image *mint_image_nodes( const mint_nodes nred,
   int rows, cols, size, x, y, R, G, B;
   float frows;
 
-  if( mint_nodes_property( nred, "rows", 0, &frows ) )
+  if( mint_nodes_get_property( nred, "rows", 0, &frows ) )
     rows = frows;
   else
     rows = 1;
@@ -426,6 +427,36 @@ void mint_text_display( const char *message, float x, float y,
   SDL_FreeSurface( text );
 }
 
+void mint_image_display_status( int status ) {
+  SDL_Rect r;
+  int w; 
+
+  r.x = 0.05 * mint_screen->w;
+  r.y = 0.90 * mint_screen->h;
+  r.w = 0.05 * mint_screen->w;
+  r.h = 0.05 * mint_screen->h;
+
+  switch( status ) {
+  case -1: /* simulation stopped - draw a square */
+    boxRGBA( mint_screen, r.x, r.y, r.x + r.w, r.y + r.h, 
+		  0, 192, 0, 255 );
+    break;
+  case 0: /* display stopped, simulation active - draw pause symbol*/
+    w = r.w/3 - 1; /* ensures same rounding in both lines below */
+    boxRGBA( mint_screen, r.x, r.y, r.x + w, r.y + r.h, 
+	     0, 192, 0, 255 );
+    boxRGBA( mint_screen, r.x + 2*w, r.y, r.x + 3*w, r.y+r.h, 
+	     0, 192, 0, 255 );
+    break;
+  case 1: /* display and simulation active - erase symbols */
+    boxRGBA( mint_screen, r.x, r.y, r.x + r.w, r.y + r.h, 
+	     0, 0, 0, 255 );
+    break;
+  }
+
+  SDL_UpdateRect( mint_screen, r.x, r.y, r.w, r.h );
+}
+
 void mint_image_display( struct mint_image *src, float w, float h,
 			 float x, float y ) {
   SDL_Rect dest;
@@ -457,38 +488,70 @@ void mint_image_display( struct mint_image *src, float w, float h,
   SDL_FreeSurface( src_scaled );
 }
 
-void mint_poll_event( ) {
+void mint_poll_event( struct mint_network *net ) {
   int w, h;
   SDL_Event event;
   SDLKey key;
+  float active, rate;
 
   while( SDL_PollEvent( &event ) ) {
     switch( event.type ) {
-    case SDL_VIDEORESIZE:
+
+    case SDL_VIDEORESIZE: /* resize MINT window */
       SDL_SetVideoMode( event.resize.w, event.resize.h, 24,
 			SDL_SWSURFACE | SDL_ANYFORMAT | SDL_RESIZABLE );
       break;
+    
     case SDL_KEYUP:
       key = event.key.keysym.sym;
-      if( key == SDLK_COMMA ) {
+
+      if( key == SDLK_COMMA ) { /* reduce window size 10% */
 	w = .9 * mint_screen->w;
 	h = .9 * mint_screen->h;
 	SDL_SetVideoMode( w, h, 24, 
 			  SDL_SWSURFACE | SDL_ANYFORMAT | SDL_RESIZABLE );
-      } else if( key == SDLK_PERIOD ) {
+
+      } else if( key == SDLK_PERIOD ) { /* increase window size 10% */
 	  w = 1.1 * mint_screen->w;
 	  h = 1.1 * mint_screen->h;
 	  SDL_SetVideoMode( w, h, 24, 
 			    SDL_SWSURFACE | SDL_ANYFORMAT | SDL_RESIZABLE );
-      } else if( key == SDLK_SPACE ) {
+
+      } else if( key == SDLK_SPACE ) { /* pause simulation */
 	/* wait for another space press */
+	mint_image_display_status( -1 );
 	while( SDL_WaitEvent( &event ) ) {
 	  if( event.type == SDL_KEYUP &&
-	      event.key.keysym.sym == SDLK_SPACE )
+	      event.key.keysym.sym == SDLK_SPACE ) {
+	    mint_image_display_status( 1 );
 	    break;
+	  }
 	}
-      } else if( key == SDLK_q )
+
+      } else if( key == SDLK_q ) { /* quit simulation */
 	exit( EXIT_SUCCESS );
+
+      } else if( key == SDLK_p ) { /* pause/resume display */
+	mint_network_get_property( net, "display", 2, &active );
+	if( active ) {
+	  mint_network_set_property( net, "display", 2, 0. );
+	  mint_image_display_status( 0 );
+	} else {
+	  mint_network_set_property( net, "display", 2, 1. );
+	  mint_image_display_status( 1 );
+	}
+
+      } else if( key == SDLK_EQUALS ) { /* decrease sampling */
+	mint_network_get_property( net, "display", 0, &rate );
+	rate = rate + 10;
+	rate = rate - fmod(rate,10);
+	mint_network_set_property( net, "display", 0, rate );
+
+      } else if( key == SDLK_MINUS ) { /* increase sampling */
+	mint_network_get_property( net, "display", 0, &rate );
+	rate = rate - 10 >= 1 ? rate - 10 : 1;
+	mint_network_set_property( net, "display", 0, rate );
+      }
       break;
 
     case SDL_QUIT:
@@ -500,24 +563,30 @@ void mint_poll_event( ) {
 
 void mint_network_display( struct mint_network *net, float *p ) {
   int i, j, groups, size, rows, rate;
-  float w, h, x, y;
+  float w, h, x, y, active;
   struct mint_image *img;
   mint_nodes n;
   struct mint_ops *ops;
   char msg[256];
  
-  mint_poll_event();
-
-  groups = mint_network_groups( net );
-
   rate = p[0];
   mint_check( rate>0, "invalid rate: %d", (int)rate );
 
   p[1] += 1;
-  
+
+  mint_poll_event( net );
+
+  /* info at lower right corner */
+  sprintf( msg, "   1/%d, %d   ", rate, (int)p[1] );
+  mint_text_display( msg, 0.9, 0.925, mint_font_small );
+
+  if( p[2] == 0 ) /* display inactive */
+    return;
+
   if( ( (int)p[1] - 1 ) % rate )
     return;
 
+  groups = mint_network_groups( net );
   y = 0.05;
   w = ( 0.9 - 0.05 * (groups-1) ) / groups;
 
@@ -543,7 +612,4 @@ void mint_network_display( struct mint_network *net, float *p ) {
     mint_text_display( mint_str_char( mint_nodes_get_name(n) ),
 		       x + .5*w, y + h + 0.05, mint_font );
   }
-
-  sprintf( msg, "sampling = %d  frame = %d", rate, (int)p[1] );
-  mint_text_display( msg, 0.5, 0.95, mint_font_small );
 }
