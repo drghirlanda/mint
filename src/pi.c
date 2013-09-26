@@ -219,7 +219,7 @@ void mint_pi_gpiosensor_callback( int gpio, int level,
   /* get nodes object and retrieve increment param from gpiosensor op */
   n = (mint_nodes) userdata;
   ops = mint_nodes_get_ops( n );
-  i = mint_ops_find( ops, "gpiosensor" );
+  i = mint_ops_find( ops, "gpiosensor", mint_op_nodes_any );
   mint_check( i>-1, "no gpiosensor op in nodes" );
   op = mint_ops_get( ops, i );
   increment = mint_op_get_param( op, 1 );
