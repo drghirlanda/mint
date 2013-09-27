@@ -13,7 +13,7 @@ int main( void ) {
   mint_pi_init();
 
   /* read network architecture from file */
-  file = fopen( "pi.arc", "r" );
+  file = fopen( "dcmotor.arc", "r" );
   net = mint_network_load( file );
   fclose( file );
 

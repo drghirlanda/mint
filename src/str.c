@@ -45,7 +45,7 @@ void mint_str_cpy( struct mint_str *dst, const struct mint_str *src ) {
 struct mint_str *mint_str_load( FILE *f ) {
   long pos;
   int len;
-  char c;
+  int c;
   struct mint_str *s;
 
   /* it's not a MINT string if it starts with a number */
@@ -56,7 +56,7 @@ struct mint_str *mint_str_load( FILE *f ) {
   len = 0;
   while( len<MINT_STRLEN && !feof(f) ) {
     c = fgetc( f );
-    if( !isspace(c) ) len++;
+    if( isalnum(c) ) len++;
     else break;
   }
   fseek( f, pos, SEEK_SET );
