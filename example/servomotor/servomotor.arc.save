@@ -1,0 +1,5 @@
+network
+
+nodes n1 
+  size 1 
+#  servomotor 27 750 2250 0 21 21
