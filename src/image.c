@@ -269,12 +269,13 @@ void mint_image_rotate( struct mint_image *image, float angle ) {
 
 void mint_image_paste( const struct mint_image *image, mint_nodes n,
 		       int xpos, int ypos, int scale ) {
-  int i, j, irows, icols, nrows, ncols, size, x, y, idx, var;
+  int i, j, irows, icols, nrows, ncols, size, x, y, idx, var, 
+    *init, states;
   float weight;
   SDL_Surface *surf;
 
-  Uint8 mask, shift, loss, intensity;
-  Uint32 pixel;
+  Uint8 intensity;
+  Uint32 pixel, mask, shift, loss;
   struct mint_ops *ops;
   struct mint_op *op;
   const char *name;
@@ -283,11 +284,17 @@ void mint_image_paste( const struct mint_image *image, mint_nodes n,
 
   irows = image->surf->h;
   icols = image->surf->w;
-    
+
+  /* we want to set the target variable to zero only once, hence we
+     have to keep track of when we do that */
+  states = mint_nodes_states( n );
+  init = malloc( ( 2 + states ) * sizeof(int) );
+  for( i=0; i<2+states; i++ )
+    init[i] = 0;
+
   /* go through all ops and process red, green, and blue ops only */
   ops = mint_nodes_get_ops( n );
   for( i=0; i < mint_ops_size( ops ); i++ ) {
-    mask = -1;
     op = mint_ops_get( ops, i );
     name = mint_op_name( op );
     if( strcmp( name, "red" ) == 0 ) {
@@ -302,48 +309,52 @@ void mint_image_paste( const struct mint_image *image, mint_nodes n,
       mask = image->surf->format->Bmask;
       shift = image->surf->format->Bshift;
       loss =  image->surf->format->Bloss;
+    } else 
+      continue;
+      
+    j = mint_ops_find( ops, "rows", mint_op_nodes_init );
+    if( j == -1 ) nrows = 1; 
+    else nrows = mint_op_get_param( mint_ops_get(ops, j), 0 );
+    size = mint_nodes_size( n );
+    ncols = size / nrows;
+
+    /* we set surf only here to potentially save us an image rescale
+       if there are no image ops for this node group. if surf is
+       already nonzero, the job has already been done erlier in the
+       loop, and we can just continue  */
+    if( !surf ) {
+      if( scale && (nrows != irows || ncols != icols) )
+	surf = zoomSurface( image->surf, 
+			    ((float)ncols)/icols, 
+			    ((float)nrows)/irows, SMOOTHING_OFF );
+      else
+	surf = image->surf;
     }
-
-    if( mask != -1 ) { /* if red/green/blue op found */
       
-      j = mint_ops_find( ops, "rows", mint_op_nodes_init );
-      if( j == -1 ) nrows = 1; 
-      else nrows = mint_op_get_param( mint_ops_get(ops, j), 0 );
-      size = mint_nodes_size( n );
-      ncols = size / nrows;
+    var = mint_op_get_param( op, 1 );
+    weight = mint_op_get_param( op, 0 );
 
-      /* we set surf only here to potentially save us an image rescale
-	 if there are no image ops for this node group. if surf is
-	 already nonzero, the job has already been done erlier in the
-	 loop, and we can just continue  */
-      if( !surf ) {
-	if( scale && (nrows != irows || ncols != icols) )
-	  surf = zoomSurface( image->surf, 
-			      ((float)ncols)/icols, 
-			      ((float)nrows)/irows, SMOOTHING_OFF );
-	else
-	  surf = image->surf;
-      }
-      
-      var = mint_op_get_param( op, 1 );
-      weight = mint_op_get_param( op, 0 );
-
-      for ( y=0; y<irows; y++ ) {
-	for ( x=0; x<icols; x++ ) {
-	  idx = y+ypos + nrows*(x+xpos);
-	  if( idx>=0 && idx<size ) {
-	    pixel = getpixel( surf, x, y );
-	    pixel = pixel & mask;
-	    pixel = pixel >> shift;
-	    intensity = (Uint8)( pixel << loss );
-	    n[ var ][ idx ] += weight * intensity / 255;
-	  }
+    if( !init[var] ) {
+      mint_nodes_set( n, var, 0 );
+      init[var] = 1;
+    }
+    
+    for ( y=0; y<irows; y++ ) {
+      for ( x=0; x<icols; x++ ) {
+	idx = y+ypos + nrows*(x+xpos);
+	if( idx>=0 && idx<size ) {
+	  pixel = getpixel( surf, x, y );
+	  pixel = pixel & mask;
+	  pixel = pixel >> shift;
+	  intensity = (Uint8)( pixel << loss );
+	  n[ var ][ idx ] += weight * intensity / 255;
 	}
       }
     }
   }
   if( surf != image->surf )
     SDL_FreeSurface( surf );
+  free( init );
 }
 
 
@@ -425,7 +436,7 @@ void mint_init_screen( int groups ) {
   }
 }
 
-void mint_text_display( const char *message, float x, float y, 
+void mint_text_display( const char *message, int x, int y, 
 			TTF_Font *font ) {
   SDL_Surface *text;
   SDL_Rect dest;
@@ -468,7 +479,8 @@ void mint_image_display_status( int status ) {
 	     0, 192, 0, 255 );
     break;
   case 1: /* display and simulation active - erase symbols */
-    boxRGBA( mint_screen, r.x, r.y, r.x + r.w, r.y + r.h, 
+    boxRGBA( mint_screen, r.x - 5, r.y - 5, 
+	     r.x + r.w + 5, r.y + r.h + 5, 
 	     0, 0, 0, 255 );
     break;
   }
@@ -481,15 +493,12 @@ void mint_image_display( struct mint_image *src,
   SDL_Rect dest;
   SDL_Surface *scaled;
   int i;
-  float xscale, yscale;
+  float scale;
 
   mint_init_screen( 1 );
 
-  xscale = w / src->surf->w;
-  yscale = h / src->surf->h;
-
-  scaled = rotozoomSurfaceXY( src->surf, 0, xscale, yscale, 
-			      SMOOTHING_OFF );
+  scale = (float)w / src->surf->w;
+  scaled = rotozoomSurface( src->surf, 0, scale, SMOOTHING_OFF );
 
   dest.x = x;
   dest.y = y;
@@ -578,8 +587,8 @@ void mint_poll_event( struct mint_network *net ) {
 }
 
 void mint_network_display( struct mint_network *net, float *p ) {
-  int i, groups, size, rows, rate;
-  float w, h, x, y, frows;
+  int i, groups, size, rows, rate, x, y, w, h;
+  float frows;
   struct mint_image *img;
   mint_nodes n;
   char msg[256];
@@ -607,7 +616,7 @@ void mint_network_display( struct mint_network *net, float *p ) {
     return;
 
   y = 0.05 * mint_screen->h;
-  w = ( ( 1 - 0.05 * (groups+1) ) / groups ) * mint_screen->w;
+  w = ( ( 1.0 - 0.05 * (groups+1) ) / groups ) * mint_screen->w;
 
   for( i=0; i<groups; i++ ) {
 
@@ -619,7 +628,7 @@ void mint_network_display( struct mint_network *net, float *p ) {
     else
       rows = (int) sqrt( mint_nodes_size(n) );
 
-    h = w * rows * rows / size;
+    h = (w * rows * rows) / size;
 
     img = mint_image_nodes( n, 0, 0, 1 );
     x = w * i + 0.05 * (i+1) * mint_screen->w;
