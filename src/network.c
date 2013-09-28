@@ -21,7 +21,6 @@ struct mint_network {
   struct mint_ops *ops;
 };
 
-
 static struct mint_network *mint_network_alloc( int groups, 
 						int matrices ) {
   int i;
@@ -582,8 +581,7 @@ void mint_network_asynchronous( struct mint_network *net, float *p ) {
     k = mint_random_int( 0, size );
     while( j<=k ) {
       n = mint_network_nodes( net, i );
-      if( mint_ops_count(mint_nodes_get_ops(n),mint_op_nodes_update)>0 ) 
-	j += mint_nodes_size( net->n[i] );
+      j += mint_nodes_size( net->n[i] );
       i++;
     }
     i--;
@@ -637,17 +635,13 @@ void mint_network_spread( struct mint_network *net ) {
       from = mint_weights_get_from( net->w[k] );
       mint_weights_operate( net->w[k], net->n[from], net->n[to],
 			    0, mint_weights_rows(net->w[k]) );
+      mint_weights_update( net->w[k], net->n[from], net->n[to], 
+			   0, mint_weights_rows(net->w[k]) );
     }
 
     /* node update */
     if( j > -1 )
       mint_nodes_update( net->n[j], 0, mint_nodes_size(net->n[j]) );
-
-    /* weight update */
-    if( k > -1 )
-      mint_weights_update( net->w[k], net->n[from], net->n[to], 
-			   0, mint_weights_rows(net->w[k]) );
-
   }
 }
 
