@@ -110,7 +110,6 @@ static struct mint_op mint_op_static_table[] = {
 
   { "mult",mint_op_weights_operate,mint_weights_mult,0,0 },
 
-
   /* weights update */
 
   { "hebbian",mint_op_weights_update,mint_weights_hebbian,4,
