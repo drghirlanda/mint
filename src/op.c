@@ -1,4 +1,5 @@
 #include "op.h"
+#include "optype.h"
 #include "nop.h"
 #include "wop.h"
 #include "netop.h"
@@ -10,17 +11,9 @@
 #include <stdarg.h>
 #include <string.h>
 
-struct mint_op {
-  char *name;   /* op name: a unique identifier */
-  int type;     /* see enum in op.h */
-  void *op;     /* the op function */
-  int nparam;   /* # op parameters */
-  float *param; /* parameter values */
-};
-
 struct mint_ops {
   int n;               /* number of ops in the list */
-  struct mint_op **p;  /* array of ops pointers */
+  struct mint_op **p;  /* array of op pointers */
 };
 
 /* default parameter values for ops that need them */
