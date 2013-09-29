@@ -1,47 +1,56 @@
-#!/bin/bash
+#!/bin/bash -e
 
-N=1000
+N=2000
+TMAX=10
 
-/bin/rm -f threads-*.dat
+/bin/rm -f *.dat
 
-for T in $(seq 1 20); do
+## baseline 1: single-threaded MINT
+cat<<EOF>threads.arc
+network
+nodes n1 size $N sigmoid
+nodes n2 size $N sigmoid
+weights n1-n2 uniform 0 1 0.01
+EOF
+echo "single-threaded"
+/usr/bin/time -f '%e %M' ./threads 1>&2 2>>nothreads.dat
+
+for T in $(seq 1 $TMAX); do
     cat<<EOF>threads.arc
-network 2 1
-threads $T 4
-nodes n1 size $N sigmoid .1 1
-nodes n2 size $N sigmoid .1 1
-weights n1-n2
+network
+threads $T 1 1
+nodes n1 size $N sigmoid
+nodes n2 size $N sigmoid
+weights n1-n2 uniform 0 1 0.01
 EOF
     echo $T
-    /usr/bin/time -f '%e %M' ./threads 1>&2 2>>threads-w=1-t=4.dat
+    /usr/bin/time -f '%e %M' ./threads 1>&2 2>>threads11.dat
 done
 
 
-for T in $(seq 1 20); do
+for T in $(seq 1 $TMAX); do
     cat<<EOF>threads.arc
-network 2 2
-threads $T 4
-nodes n1 size $N sigmoid .1 1
-nodes n2 size $N sigmoid .1 1
-weights n1-n2
-weights n1-n2.2
+network
+threads $T 0 1
+nodes n1 size $N sigmoid
+nodes n2 size $N sigmoid
+weights n1-n2 uniform 0 1 0.01
 EOF
     echo $T
-    /usr/bin/time -f '%e %M' ./threads 1>&2 2>>threads-w=2-t=4.dat
+    /usr/bin/time -f '%e %M' ./threads 1>&2 2>>threads01.dat
 done
 
 
-for T in $(seq 1 20); do
+for T in $(seq 1 $TMAX); do
     cat<<EOF>threads.arc
-network 2 2
-threads $T 6
-nodes n1 size $N sigmoid .1 1
-nodes n2 size $N sigmoid .1 1
-weights n1-n2
-weights n1-n2.2
+network
+threads $T 1 0
+nodes n1 size $N logistic
+nodes n2 size $N logistic
+weights n1-n2 uniform 0 1 0.01
 EOF
     echo $T
-    /usr/bin/time -f '%e %M' ./threads 1>&2 2>>threads-w=2-t=6.dat
+    /usr/bin/time -f '%e %M' ./threads 1>&2 2>>threads10.dat
 done
 
 Rscript threads.R

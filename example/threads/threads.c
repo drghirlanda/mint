@@ -8,6 +8,8 @@ int main( void ) {
   int i;
   int iterations = 1000;
 
+  mint_image_init();
+
   mint_random_seed( time(0) );
 
   file = fopen( "threads.arc", "r" );
