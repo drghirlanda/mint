@@ -1,26 +1,27 @@
 network
   display
-  threads 40 0 1
+  threads 4 1 1
+#  clocked 30
 
-nodes mitral 
-  size 100
+nodes exc 
+  size 2500
   states 1
-  rows 10
-  noise 0.5 0.05 0
-  integrator 1 0 0 2
-  sigmoid 0.1 1 2 1
+  rows 50
+  noise 1 0.5 0
+  integrator 10 0.1 0 2
+  sigmoid .1 1 2 1
 
-nodes granule
-  size 400
+nodes inh
+  size 2500
   states 1
-  rows 20
-  integrator 50 0 0 2
-  sigmoid 0.1 1 2 1
+  rows 50
+  integrator 10 0.1 0 2
+  sigmoid .1 1 2 1
 
-weights mitral-granule
+weights exc-inh
   sparse
-  uniform 0 .75 .01 
+  uniform 0 .01 .01
 
-weights granule-mitral
+weights inh-exc
   sparse
-  uniform -.15 0 .01 
+  uniform -.05 0 .02

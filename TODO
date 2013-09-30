@@ -39,19 +39,16 @@
     work to nthread slaves and leave the master thread only as
     monitor?
 
-  - multithread mint_nodes_set?
+  - check multithreaded mint_nodes_set and mint_weights_update. add
+    multithreaded mint_nodes_update. write common code to fill in the
+    thread data structures? it could easily be the same for nodes and
+    weights!
 
-  - multi thread mint_node update: could be done in the network rather
-    than in the nodes, given that node updates already take a range of
-    nodes, and given that the diversity of node updates prevents the
-    approach used for weights.
+  - do we need to replace mult with threaded mult? isn't it enough to
+    ahve threaded spread function that selectively dispatches whatever
+    features have been requested?
 
   - spread threading is suboptimal, see FIX in threads.c
-
-  - multithreading of node operations: write auxiliary function that
-    either simply dispatches the node op or schedules it across
-    multiple threads then an init op could se this to the threaded
-    version.
 
 - ops system:
 

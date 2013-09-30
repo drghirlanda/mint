@@ -284,15 +284,17 @@ struct mint_network *mint_network_load( FILE *file ) {
     mint_op_del( op ); /* a copy has been stored in net->ops */
   }
 
-  /* if there is a spread (possibly created by synchronour op that
-     might ahve just run), add the run_spread op, unless threaded
-     spread is set, in which case do nothign */
-  if( net->spread && 
-      mint_ops_find( net->ops, "threads", 
-		     mint_op_network_operate ) == -1 ) {
-    op = mint_op_new( "run_spread", mint_op_network_operate );
-    mint_ops_append( net->ops, op );
-    mint_op_del( op );
+  /* if there is a spread (possibly created by the synchronous op that
+     might have just run), add the run_spread op, unless it is already
+     there, in which case do nothing */
+  if( net->spread ) {
+    op = mint_ops_get_name( net->ops, "run_spread", 
+			    mint_op_network_operate );
+    if( !op ) {
+      op = mint_op_new( "run_spread", mint_op_network_operate );
+      mint_ops_append( net->ops, op );
+      mint_op_del( op );
+    }
   }
 
   return net;
