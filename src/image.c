@@ -146,7 +146,11 @@ struct mint_image *mint_image_nodes( const mint_nodes nred,
     rows = 1;
 
   size = mint_nodes_size( nred );
+
   cols = size / rows;
+
+  while( cols*rows < size ) 
+    cols++;
 
   if( ngreen && nblue ) {
     mint_check( size == mint_nodes_size(ngreen), 
@@ -626,7 +630,7 @@ void mint_network_display( struct mint_network *net, float *p ) {
     if( mint_nodes_get_property( n, "rows", 0, &frows ) )
       rows = frows;
     else
-      rows = (int) sqrt( mint_nodes_size(n) );
+      rows = sqrt( size );
 
     h = (w * rows * rows) / size;
 
