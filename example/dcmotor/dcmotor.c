@@ -22,12 +22,12 @@ int main( void ) {
   n = mint_network_nodes( net, 0 );
 
   printf( "driving motor in one direction for 5s\n" );
-  n[0][0] = 1;
+  n[0][1] = 1;
   mint_network_operate( net ); 
   sleep( 5 );
 
   printf( "driving motor in the other direction for 5s\n" );
-  n[0][0] = 0;
+  n[0][1] = 0;
   mint_network_operate( net ); 
   sleep( 5 );
 
