@@ -16,110 +16,160 @@
 
 #include <pthread.h>
 
-struct mint_thread_wdata {
+struct mint_thread_data {
   mint_weights w;  /* weights object */
   mint_nodes n1;   /* nodes (pre-synpatic if w != 0) */ 
   mint_nodes n2;   /* nodes (post-synaptic if w != 0) */
   int min;         /* a thread operates on a [min, max[ slice */
   int max;       
+  int var;
 };
 
 /* this function is called by mint_threads_mult for each thread, with
    approriate data to perform part or all of a matrix-vector
    multiplication  */
 void *mint_threads_weights_helper( void *arg ) {
-  struct mint_thread_wdata *td;
+  struct mint_thread_data *td;
 
-  td = (struct mint_thread_wdata *)arg;
+  td = (struct mint_thread_data *)arg;
+
+  mint_check( td->w, "null weights argument" );
+  mint_check( td->n1, "null nodes 1 argument" );
+  mint_check( td->n2, "null nodes 2 argument" );
+  mint_check( td->min >= 0, "td->min is negative" );
+  mint_check( td->max > td->min, "td->max not larger than td->min" );
+
   mint_weights_operate( td->w, td->n1, td->n2, td->min, td->max );
   mint_weights_update( td->w, td->n1, td->n2, td->min, td->max );
 
   return 0;
 }
 
-void mint_threads_weights( pthread_t *tids,
-			   struct mint_thread_wdata *td,
-			   pthread_attr_t *tattr,
+void mint_threads_weights( struct mint_thread_data tmpl,
 			   int nthreads ) {
   int step, max, i, j;
-  
-  max = mint_weights_rows( td[0].w );
-  step = max / nthreads;
-
-  td[0].max = step;
-  j = pthread_create( tids, tattr, mint_threads_weights_helper, 
-		      (void *)td );
-  mint_check( j==0, "thread creation failed" ); 
-
-  for( i = 1; i < nthreads - 1; i++ ) {
-    memcpy( td + i, td, sizeof(struct mint_thread_wdata) );
-    td[i].min = i * step;
-    td[i].max = (i+1) * step;
-    j = pthread_create( tids + i, tattr, mint_threads_weights_helper, 
-			(void *) (td + i) );
-    mint_check( j==0, "thread creation failed" );
-  }
-
-  /* do the last bit of work */
-  memcpy( td + i, td, sizeof(struct mint_thread_wdata) );
-  td[i].min = td[i-1].max;
-  td[i].max = max; 
-  mint_weights_operate( td[i].w, td[i].n1, td[i].n2, td[i].min, 
-			td[i].max );
-  mint_weights_update( td[i].w, td[i].n1, td[i].n2, td[i].min, 
-		       td[i].max );
-
-  /* wait for other threads to complete */
-  for( i = 0; i < nthreads - 1; i++ )
-    mint_check( pthread_join( tids[i], 0 ) == 0, 
-		"thread join failed" );
-}
-
-/* this function schedules node reset, matrix-vector multiplications,
-   node updates, and weight updates in parallel */
-void mint_threads_spread( struct mint_network *net, float *p ) {
-  int wid, nid, i, j, nthreads, ifrom, ito, target;
-  int threaded_nodes, threaded_weights;
-  struct mint_spread *spread;
-  struct mint_thread_wdata *td;
   pthread_t *tids;
+  struct mint_thread_data *td;
   pthread_attr_t tattr;
-  mint_weights w;
-  mint_nodes n;
 
-  nthreads = p[0];
-  threaded_nodes = p[1];
-  threaded_weights = p[2];
+  max = mint_weights_rows( tmpl.w );
+  step = max / nthreads;
 
   /* initialize thread system and create thread data structures */
   pthread_attr_init( &tattr );
   pthread_attr_setscope( &tattr, PTHREAD_SCOPE_SYSTEM );
   pthread_attr_setdetachstate( &tattr, PTHREAD_CREATE_JOINABLE );
-  td = malloc( nthreads * sizeof(struct mint_thread_wdata) );
+  td = malloc( nthreads * sizeof(struct mint_thread_data) );
   tids = malloc( nthreads * sizeof(pthread_t) );
 
-  /* reset targets of weight matrices */
-  for( i=0; i<mint_network_matrices( net ); i++ ) {
-    w = mint_network_weights( net, i );
-    ito =  mint_weights_get_to( w );
-    target = mint_weights_get_target( w );
-    mint_nodes_set( mint_network_nodes(net, ito), target, 0. );
+  for( i = 0; i < nthreads; i++ ) {
+    td[i].w = tmpl.w;
+    td[i].n1 = tmpl.n1;
+    td[i].n2 = tmpl.n2;
+    td[i].min = i * step;
+    td[i].max = i == nthreads - 1 ? max : (i+1) * step;
+    td[i].var = tmpl.var;
+    j = pthread_create( tids + i, &tattr, mint_threads_weights_helper, 
+			(void *) (td + i) );
+    mint_check( j==0, "thread creation failed" );
   }
-  /* for( i = 0; i < mint_network_matrices( net ); i++ ) { */
-  /*   tmpl.w = mint_network_weights( net, i ); */
-  /*   tmpl.n1 = mint_network_nodes( net,  */
-  /* 				  mint_weights_get_to( tmpl.w ) ); */
-  /*   tmpl.n2 = 0; /\* not needed *\/ */
-  /*   tmpl.var = mint_weights_get_target( tmpl.w ); */
-  /*   tmpl.task = nodes_reset; */
-  /*   tmpl.w = 0; /\* not needed *\/ */
-  /*   if( threaded_nodes ) */
-  /*     mint_threads_dispatch( &tmpl, nthreads ); */
-  /*   else { */
-  /*     for( j=0; j<mint_nodes_size( tmpl.n1 ); j++ ) */
-  /* 	tmpl.n1[ tmpl.var ][ j ] = 0; */
-  /*   } */
-  /* } */
+
+  /* wait for other threads to complete */
+  for( i = 0; i < nthreads; i++ )
+    mint_check( pthread_join( tids[i], 0 ) == 0, "thread join failed" );
+
+  free( tids );
+  free( td );
+}
+
+/* this function is called by mint_threads_nodes for each thread */
+void *mint_threads_nodes_helper( void *arg ) {
+  struct mint_thread_data *td;
+  int i;
+
+  td = (struct mint_thread_data *)arg;
+
+  mint_check( td->n1, "null nodes argument" );
+  mint_check( td->min >= 0, "td->min is negative" );
+  mint_check( td->max > td->min, "td->max not larger than td->min" );
+
+  if( td->var > -1 ) { /* node reset */
+    for( i = td->min; i < td->max; i++ )
+      td->n1[ td->var ][ i ] = 0;
+  } else
+    mint_nodes_update( td->n1, td->min, td->max );
+
+  return 0;
+}
+
+void mint_threads_nodes( struct mint_thread_data tmpl,
+			 int nthreads ) {
+  int step, max, i, j;
+  pthread_t *tids;
+  struct mint_thread_data *td;
+  pthread_attr_t tattr;
+			 
+  max = mint_nodes_size( tmpl.n1 );
+  step = max / nthreads;
+
+  /* initialize thread system and create thread data structures */
+  pthread_attr_init( &tattr );
+  pthread_attr_setscope( &tattr, PTHREAD_SCOPE_SYSTEM );
+  pthread_attr_setdetachstate( &tattr, PTHREAD_CREATE_JOINABLE );
+  td = malloc( nthreads * sizeof(struct mint_thread_data) );
+  tids = malloc( nthreads * sizeof(pthread_t) );
+
+  for( i = 0; i < nthreads; i++ ) {
+    td[i].w = tmpl.w;
+    td[i].n1 = tmpl.n1;
+    td[i].n2 = tmpl.n2;
+    td[i].min = i * step;
+    td[i].max = i == nthreads -1 ? max : (i+1) * step;
+    td[i].var = tmpl.var;
+    j = pthread_create( tids + i, &tattr, mint_threads_nodes_helper, 
+			(void *) (td + i) );
+    mint_check( j==0, "thread creation failed" );
+  }
+
+  /* wait for threads to complete */
+  for( i = 0; i < nthreads; i++ )
+    mint_check( pthread_join( tids[i], 0 ) == 0, "thread join failed" );
+
+  free( tids );
+  free( td );
+}
+
+/* this function schedules node reset, matrix-vector multiplications,
+   node updates, and weight updates in parallel */
+void mint_threads_spread( struct mint_network *net, float *p ) {
+  int wid, nid, i, nthreads, ifrom, ito, target;
+  int threaded_nodes, threaded_weights;
+  struct mint_thread_data tmpl;
+  struct mint_spread *spread;
+
+  nthreads = p[0];
+  threaded_nodes = p[1];
+  threaded_weights = p[2];
+
+  /* reset targets of weight matrices */
+  if( threaded_nodes ) {
+    for( i = 0; i < mint_network_matrices( net ); i++ ) {
+      tmpl.w = mint_network_weights( net, i );
+      tmpl.n1 = 
+	mint_network_nodes( net, mint_weights_get_to( tmpl.w ) );
+      tmpl.var = mint_weights_get_target( tmpl.w );
+      tmpl.w = 0; /* not needed */
+      tmpl.n2 = 0;
+      mint_threads_nodes( tmpl, nthreads );
+    }
+  } else {
+    for( i=0; i<mint_network_matrices( net ); i++ ) {
+      tmpl.w = mint_network_weights( net, i );
+      ito =  mint_weights_get_to( tmpl.w );
+      target = mint_weights_get_target( tmpl.w );
+      mint_nodes_set( mint_network_nodes(net, ito), target, 0. );
+    }
+  }
 
   spread = mint_network_get_spread( net );
 
@@ -129,20 +179,31 @@ void mint_threads_spread( struct mint_network *net, float *p ) {
     nid = mint_spread_get_nodes( spread, i );
     
     if( wid > -1 ) { /* operate and update matrix */
-      td[0].w = mint_network_weights( net, wid );
-      ifrom = mint_weights_get_from( td[0].w );
-      td[0].n1 = mint_network_nodes( net, ifrom );
-      ito = mint_weights_get_to( td[0].w );
-      td[0].n2 = mint_network_nodes( net, ito );
-      mint_threads_weights( tids, td, &tattr, nthreads );
+      tmpl.w = mint_network_weights( net, wid );
+      ifrom = mint_weights_get_from( tmpl.w );
+      tmpl.n1 = mint_network_nodes( net, ifrom );
+      ito = mint_weights_get_to( tmpl.w );
+      tmpl.n2 = mint_network_nodes( net, ito );
+      tmpl.var = -1; /* not needed */
+      if( threaded_weights )
+	mint_threads_weights( tmpl, nthreads );
+      else {
+	mint_weights_operate( tmpl.w, tmpl.n1, tmpl.n2, 0,
+			      mint_weights_rows( tmpl.w ) );
+	mint_weights_update( tmpl.w, tmpl.n1, tmpl.n2, 0,
+			     mint_weights_rows( tmpl.w ) );
+      }
     } else if( nid > -1 ) { /* node update */
-      n = mint_network_nodes( net, nid );
-      mint_nodes_update( n, 0, mint_nodes_size(n) );
+      tmpl.n1 = mint_network_nodes( net, nid );
+      if( threaded_nodes ) {
+	tmpl.w = 0;
+	tmpl.n2 = 0;
+	tmpl.var = -1;
+	mint_threads_nodes( tmpl, nthreads );
+      } else
+	mint_nodes_update( tmpl.n1, 0, mint_nodes_size( tmpl.n1 ) );
     }
   }
-
-  free( tids );
-  free( td );
 }
 
 void mint_network_init_threads( struct mint_network *net, float *p ) {
