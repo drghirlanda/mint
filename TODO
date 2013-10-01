@@ -11,7 +11,7 @@
   - DOCUMENT THIS: network init ops may set spread. if spread is set,
     run_spread op is added and the spread is performed. other network
     operate ops are run prior to spreading (threaded spread overrides
-    the default run spread - see network_load)
+    the default run spread - see threads.c)
 
   - mint_weights_set assumes indices in sparse matrix cind variables
     are sorted, but mint_weights_set_row does not check...
@@ -26,8 +26,7 @@
 
 - display:
 
-  - some more key-bindings, e.g., to start/stop display and change
-    framerate
+  - better layout, somehow display weights or at least connections
 
 -mint_pi:
 
@@ -35,20 +34,8 @@
 
 - threads:
 
-  - in weights_mult_threads, would it be noticeably faster to send all
-    work to nthread slaves and leave the master thread only as
-    monitor?
-
-  - check multithreaded mint_nodes_set and mint_weights_update. add
-    multithreaded mint_nodes_update. write common code to fill in the
-    thread data structures? it could easily be the same for nodes and
-    weights!
-
-  - do we need to replace mult with threaded mult? isn't it enough to
-    ahve threaded spread function that selectively dispatches whatever
-    features have been requested?
-
-  - spread threading is suboptimal, see FIX in threads.c
+  - write common code to fill in the thread data structures? it could
+    easily be the same for nodes and weights!
 
 - ops system:
 
@@ -58,19 +45,8 @@
     to the same as n[0]... carefully. is this safe? how to prevent
     memory to be wasted? 
 
-  - more convenient ways to manipulate ops lists? like add op of a
-    given type and params by name? also: 
-
-    int mint_nodes_property( mint_nodes n, char *prop, int param, 
-                             float *value )
-
-    and mint_weights_property, mint_network_property
-
 - weights init functions that build receptive fields and topographic
   mappings
-
-- can we write a function that efficiently maps node index to x,y
-  position on a grid? 
 
 - make it possible to set inputs by "shallow copy" (pointer
   assignment)? would make things much faster when presenting many
@@ -103,8 +79,6 @@ mint_nodes mint_2d_stim( int size, float x, float h, float d ) {
     MEDIUM
 
   - population and mutation for genetic algorithms MEDIUM
-
-  - dynamic network visualization MEDIUM
 
   - virtual environment COMPLEX
 

@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-N=500
+N=2000
 TMAX=10
 
 /bin/rm -f *.dat
