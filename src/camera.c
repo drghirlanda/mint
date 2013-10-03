@@ -1,4 +1,3 @@
-
 #define _POSIX_C_SOURCE 199309L
 
 #include "camera.h"
@@ -64,7 +63,7 @@ void mint_camera_init( void ) {
   mint_check( pid != -1, "cannot fork to create camshot process" );
 
   if( pid==0 ) { /* child */
-    execv( "/usr/bin/camshot", camarg );
+    execv( CAMSHOT, camarg );
     mint_check( 0, "%s", strerror(errno) );
   }
 
