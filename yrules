@@ -223,12 +223,13 @@ cmd_doc() {
 
 # build camshot
 
-test_camshot() {
-    ! make -q -C camshot
-}
+#test_camshot() {
+#    ! make -q -C camshot
+#}
 
 cmd_camshot() {
     cd camshot
+    make clean
     make
     cd -
 }
