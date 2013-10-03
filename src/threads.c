@@ -55,6 +55,12 @@ void mint_threads_weights( struct mint_thread_data tmpl,
   max = mint_weights_rows( tmpl.w );
   step = max / nthreads;
 
+  if( !step ) { /* small job */
+    tmpl.min = 0;
+    tmpl.max = max;
+    return mint_threads_weights_helper( (void *) &tmpl );
+  }
+
   /* initialize thread system and create thread data structures */
   pthread_attr_init( &tattr );
   pthread_attr_setscope( &tattr, PTHREAD_SCOPE_SYSTEM );
@@ -111,6 +117,12 @@ void mint_threads_nodes( struct mint_thread_data tmpl,
 			 
   max = mint_nodes_size( tmpl.n1 );
   step = max / nthreads;
+
+  if( !step ) { /* small job */
+    tmpl.min = 0;
+    tmpl.max = max;
+    return mint_threads_nodes_helper( (void *) &tmpl );
+  }
 
   /* initialize thread system and create thread data structures */
   pthread_attr_init( &tattr );

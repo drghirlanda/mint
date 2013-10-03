@@ -56,7 +56,7 @@ struct mint_str *mint_str_load( FILE *f ) {
   len = 0;
   while( len<MINT_STRLEN && !feof(f) ) {
     c = fgetc( f );
-    if( isalnum(c) || c == '-' || c == '.' ) len++;
+    if( isalnum(c) || c == '-' || c == '.' || c == '_' ) len++;
     else break;
   }
   fseek( f, pos, SEEK_SET );
