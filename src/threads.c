@@ -58,7 +58,8 @@ void mint_threads_weights( struct mint_thread_data tmpl,
   if( !step ) { /* small job */
     tmpl.min = 0;
     tmpl.max = max;
-    return mint_threads_weights_helper( (void *) &tmpl );
+    mint_threads_weights_helper( (void *) &tmpl );
+    return;
   }
 
   /* initialize thread system and create thread data structures */
@@ -121,7 +122,8 @@ void mint_threads_nodes( struct mint_thread_data tmpl,
   if( !step ) { /* small job */
     tmpl.min = 0;
     tmpl.max = max;
-    return mint_threads_nodes_helper( (void *) &tmpl );
+    mint_threads_nodes_helper( (void *) &tmpl );
+    return;
   }
 
   /* initialize thread system and create thread data structures */
@@ -154,7 +156,7 @@ void mint_threads_nodes( struct mint_thread_data tmpl,
 /* this function schedules node reset, matrix-vector multiplications,
    node updates, and weight updates in parallel */
 void mint_threads_spread( struct mint_network *net, float *p ) {
-  int wid, nid, i, nthreads, ifrom, ito, target;
+  int wid, nid, i, nthreads, ifrom, ito, target, groups, *done;
   int threaded_nodes, threaded_weights;
   struct mint_thread_data tmpl;
   struct mint_spread *spread;
@@ -164,24 +166,35 @@ void mint_threads_spread( struct mint_network *net, float *p ) {
   threaded_weights = p[2];
 
   /* reset targets of weight matrices */
+  groups = mint_network_groups(net);
+  done = malloc(  groups * sizeof(int) );
+  for( i=0; i<groups; i++ )
+    done[i] = 0;
   if( threaded_nodes ) {
     for( i = 0; i < mint_network_matrices( net ); i++ ) {
       tmpl.w = mint_network_weights( net, i );
-      tmpl.n1 = 
-	mint_network_nodes( net, mint_weights_get_to( tmpl.w ) );
-      tmpl.var = mint_weights_get_target( tmpl.w );
-      tmpl.w = 0; /* not needed */
-      tmpl.n2 = 0;
-      mint_threads_nodes( tmpl, nthreads );
+      ito = mint_weights_get_to( tmpl.w );
+      if( !done[ ito ] ) {
+	tmpl.n1 = mint_network_nodes( net, ito );
+	tmpl.var = mint_weights_get_target( tmpl.w );
+	tmpl.w = 0; /* not needed */
+	tmpl.n2 = 0;
+	mint_threads_nodes( tmpl, nthreads );
+	done[ ito ] = 1;
+      }
     }
   } else {
     for( i=0; i<mint_network_matrices( net ); i++ ) {
       tmpl.w = mint_network_weights( net, i );
       ito =  mint_weights_get_to( tmpl.w );
-      target = mint_weights_get_target( tmpl.w );
-      mint_nodes_set( mint_network_nodes(net, ito), target, 0. );
+      if( !done[ ito ] ) {
+	target = mint_weights_get_target( tmpl.w );
+	mint_nodes_set( mint_network_nodes(net, ito), target, 0. );
+	done[ ito ] = 1;
+      }
     }
   }
+  free( done );
 
   spread = mint_network_get_spread( net );
 

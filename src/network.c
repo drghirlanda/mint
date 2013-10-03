@@ -611,16 +611,24 @@ void mint_network_asynchronous( struct mint_network *net, float *p ) {
 }
 
 void mint_network_spread( struct mint_network *net ) {
-  int i, j, k, from, to, len, target;
+  int i, j, k, from, to, len, target, groups;
+  int *done;
 
   if( !net->spread ) 
     return;
 
   /* reset the targets of weight matrices */
+  groups = mint_network_groups(net);
+  done = malloc(  groups * sizeof(int) );
+  for( i=0; i<groups; i++ )
+    done[i] = 0;
   for( i=0; i<net->matrices; i++ ) {
     to =  mint_weights_get_to( net->w[i] );
     target = mint_weights_get_target( net->w[i] );
-    mint_nodes_set( net->n[to], target, 0. );
+    if( !done[ to ] ) {
+      mint_nodes_set( net->n[to], target, 0. );
+      done[ to ] = 1;
+    }
   }
 
   len = mint_spread_len( net->spread );
