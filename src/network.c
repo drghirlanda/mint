@@ -630,6 +630,7 @@ void mint_network_spread( struct mint_network *net ) {
       done[ to ] = 1;
     }
   }
+  free( done );
 
   len = mint_spread_len( net->spread );
 

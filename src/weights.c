@@ -90,7 +90,7 @@ static mint_weights mint_weights_alloc( unsigned int rows,
   }
 
   if( !sparse ) { /* set everything to zero */
-    for( s=0; s<states; s++ ) {
+    for( s=0; s<1+states; s++ ) {
       for( r=0; r<rows; r++ ) {
 	for( c=0; c<cols; c++ )
 	  w[s][r][c] = 0;

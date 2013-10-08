@@ -356,6 +356,7 @@ void mint_image_paste( const struct mint_image *image, mint_nodes n,
       }
     }
   }
+
   if( surf != image->surf )
     SDL_FreeSurface( surf );
   free( init );
@@ -424,7 +425,7 @@ void mint_init_screen( int groups ) {
     return;
 
   info = SDL_GetVideoInfo();
-  w = info->current_w / 3;
+  w = info->current_w / 2;
   wgroup = ( w - 0.05 * w * (groups+1) ) / groups;
   h = 1.75 * wgroup;
 
