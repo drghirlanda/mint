@@ -182,5 +182,24 @@ void mint_node_size( mint_nodes n, int min, int max, float *p );
     variable. Thus "nodes n1 size 100 red 1 0" would direct the red
     channel to node input rather than node output. */
 void mint_node_color( mint_nodes n, float *p );
+
+/** Habituation of a state variable. A habituation variable, h, is set
+    up evolving according to
+
+      T Delta h = a * y - h
+
+    where T is a time constant and a the maximum level of habituation
+    (see parameter description below).
+
+    State variables: One required to store habituation level. Also, if
+    you want to habituate a state variable that is not input or
+    output, that state variable must exist...
+
+    Parameters: 0: Time constant (default 1)
+                1: Maximum habituation level, in [0,1] (default 0)
+		2: State variable storing habituation level (default: 2)
+		3: State variable that habituates (default: 1)
+ */
+void mint_node_habituation( mint_nodes n, int min, int max, float *p );
  
 #endif
