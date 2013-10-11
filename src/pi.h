@@ -64,8 +64,6 @@ void mint_pi_dcmotor( mint_nodes n, int, int, float * );
                 by the value read from the GPIO pin times this scale
                 factor.
 
-		2: Frequency of GPIO pin reads. 
-
 		2: Node state variable to which increments are added
 		(default 0, i.e., the node input variable).
  
