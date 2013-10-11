@@ -2,7 +2,16 @@
 
   - uninstall
 
-- known bugs or poorly designed features:
+- improvements:
+
+  - make WEIGHTS_LOOP macro to iterate correctly over both sparse and
+    dense matrices, so that one can focus on the code...
+
+  - keep track of pointers in spread reset of matrix targets, to avoid
+    potentially resetting twice
+
+  - getting image from camera should work as fast as possible
+    regardless of max framerate.
 
   - inner loop in image_paste could be optimized by replacing the if
     on the index with a calculation to begin and end loops at
@@ -18,7 +27,7 @@
 
   - lateral processing weights op can be turned into receptive field
     op by allowing nfrom to be different from nto!
-   
+
 - to be tested:
 
   - freezing/unfreezing of weight matrices and networks
