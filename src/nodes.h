@@ -38,7 +38,7 @@ void mint_nodes_del( mint_nodes );
 /** Creates a duplicate (exact copy) of a nodes object. */
 mint_nodes mint_nodes_dup( const mint_nodes );
 
-/** Makes the dst object equal to the src object. */
+/** Makes the dst object identical to the src object. */
 void mint_nodes_cpy( mint_nodes dst, const mint_nodes src );
 
 /** Loads a node group from an open file. The file format is:
