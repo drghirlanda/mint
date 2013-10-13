@@ -177,6 +177,8 @@ void mint_weights_init_random_dense( mint_weights w,
     for( j=0; j<c; j++ ) {
       if( mint_random()<p[2] )
 	w[0][i][j] = rnd( p[0], p[1] );
+      else
+	w[0][i][j] = 0;
     }
   }
 }
