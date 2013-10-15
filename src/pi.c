@@ -11,13 +11,13 @@
 
 /* the second and third defaults ensure that the servo is not damaged
    by excessive rotation. the user is expected to set them */
-static float mint_pi_servomotor_default[7] = {-1, 1500, 1500, 0, -1, -1, 0};
+static float mint_pi_servomotor_default[] = {-1, 1500, 1500, 0, -1, -1, 0};
 
 /* the last parameter (undocumented in the user interface) is for
    storing the init status */
-static float mint_pi_dcmotor_default[7] = { -1, -1, -1, 0.5, 0.1, 0, 0 };
+static float mint_pi_dcmotor_default[] = { -1, -1, -1, 0.5, 0.1, 0, 0 };
 
-static float mint_pi_gpiosensor_default[4] = { -1, 1, 0, 0 };
+static float mint_pi_gpiosensor_default[] = { -1, 1, 2, 0, 0 };
 
 /*** end default parameters ***/
 
@@ -61,7 +61,7 @@ void mint_pi_init( void ) {
 	       mint_pi_dcmotor, 7, mint_pi_dcmotor_default );
 
   mint_op_add( "gpiosensor", mint_op_nodes_update, 
-	       mint_pi_gpiosensor, 4, mint_pi_gpiosensor_default );
+	       mint_pi_gpiosensor, 5, mint_pi_gpiosensor_default );
 
 }
 
@@ -184,7 +184,7 @@ void mint_pi_dcmotor( mint_nodes n, int min, int max, float *p ) {
   }
 
   /* scale activity from [zero_point+threshold, 1] to [0, 1] */
-  activity += zero_point + threshold;
+  activity -= zero_point + threshold;
   activity /= 1 - zero_point - threshold;
 
   /* scale activity from [0, 1] to the pin range */
@@ -213,8 +213,8 @@ void mint_pi_gpiosensor_callback( int gpio, int level,
   mint_nodes n;
   struct mint_ops *ops;
   struct mint_op *op;
-  int i, size;
-  float increment, *state;
+  int i, size, fromvar;
+  float increment, *from;
 
   /* get nodes object and retrieve increment param from gpiosensor op */
   n = (mint_nodes) userdata;
@@ -222,13 +222,14 @@ void mint_pi_gpiosensor_callback( int gpio, int level,
   i = mint_ops_find( ops, "gpiosensor", mint_op_nodes_any );
   mint_check( i>-1, "no gpiosensor op in nodes" );
   op = mint_ops_get( ops, i );
-  increment = mint_op_get_param( op, 1 );
 
-  state = n[ (int) mint_op_get_param( op, 2 ) ];
+  increment = mint_op_get_param( op, 1 );
+  fromvar = mint_op_get_param( op, 2 );
+  from = n[ fromvar ];
 
   size = mint_nodes_size( n );
   for( i=0; i<size; i++ )
-    *(state + i) += increment * level;
+    from[i] += increment * level;
 }
 
 /* here we first arranges for pigpio to call the function above, which
@@ -237,9 +238,9 @@ void mint_pi_gpiosensor_callback( int gpio, int level,
    (ensured by storing a flag value into param 3 of the op). */
 void mint_pi_gpiosensor( mint_nodes n, int min, int max, float *p ) {
   int input_pin, i;
-  float *in, *state;
+  float *from, *to;
 
-  if( !p[3] ) { /* we still have to set things up */
+  if( !p[4] ) { /* we still have to set things up */
     input_pin = p[0];
     mint_check( input_pin != -1, "input_pin not set (1st op parameter)" );
 
@@ -251,13 +252,14 @@ void mint_pi_gpiosensor( mint_nodes n, int min, int max, float *p ) {
 
     gpioSetAlertFuncEx( input_pin, mint_pi_gpiosensor_callback, (void *)n );
 
-    p[3] = 1; /* setup done */
+    p[4] = 1; /* setup done */
   }
 
-  state = n[ (int) p[2] ];
-  in = n[0];
+  from = n[ (int)p[2] ];
+  to = n[ (int)p[3] ];
+
   for( i=min; i<max; i++ ) {
-    *(in+i) += *(state+i);
-    *(state+i) = 0;
+    to[i] += from[i];
+    from[i] = 0;
   }
 }

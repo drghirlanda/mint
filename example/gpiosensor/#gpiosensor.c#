@@ -9,27 +9,24 @@ int main( void ) {
   FILE *file;
   struct mint_network *net;
   mint_nodes n;
+  int i;
 
   mint_pi_init();
 
   /* read network architecture from file */
-  file = fopen( "dcmotor.arc", "r" );
+  file = fopen( "gpiosensor.arc", "r" );
   net = mint_network_load( file );
   fclose( file );
 
-  mint_network_save( net, stdout );
+  mint_network_info( net, stdout );
 
   n = mint_network_nodes( net, 0 );
 
-  printf( "driving motor in one direction for 5s\n" );
-  n[0][1] = 1;
-  mint_network_operate( net ); 
-  sleep( 5 );
-
-  printf( "driving motor in the other direction for 5s\n" );
-  n[0][1] = 0;
-  mint_network_operate( net ); 
-  sleep( 5 );
+  for( i=0; i<30; i++ ) {
+    mint_network_operate( net ); 
+    printf( "%f\n", n[1][0] );
+    sleep( 5 );
+  }
 
   mint_network_del( net );
   return 0;
