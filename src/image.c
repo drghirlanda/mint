@@ -26,9 +26,9 @@ static SDL_Color mint_background = { 0, 0, 0, 255 };
 static TTF_Font *mint_font = 0;
 static TTF_Font *mint_font_small = 0;
 
-
 static float node_snapshot_param[] = { 1, 1, 1, 0 };
 static float network_display_param[] = { 1, 0, 1 };
+static float node_key_param[] = { 0, 0, 0, 0 };
 
 /* functions to get and set pixels in SDL surfaces, from
    http://sdl.beuc.net/sdl.wiki/Pixel_Access */
@@ -110,6 +110,8 @@ void mint_image_init( void ) {
 
   mint_op_add( "snapshot", mint_op_nodes_update, mint_node_snapshot,
 	       4, node_snapshot_param );
+  mint_op_add( "key", mint_op_nodes_event, mint_node_key,
+	       4, node_key_param );
   mint_op_add( "display", mint_op_network_operate, mint_network_display,
 	       3, network_display_param );
 }
@@ -383,6 +385,47 @@ struct mint_image *mint_image_from_surface( SDL_Surface *surf ) {
   return image;
 }
 
+void mint_nodes_event( mint_nodes n, int min, int max, SDL_Event ev ) {
+  int i;
+  struct mint_ops *ops;
+  struct mint_op *op;
+  ops = mint_nodes_get_ops( n );
+
+  for( i=0; i<mint_ops_size(ops); i++ ) {
+    op = mint_ops_get( ops, i );
+    if( mint_op_type( op )  == mint_op_nodes_event )
+      mint_op_run( op, n, min, max, mint_op_get_params( op ), ev );
+  }
+}
+
+void mint_node_key( mint_nodes n, int min, int max, float *p,
+		    SDL_Event ev ) {
+  int i, var, mode, key, states; 
+  float value;
+
+  key = p[0];
+  var = p[1];
+  value = p[2];
+  mode = p[3];
+
+  states = mint_nodes_states(n);
+
+  mint_check( key>=32 && key<=127, 
+	      "key (param 0) must be between 32 and 127" );
+  mint_check( var >= 0, "variable (param 1) must be >= 0" );
+  mint_check( var < 2+states, "variable ([aram 1) must be < %d",
+	      2+states );
+  mint_check( mode==0 || mode==1, "mode (param 3) must be 0 or 1" );
+
+  if( ev.type != SDL_KEYUP || ev.key.keysym.sym != key )
+    return;
+
+  /* mode 0/1 switches between increment value or set value */
+  for( i=min; i<max; i++ )
+    n[ var ][i] = mode * n[ var ][i] + value;
+ 
+}
+
 void mint_node_snapshot( mint_nodes n, int min, int max, float *p ) {
   int frequency, state, overwrite, len;
   struct mint_image *img;
@@ -459,7 +502,6 @@ void mint_text_display( const char *message, int x, int y,
   text = TTF_RenderUTF8_Shaded( font, message, mint_color, mint_background );
   SDL_BlitSurface( text, 0, mint_screen, &dest );
   SDL_UpdateRect( mint_screen, dest.x, dest.y, dest.w, dest.h );
-
   SDL_FreeSurface( text );
 }
 
@@ -510,20 +552,13 @@ void mint_image_display( struct mint_image *src,
   dest.y = y;
   i = SDL_BlitSurface( scaled, 0, mint_screen, &dest ); 
   mint_check( i==0, "cannot display image: %s", SDL_GetError() );
-
-  if( SDL_MUSTLOCK( mint_screen ) ) 
-    SDL_LockSurface( mint_screen );
-
-  SDL_UpdateRect( mint_screen, dest.x, dest.y, dest.w, dest.h );
-
-  if( SDL_MUSTLOCK( mint_screen ) ) 
-    SDL_UnlockSurface( mint_screen );
-
+  SDL_UpdateRect( mint_screen, dest.x-1, dest.y-1, dest.w+1, dest.h+1 );
   SDL_FreeSurface( scaled );
 }
 
 void mint_poll_event( struct mint_network *net ) {
-  int w, h;
+  int i;
+  mint_nodes n;
   SDL_Event event;
   SDLKey key;
   float active, rate;
@@ -538,17 +573,7 @@ void mint_poll_event( struct mint_network *net ) {
     case SDL_KEYUP:
       key = event.key.keysym.sym;
 
-      if( key == SDLK_COMMA ) { /* reduce window size 10% */
-	w = .9 * mint_screen->w;
-	h = .9 * mint_screen->h;
-	SDL_SetVideoMode( w, h, 0, mint_vmode );
-
-      } else if( key == SDLK_PERIOD ) { /* increase window size 10% */
-	  w = 1.1 * mint_screen->w;
-	  h = 1.1 * mint_screen->h;
-	  SDL_SetVideoMode( w, h, 0, mint_vmode );
-
-      } else if( key == SDLK_SPACE ) { /* pause simulation */
+      if( key == SDLK_SPACE ) { /* pause simulation */
 	/* wait for another space press */
 	mint_image_display_status( -1 );
 	while( SDL_WaitEvent( &event ) ) {
@@ -582,6 +607,12 @@ void mint_poll_event( struct mint_network *net ) {
 	mint_network_get_property( net, "display", 0, &rate );
 	rate = rate - 10 >= 1 ? rate - 10 : 1;
 	mint_network_set_property( net, "display", 0, rate );
+      } else {
+	/* loop for user-registered key events */
+	for( i=0; i<mint_network_groups(net); i++ ) {
+	  n = mint_network_nodes( net, i );
+	  mint_nodes_event( n, 0, mint_nodes_size(n), event );
+	}
       }
       break;
 

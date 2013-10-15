@@ -139,4 +139,8 @@ void mint_network_display( struct mint_network *net, float *p );
                    (default 1). */
 void mint_node_snapshot( mint_nodes n, int min, int max, float *p );
 
+/** Document! */
+void mint_node_key( mint_nodes n, int min, int max, float *p, 
+		    SDL_Event ev );
+
 #endif /* MINT_IMAGE_H */

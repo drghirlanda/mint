@@ -15,15 +15,16 @@
 enum {
   mint_op_nodes_update = 1,
   mint_op_nodes_init = 2,
-  mint_op_nodes_any = 1+2,
-  mint_op_weights_update = 4,
-  mint_op_weights_init = 8,
-  mint_op_weights_operate = 16,
-  mint_op_weights_connect = 32,
-  mint_op_weights_any = 4+8+16+32,
-  mint_op_network_init = 64,
-  mint_op_network_operate = 128,
-  mint_op_network_any = 64+128  
+  mint_op_nodes_event = 4, /* see image.c for event functions */
+  mint_op_nodes_any = 1+2+4,
+  mint_op_weights_update = 8,
+  mint_op_weights_init = 16,
+  mint_op_weights_operate = 32,
+  mint_op_weights_connect = 64,
+  mint_op_weights_any = 8+16+32+64,
+  mint_op_network_init = 128,
+  mint_op_network_operate = 256,
+  mint_op_network_any = 128+256  
 };
 
 /** An op describes an operation that can be performed on nodes or
@@ -35,6 +36,13 @@ struct mint_ops;
  
 /** Function prototpye for node update and init ops. */
 typedef void (*mint_nop_t)( mint_nodes, int, int, float * );
+
+#ifdef MINT_IMAGE
+#include "SDL/SDL.h"
+
+typedef void (*mint_nop_ev_t)( mint_nodes, int, int, float *,
+			       SDL_Event );
+#endif
 
 /** Function prototpye for weight update, operate, and connect ops. */
 typedef void (*mint_wop_t)( mint_weights, mint_nodes, mint_nodes, 

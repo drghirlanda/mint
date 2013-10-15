@@ -359,6 +359,9 @@ void mint_op_run( struct mint_op *op, ... ) {
   struct mint_network *net;
   int min, max;
   va_list ap;
+#ifdef MINT_IMAGE
+  SDL_Event event;
+#endif
 
   va_start( ap, op );
 
@@ -371,6 +374,16 @@ void mint_op_run( struct mint_op *op, ... ) {
     max = va_arg( ap, int );
     ( (mint_nop_t)op->op )( n1, min, max, op->param );
     break;
+
+#ifdef MINT_IMAGE
+  case mint_op_nodes_event:
+    n1 = va_arg( ap, mint_nodes );
+    min = va_arg( ap, int );
+    max = va_arg( ap, int );
+    event = va_arg( ap, SDL_Event );
+    ( (mint_nop_ev_t)op->op )( n1, min, max, op->param, event );
+    break;
+#endif
 
   case mint_op_weights_update:
   case mint_op_weights_operate:
