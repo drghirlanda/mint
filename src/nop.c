@@ -168,4 +168,31 @@ void mint_node_color( mint_nodes n, float *p ) {
 	      "parameter 0 out of range 0-%d", 1+states );
 }
 
+/*
+    Parameters: 0: Time constant
+                1: Maximum habituation level, in [0,1]
+		2: State variable storing habituation level (default: 2)
+		3: State variable that habituates (default: 1)
+ */
+void mint_node_habituation( mint_nodes n, int min, int max, float *p ) {
+
+  float T, a;
+  float *h, *y;
+  int i;
+
+  T = p[0];
+  mint_check( T>0, "time constant (parameter 0) must be positive" );
+  a = p[1];
+  mint_check( a>=0 && a<=1, 
+	      "max habituation (parameter 1) must be in [0,1]" );
+  
+  SET_VAR( n, h, p[2] );
+  SET_VAR( n, y, p[3] );
+
+  for( i=min; i<max; i++ ) {
+    h[i] += ( a*y[i] - h[i] ) / T;
+    y[i] -= h[i];
+  }
+}
+
 #undef SET_VAR

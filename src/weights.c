@@ -48,7 +48,7 @@ static mint_weights mint_weights_alloc( unsigned int rows,
 					unsigned int states,
 					int sparse ) {
   mint_weights w;
-  unsigned int s, r;
+  unsigned int s, r, c;
   char *start1, *start2;
   struct mint_weights_str *wstr;
 
@@ -88,7 +88,16 @@ static mint_weights mint_weights_alloc( unsigned int rows,
 	w[s][r] = (float *)( start2 + (s*rows*cols + r*cols)*sizeof(float) );
     }
   }
-  
+
+  if( !sparse ) { /* set everything to zero */
+    for( s=0; s<1+states; s++ ) {
+      for( r=0; r<rows; r++ ) {
+	for( c=0; c<cols; c++ )
+	  w[s][r][c] = 0;
+      }
+    }
+  }
+
   return w;
 }
 

@@ -67,16 +67,26 @@ void mint_weights_hebbian( mint_weights w, mint_nodes pre,
 
 void mint_weights_delta( mint_weights w, mint_nodes pre, 
 			 mint_nodes post, int rmin, int rmax, float *p ) {
-  int r, c, i, j, desired;
+  int c, i, j, desired, jmax;
+  unsigned int *colind;
   float lrate;
   lrate = p[0];
   desired = (int)p[1]; 
-  r = mint_weights_rows( w );
-  c = mint_weights_cols( w );
-  mint_check( rmin>=0 && rmax<=r, "rmin, rmax out of range" );
-  for( i=rmin; i<rmax; i++ ) {
-    for( j=0; j<c; j++ )
-      w[0][i][j] += lrate * ( post[desired][i] - post[1][i] ) * pre[1][j];
+  if( mint_weights_is_sparse( w ) ) {
+    for( i=rmin; i<rmax; i++ ) {
+      colind = mint_weights_colind( w, i );
+      jmax = mint_weights_rowlen( w, i );
+      for( j=0; j<jmax; j++ )
+	w[0][i][j] += lrate * 
+	  ( post[desired][i] -  post[1][i] ) * pre[ 1 ][ colind[j] ];
+    }
+  } else {
+    jmax = mint_weights_cols( w );
+    for( i=rmin; i<rmax; i++ ) {
+      for( j=0; j<jmax; j++ )
+	w[0][i][j] += lrate * ( post[desired][i] - post[1][i] ) * 
+	  pre[1][j];
+    }
   }
 }
 
@@ -167,6 +177,8 @@ void mint_weights_init_random_dense( mint_weights w,
     for( j=0; j<c; j++ ) {
       if( mint_random()<p[2] )
 	w[0][i][j] = rnd( p[0], p[1] );
+      else
+	w[0][i][j] = 0;
     }
   }
 }

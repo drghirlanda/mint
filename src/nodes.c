@@ -30,7 +30,7 @@ mint_nodes mint_nodes_new( unsigned int size, unsigned int states ) {
   size_t offset;
   struct mint_nodes_str *nstr;
   mint_nodes n;
-  unsigned int s;
+  unsigned int s, i;
   nstr = malloc( mint_nodes_bytes(size, states) );
   mint_check( nstr!=0, "out of memory!" );
   nstr->size = size;
@@ -43,6 +43,13 @@ mint_nodes mint_nodes_new( unsigned int size, unsigned int states ) {
   for( s=0; s<2+states; s++ ) {
     n[s] = (float *)( (char *)n + offset + s*size*sizeof(float) );
   }
+
+  /* set everything to zero initially */
+  for( s = 0; s < 2 + states; s++ ) {
+    for( i = 0; i < size; i++ )
+      n[s][i] = 0;
+  }
+
   return n;
 }
 

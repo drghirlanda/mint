@@ -137,7 +137,8 @@ struct mint_image *mint_image_nodes( const mint_nodes nred,
 				     const mint_nodes nblue,
 				     int var ) {
   struct mint_image *image;
-  int rows, cols, size, x, y, R, G, B, bpp;
+  int rows, cols, size, x, y, bpp;
+  Uint8 R, G, B;
   float frows;
 
   if( mint_nodes_get_property( nred, "rows", 0, &frows ) )
@@ -198,8 +199,8 @@ struct mint_image *mint_image_nodes( const mint_nodes nred,
 struct mint_image *mint_image_weights( const mint_weights w, int irows, 
 				       int var ) {
   struct mint_image *image;
-  int icols, cols, rows, x, y, wx, wy, count, bpp;
-  int intensity, R, G, B;
+  int icols, cols, rows, x, y, wx, wy, count, bpp, intensity;
+  Uint8 R, G, B;
   float max;
 
   cols = mint_weights_cols( w );
@@ -356,6 +357,7 @@ void mint_image_paste( const struct mint_image *image, mint_nodes n,
       }
     }
   }
+
   if( surf != image->surf )
     SDL_FreeSurface( surf );
   free( init );
@@ -424,7 +426,7 @@ void mint_init_screen( int groups ) {
     return;
 
   info = SDL_GetVideoInfo();
-  w = info->current_w / 3;
+  w = info->current_w / 2;
   wgroup = ( w - 0.05 * w * (groups+1) ) / groups;
   h = 1.75 * wgroup;
 
