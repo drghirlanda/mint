@@ -4,14 +4,25 @@
 
 - improvements:
 
+  - document the new event system for nodes (see op.c and image.c,
+    where the event loop resides)
+
+  - move event loop to event.h/c ?
+
   - make WEIGHTS_LOOP macro to iterate correctly over both sparse and
-    dense matrices, so that one can focus on the code...
+    dense matrices, so that one can focus on the code?
 
   - keep track of pointers in spread reset of matrix targets, to avoid
     potentially resetting twice
 
+  - have MINT save network state and exit cleanly on SIGUSR? it should
+    not be hard to write a signal handler and have network_load add
+    the network to a list of networks (and network_del remove it from
+    there)
+
   - getting image from camera should work as fast as possible
-    regardless of max framerate.
+    regardless of max camera framerate, returning an identical image
+    to the last one from the camera if necessary.
 
   - inner loop in image_paste could be optimized by replacing the if
     on the index with a calculation to begin and end loops at
@@ -31,13 +42,12 @@
 - to be tested:
 
   - freezing/unfreezing of weight matrices and networks
-  - multi-threaded spread
 
 - display:
 
   - better layout, somehow display weights or at least connections
 
--mint_pi:
+- mint_pi:
 
   - test sensor functions
 
