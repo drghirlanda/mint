@@ -67,7 +67,7 @@ void mint_weights_hebbian( mint_weights w, mint_nodes pre,
 
 void mint_weights_delta( mint_weights w, mint_nodes pre, 
 			 mint_nodes post, int rmin, int rmax, float *p ) {
-  int c, i, j, desired, jmax;
+  int i, j, desired, jmax;
   unsigned int *colind;
   float lrate;
   lrate = p[0];
@@ -92,7 +92,6 @@ void mint_weights_delta( mint_weights w, mint_nodes pre,
 
 void mint_weights_stdp( mint_weights w, mint_nodes pre, 
 			mint_nodes post, int rmin, int rmax, float *p ) {
-  struct mint_ops *ops;
   int r, i, j, rlen, precount, postcount;
   float decay = p[0];
   float plus = p[1];

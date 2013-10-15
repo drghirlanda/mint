@@ -264,9 +264,10 @@ mint_weights mint_weights_load( FILE *file, struct mint_network *net ) {
     toname = mint_str_substr( name, i+1, j );
     from = mint_network_nodes_find( net, mint_str_char(fromname) );
     to = mint_network_nodes_find( net, mint_str_char(toname) );
-    mint_check( from != -1 && to != -1, 
-		"invalid from and/or to node groups in '%s'", 
-		mint_str_char(name) );
+    mint_check( from != -1, "cannot find 'from' nodes: %s", 
+		mint_str_char(fromname) );
+    mint_check( to != -1, "cannot find 'to' nodes: %s", 
+		mint_str_char(toname) );
   }
 
   if( mint_next_string( file, "from", 4 ) ) {
