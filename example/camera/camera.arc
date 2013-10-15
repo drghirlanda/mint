@@ -1,10 +1,11 @@
 network
 camera
 display
-threads 8 0 1
-nodes nred size 76800 rows 240 red
-nodes ngreen size 76800 rows 240 green
-nodes nblue size 76800 rows 240 blue 
+clocked 10 1
+threads 4 1 0
+nodes nred size 768 rows 24 red
+nodes ngreen size 768 rows 24 green
+nodes nblue size 768 rows 24 blue 
 
 
 
