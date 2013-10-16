@@ -114,6 +114,8 @@ void mint_image_init( void ) {
 	       4, node_key_param );
   mint_op_add( "display", mint_op_network_operate, mint_network_display,
 	       3, network_display_param );
+  mint_op_add( "events", mint_op_network_operate, mint_network_events,
+	       0, 0 );
 }
 
 struct mint_image *mint_image_load( char *filename ) {
@@ -556,7 +558,7 @@ void mint_image_display( struct mint_image *src,
   SDL_FreeSurface( scaled );
 }
 
-void mint_poll_event( struct mint_network *net ) {
+void mint_network_events( struct mint_network *net, float *p ) {
   int i;
   mint_nodes n;
   SDL_Event event;
@@ -564,61 +566,66 @@ void mint_poll_event( struct mint_network *net ) {
   float active, rate;
 
   while( SDL_PollEvent( &event ) ) {
-    switch( event.type ) {
-
-    case SDL_VIDEORESIZE: /* resize MINT window */
-      SDL_SetVideoMode( event.resize.w, event.resize.h, 0, mint_vmode );
-      break;
     
-    case SDL_KEYUP:
-      key = event.key.keysym.sym;
+    if( mint_screen ) { /* process GUI events */
 
-      if( key == SDLK_SPACE ) { /* pause simulation */
-	/* wait for another space press */
-	mint_image_display_status( -1 );
-	while( SDL_WaitEvent( &event ) ) {
-	  if( event.type == SDL_KEYUP &&
-	      event.key.keysym.sym == SDLK_SPACE ) {
-	    mint_image_display_status( 1 );
-	    break;
+      switch( event.type ) {
+
+      case SDL_VIDEORESIZE: /* resize MINT window */
+	SDL_SetVideoMode( event.resize.w, event.resize.h, 0, 
+			  mint_vmode );
+	break;
+    
+      case SDL_KEYUP:
+	key = event.key.keysym.sym;
+
+	if( key == SDLK_SPACE ) { /* pause simulation */
+	  /* wait for another space press */
+	  mint_image_display_status( -1 );
+	  while( SDL_WaitEvent( &event ) ) {
+	    if( event.type == SDL_KEYUP &&
+		event.key.keysym.sym == SDLK_SPACE ) {
+	      mint_image_display_status( 1 );
+	      break;
+	    }
 	  }
-	}
+	  
+	} else if( key == SDLK_q ) { /* quit simulation */
+	  exit( EXIT_SUCCESS );
+	  
+	} else if( key == SDLK_p ) { /* pause/resume display */
+	  mint_network_get_property( net, "display", 2, &active );
+	  if( active ) {
+	    mint_network_set_property( net, "display", 2, 0. );
+	    mint_image_display_status( 0 );
+	  } else {
+	    mint_network_set_property( net, "display", 2, 1. );
+	    mint_image_display_status( 1 );
+	  }
 
-      } else if( key == SDLK_q ) { /* quit simulation */
+	} else if( key == SDLK_EQUALS ) { /* decrease sampling */
+	  mint_network_get_property( net, "display", 0, &rate );
+	  rate = rate + 10;
+	  rate = rate - fmod(rate,10);
+	  mint_network_set_property( net, "display", 0, rate );
+	  
+	} else if( key == SDLK_MINUS ) { /* increase sampling */
+	  mint_network_get_property( net, "display", 0, &rate );
+	  rate = rate - 10 >= 1 ? rate - 10 : 1;
+	  mint_network_set_property( net, "display", 0, rate );
+	}
+	break;
+	
+      case SDL_QUIT:
 	exit( EXIT_SUCCESS );
-
-      } else if( key == SDLK_p ) { /* pause/resume display */
-	mint_network_get_property( net, "display", 2, &active );
-	if( active ) {
-	  mint_network_set_property( net, "display", 2, 0. );
-	  mint_image_display_status( 0 );
-	} else {
-	  mint_network_set_property( net, "display", 2, 1. );
-	  mint_image_display_status( 1 );
-	}
-
-      } else if( key == SDLK_EQUALS ) { /* decrease sampling */
-	mint_network_get_property( net, "display", 0, &rate );
-	rate = rate + 10;
-	rate = rate - fmod(rate,10);
-	mint_network_set_property( net, "display", 0, rate );
-
-      } else if( key == SDLK_MINUS ) { /* increase sampling */
-	mint_network_get_property( net, "display", 0, &rate );
-	rate = rate - 10 >= 1 ? rate - 10 : 1;
-	mint_network_set_property( net, "display", 0, rate );
-      } else {
-	/* loop for user-registered key events */
-	for( i=0; i<mint_network_groups(net); i++ ) {
-	  n = mint_network_nodes( net, i );
-	  mint_nodes_event( n, 0, mint_nodes_size(n), event );
-	}
+	break;
       }
-      break;
+    }
 
-    case SDL_QUIT:
-      exit( EXIT_SUCCESS );
-      break;
+    /* other events */
+    for( i=0; i<mint_network_groups(net); i++ ) {
+      n = mint_network_nodes( net, i );
+      mint_nodes_event( n, 0, mint_nodes_size(n), event );
     }
   }
 }
@@ -626,16 +633,23 @@ void mint_poll_event( struct mint_network *net ) {
 void mint_network_display( struct mint_network *net, float *p ) {
   int i, groups, size, rows, rate, x, y, w, h;
   float frows;
+  struct mint_op *op;
   struct mint_image *img;
   mint_nodes n;
   char msg[256];
  
   rate = p[0];
-  mint_check( rate>0, "invalid rate: %d", (int)rate );
+  mint_check( rate>0, "invalid rate: %d", rate );
 
   p[1] += 1;
 
-  mint_poll_event( net );
+  /* add events op if not present, this will poll graphical
+     elements. */
+  if( !mint_network_get_property( net, "events", 0, 0 ) ) {
+    op = mint_op_new( "events", mint_op_network_operate );
+    mint_ops_append( mint_network_get_ops(net), op );
+    mint_op_del( op );
+  }
 
   groups = mint_network_groups( net );
   mint_init_screen( groups );

@@ -103,7 +103,9 @@ struct mint_str *mint_nodes_get_name( mint_nodes s );
 
 /** Store the value of parameter i of property prop in *value. If the
     propert is found, return 1, if not found returns 0 (*value is not
-    modified). If invalid parameter number, aborts. */
+    modified). If invalid parameter number, aborts. To check the
+    existance of an op with no parameters, pass value=0 (i is ignored
+    in these cases). */
 int mint_nodes_get_property( mint_nodes n, const char *prop, int i,
 			     float *value );
 

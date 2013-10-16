@@ -241,7 +241,9 @@ mint_weights mint_weights_optimize( mint_weights w, mint_nodes pre,
 
 /** Store the value of parameter i of property prop in *value. If the
     propert is found, return 1, if not found returns 0 (*value is not
-    modified). If invalid parameter number, aborts. */
+    modified). If invalid parameter number, aborts. To check the
+    existance of an op with no parameters, pass value=0 (i is ignored
+    in these cases). */
 int mint_weights_get_property( mint_weights w, const char *prop, int i,
 			     float *value );
 

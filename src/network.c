@@ -668,9 +668,9 @@ int mint_network_get_property( struct mint_network *net,
 
   if( k == -1 ) 
     return 0;
-  else
+  else if( value )
     *value = mint_op_get_param( mint_ops_get( net->ops, k ), i );
-
+  
   return 1;
 
 }

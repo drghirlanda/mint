@@ -156,10 +156,11 @@ void mint_network_replace_weights( struct mint_network *net,
 /** Run init ops defined for this network. */
 void mint_network_init( struct mint_network * );
 
-
 /** Store the value of parameter i of property prop in *value. If the
     propert is found, return 1, if not found returns 0 (*value is not
-    modified). If invalid parameter number, aborts. */
+    modified). If invalid parameter number, aborts. To check the
+    existance of an op with no parameters, pass value=0 (i is ignored
+    in these cases). */
 int mint_network_get_property( struct mint_network *net, 
 			       const char *prop, int i,
 			       float *value );

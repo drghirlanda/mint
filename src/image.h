@@ -143,4 +143,11 @@ void mint_node_snapshot( mint_nodes n, int min, int max, float *p );
 void mint_node_key( mint_nodes n, int min, int max, float *p, 
 		    SDL_Event ev );
 
+/** An op to enable the event framework. Takes no parameters. It is
+    automatically added if the display op is used (to manage GUI
+    events), but it can also be used on its own without a display to
+    enable other events such as keypresses. */
+void mint_network_events( struct mint_network *net, float *p );
+
+
 #endif /* MINT_IMAGE_H */

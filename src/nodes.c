@@ -217,8 +217,9 @@ int mint_nodes_get_property( mint_nodes n, const char *prop, int i,
 
   if( k == -1 ) 
     return 0;
+  else if( value )
+    *value = mint_op_get_param( mint_ops_get(ops, k), i );
 
-  *value = mint_op_get_param( mint_ops_get(ops, k), i );
   return 1;
 }
 

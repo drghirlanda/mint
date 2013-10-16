@@ -7,10 +7,12 @@
   - document the new event system for nodes (see op.c and image.c,
     where the event loop resides)
 
-  - move event loop to event.h/c ?
+  - move event loop to event.h/c ? we do not necessarily want to
+    display the network when using events, but how to make sure that
+    mint_poll_events is called just once? can we add an events op to
+    networks and have that one do the job? 
 
-  - make WEIGHTS_LOOP macro to iterate correctly over both sparse and
-    dense matrices, so that one can focus on the code?
+  - expand use of WEIGHTS_LOOP macro
 
   - keep track of pointers in spread reset of matrix targets, to avoid
     potentially resetting twice
