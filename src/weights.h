@@ -5,6 +5,44 @@
 #include <stddef.h>
 #include <stdio.h>
 
+/** This macro allows to loop over bith sparse and dense weight
+   matrices without caring of the differene, provided the code
+   fragment 'code' uses these conventions for indexing: index i is
+   used for i-th matrix row and the i-th post-synpatic node, index j
+   is the j-th pre-synaptic node, index k is the k-th element of the
+   i-th matrix row. For instance, the inner loop of matrix-vector
+   multiplication is written like this:
+
+   post[0][i] += w[0][i][k] * pre[1][j];
+
+   The macro sets k = j for dense matrices, while for sparse matrices
+   k and j are set to approproate values to loop only over existing
+   elements. The following variables must have been declared:
+
+   int i, j, k, jmax;
+   unsigned int *colind;
+
+*/
+#define mint_weights_loop( w, code )	    \
+  if( mint_weights_is_sparse( w ) ) {	    \
+    for( i=rmin; i<rmax; i++ ) {	    \
+      colind = mint_weights_colind( w, i ); \
+      jmax = mint_weights_rowlen( w, i );   \
+      for( k=0; k<jmax; k++ ) {		    \
+	j = colind[k];			    \
+	code;				    \
+      }					    \
+    }					    \
+  } else {				    \
+    for( i=rmin; i<rmax; i++ ) {            \
+      jmax = mint_weights_cols( w );	    \
+      for( k=0; k<jmax; k++ ) {		    \
+	j = k;				    \
+	code;				    \
+      }                                     \
+    }					    \
+  }					    \
+
 struct mint_image; 
 struct mint_network;
 

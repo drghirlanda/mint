@@ -52,93 +52,82 @@ void mint_weights_mult( mint_weights w, mint_nodes from, mint_nodes to,
 
 void mint_weights_hebbian( mint_weights w, mint_nodes pre, 
 			   mint_nodes post, int rmin, int rmax, float *p ) {
-  int r, c, i, j;
-  r = mint_weights_rows( w );
-  c = mint_weights_cols( w );
-  mint_check( rmin>=0 && rmax<=r, "rmin, rmax out fo range" );
-  for( i=rmin; i<rmax; i++ ) {
-    for( j=0; j<c; j++ ) {
-      if( pre!=post && i!=j )
-	w[0][i][j] += p[0]* ( (pre[1][j]-p[1]) * (post[1][i]-p[2]) )
-	  - p[3] * w[0][i][j];
-    }
-  }
+  int i, j, k, jmax;
+  unsigned int *colind;
+
+  mint_weights_loop( w,	
+		     w[0][i][k] += p[0] * ( ( pre[1][j] - p[1] ) * 
+					    ( post[1][i] - p[2] ) )
+		     - p[3] * w[0][i][k] );
 }
 
 void mint_weights_delta( mint_weights w, mint_nodes pre, 
 			 mint_nodes post, int rmin, int rmax, float *p ) {
-  int i, j, desired, jmax;
+  int i, j, k, desired, jmax;
   unsigned int *colind;
   float lrate;
   lrate = p[0];
   desired = (int)p[1]; 
-  if( mint_weights_is_sparse( w ) ) {
-    for( i=rmin; i<rmax; i++ ) {
-      colind = mint_weights_colind( w, i );
-      jmax = mint_weights_rowlen( w, i );
-      for( j=0; j<jmax; j++ )
-	w[0][i][j] += lrate * 
-	  ( post[desired][i] -  post[1][i] ) * pre[ 1 ][ colind[j] ];
-    }
-  } else {
-    jmax = mint_weights_cols( w );
-    for( i=rmin; i<rmax; i++ ) {
-      for( j=0; j<jmax; j++ )
-	w[0][i][j] += lrate * ( post[desired][i] - post[1][i] ) * 
-	  pre[1][j];
-    }
-  }
+  
+  mint_weights_loop( w, 	
+		     w[0][i][k] += lrate * ( post[desired][i] - post[1][i] ) * 
+		     pre[1][j] );
+
+  /* if( mint_weights_is_sparse( w ) ) { */
+  /*   for( i=rmin; i<rmax; i++ ) { */
+  /*     colind = mint_weights_colind( w, i ); */
+  /*     jmax = mint_weights_rowlen( w, i ); */
+  /*     for( j=0; j<jmax; j++ ) */
+  /* 	w[0][i][j] += lrate *  */
+  /* 	  ( post[desired][i] -  post[1][i] ) * pre[ 1 ][ colind[j] ]; */
+  /*   } */
+  /* } else { */
+  /*   jmax = mint_weights_cols( w ); */
+  /*   for( i=rmin; i<rmax; i++ ) { */
+  /*     for( j=0; j<jmax; j++ ) */
+  /* 	w[0][i][j] += lrate * ( post[desired][i] - post[1][i] ) *  */
+  /* 	  pre[1][j]; */
+  /*   } */
+  /* } */
 }
 
 void mint_weights_stdp( mint_weights w, mint_nodes pre, 
 			mint_nodes post, int rmin, int rmax, float *p ) {
-  int r, i, j, rlen, precount, postcount;
+  int i, j, jmax, k;
+  unsigned int *colind;
   float decay = p[0];
   float plus = p[1];
   float minus = p[2];
   float min = p[3];
   float max = p[4];
-  float x;
-  unsigned int *cind;
-  int sparse, postindex;
+  float *x = 0;
+  int precount, postcount;
   float pretime, posttime, dt;
 
   /* figure out where the spike counters are */
-  if( mint_nodes_get_property( pre, "counter", 0, &x ) )
-    precount = x;
+  if( mint_nodes_get_property( pre, "counter", 0, x ) )
+    precount = *x;
   else
     mint_check( 0, "no counter defined for pre-synaptic nodes" );
 
-  if( mint_nodes_get_property( post, "counter", 0, &x ) )
-    postcount = x;
+  if( mint_nodes_get_property( post, "counter", 0, x ) )
+    postcount = *x;
   else
     mint_check( 0, "no counter defined for post-synaptic nodes" );
 
-  r = mint_weights_rows( w );
-  mint_check( rmin>=0 && rmax<=r, "rmin, rmax out of range" );
-
-  sparse = mint_weights_is_sparse(w) ? 1 : 0;
-
-  for( i=rmin; i<rmax; i++ ) {
-    rlen = mint_weights_rowlen(w, i);
-    cind = mint_weights_colind(w, i);
-    
-    for( j=0; j<rlen; j++ ) {
-      postindex = sparse ? cind[j] : j;
-      pretime = pre[ precount ][ i ];
-      posttime = post[ postcount ][ postindex ];
-      dt = posttime - pretime;
-      x = w[0][i][j];
-      if( dt>=0 )
-	x += plus / ( 1 + dt * decay );
-      else
-	x += minus / ( 1 - dt * decay );
-      if( x<min )
-	x = min; 
-      else if( x>max )
-	x = max;
-    }
-  }
+  mint_weights_loop( w,
+		     pretime = pre[ precount ][ i ];
+		     posttime = post[ postcount ][ j ];
+		     dt = posttime - pretime;
+		     x = w[0][i] + k;
+		     if( dt>=0 )
+		       *x += plus / ( 1 + dt * decay );
+		     else
+		       *x += minus / ( 1 - dt * decay );
+		     if( *x < min )
+		       *x = min; 
+		     else if( *x > max )
+		       *x = max );
 }
 
 void mint_weights_init_random_sparse( mint_weights w, int rmin, 
