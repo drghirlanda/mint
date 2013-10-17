@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
+#include <pthread.h>
 
 #include <SDL/SDL_image.h>
 #include <SDL/SDL_rotozoom.h>
@@ -558,6 +559,46 @@ void mint_image_display( struct mint_image *src,
   SDL_FreeSurface( scaled );
 }
 
+void *mint_poll_stdin_helper( void *data ) {
+  int *c = (int *)data;
+
+  printf( "slave: waiting for input\n" );
+  *c = fgetc( stdin );
+  printf( "slave: got c = %d\n", *c );
+  pthread_exit( 0 );
+  return 0;
+}
+
+/* translate stdin keypresses into SDL events */
+int mint_poll_stdin( SDL_Event *event ) {
+  static pthread_t thread_id = 0;
+  static int c = -1;
+
+  /* create thread that will read c from stdin */
+  if( thread_id == 0 ) {
+    printf( "master: creating slave\n" );
+    pthread_create( &thread_id, 0, mint_poll_stdin_helper, (void *) &c );
+  }
+
+  /* return if c not ready */
+  if( c == -1 )
+    return 0; 
+
+  /* c ready! */
+
+  printf( "master: got c = %d\n", c );
+
+  pthread_join( thread_id, 0 ); /* cleanup */
+  event->type = SDL_KEYUP;      /* build SDL_Event */
+  event->key.keysym.sym = c;
+
+  c = -1;                       /* reset to clean state */
+  thread_id = 0;
+
+  return 1;
+}
+
+
 void mint_network_events( struct mint_network *net, float *p ) {
   int i;
   mint_nodes n;
@@ -565,67 +606,72 @@ void mint_network_events( struct mint_network *net, float *p ) {
   SDLKey key;
   float active, rate;
 
-  while( SDL_PollEvent( &event ) ) {
+  if( !mint_screen && 
+      !mint_network_get_property( net, "display", 0, 0 ) ) {
+    mint_screen = SDL_SetVideoMode( 0, 0, 0, mint_vmode );
+  }
+
+  while( 1 ) {
+
+    if( !SDL_PollEvent( &event ) && !mint_poll_stdin( &event ) )
+      return;
     
-    if( mint_screen ) { /* process GUI events */
+    switch( event.type ) {
 
-      switch( event.type ) {
-
-      case SDL_VIDEORESIZE: /* resize MINT window */
-	SDL_SetVideoMode( event.resize.w, event.resize.h, 0, 
-			  mint_vmode );
-	break;
-    
-      case SDL_KEYUP:
-	key = event.key.keysym.sym;
-
-	if( key == SDLK_SPACE ) { /* pause simulation */
-	  /* wait for another space press */
-	  mint_image_display_status( -1 );
-	  while( SDL_WaitEvent( &event ) ) {
-	    if( event.type == SDL_KEYUP &&
+    case SDL_VIDEORESIZE: /* resize MINT window */
+      SDL_SetVideoMode( event.resize.w, event.resize.h, 0, 
+			mint_vmode );
+      break;
+      
+    case SDL_KEYUP:
+      key = event.key.keysym.sym;
+      
+      if( key == SDLK_SPACE ) { /* pause simulation */
+	/* wait for another space press */
+	mint_image_display_status( -1 );
+	while( SDL_WaitEvent( &event ) ) {
+	  if( event.type == SDL_KEYUP &&
 		event.key.keysym.sym == SDLK_SPACE ) {
-	      mint_image_display_status( 1 );
-	      break;
-	    }
-	  }
-	  
-	} else if( key == SDLK_q ) { /* quit simulation */
-	  exit( EXIT_SUCCESS );
-	  
-	} else if( key == SDLK_p ) { /* pause/resume display */
-	  mint_network_get_property( net, "display", 2, &active );
-	  if( active ) {
-	    mint_network_set_property( net, "display", 2, 0. );
-	    mint_image_display_status( 0 );
-	  } else {
-	    mint_network_set_property( net, "display", 2, 1. );
 	    mint_image_display_status( 1 );
+	    break;
 	  }
-
-	} else if( key == SDLK_EQUALS ) { /* decrease sampling */
-	  mint_network_get_property( net, "display", 0, &rate );
-	  rate = rate + 10;
+	}
+	
+      } else if( key == SDLK_q ) { /* quit simulation */
+	exit( EXIT_SUCCESS );
+	
+      } else if( key == SDLK_p ) { /* pause/resume display */
+	mint_network_get_property( net, "display", 2, &active );
+	if( active ) {
+	  mint_network_set_property( net, "display", 2, 0. );
+	  mint_image_display_status( 0 );
+	} else {
+	  mint_network_set_property( net, "display", 2, 1. );
+	  mint_image_display_status( 1 );
+	}
+	
+      } else if( key == SDLK_EQUALS ) { /* decrease sampling */
+	mint_network_get_property( net, "display", 0, &rate );
+	rate = rate + 10;
 	  rate = rate - fmod(rate,10);
 	  mint_network_set_property( net, "display", 0, rate );
 	  
-	} else if( key == SDLK_MINUS ) { /* increase sampling */
-	  mint_network_get_property( net, "display", 0, &rate );
-	  rate = rate - 10 >= 1 ? rate - 10 : 1;
-	  mint_network_set_property( net, "display", 0, rate );
+      } else if( key == SDLK_MINUS ) { /* increase sampling */
+	mint_network_get_property( net, "display", 0, &rate );
+	rate = rate - 10 >= 1 ? rate - 10 : 1;
+	mint_network_set_property( net, "display", 0, rate );
+      } else {
+	/* other events */
+	for( i=0; i<mint_network_groups(net); i++ ) {
+	  n = mint_network_nodes( net, i );
+	  mint_nodes_event( n, 0, mint_nodes_size(n), event );
 	}
-	break;
-	
-      case SDL_QUIT:
-	exit( EXIT_SUCCESS );
-	break;
       }
-    }
-
-    /* other events */
-    for( i=0; i<mint_network_groups(net); i++ ) {
-      n = mint_network_nodes( net, i );
-      mint_nodes_event( n, 0, mint_nodes_size(n), event );
+      break;
+	
+    case SDL_QUIT:
+      exit( EXIT_SUCCESS );
+      break;
     }
   }
 }
