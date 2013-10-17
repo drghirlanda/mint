@@ -562,9 +562,7 @@ void mint_image_display( struct mint_image *src,
 void *mint_poll_stdin_helper( void *data ) {
   int *c = (int *)data;
 
-  printf( "slave: waiting for input\n" );
   *c = fgetc( stdin );
-  printf( "slave: got c = %d\n", *c );
   pthread_exit( 0 );
   return 0;
 }
@@ -575,18 +573,14 @@ int mint_poll_stdin( SDL_Event *event ) {
   static int c = -1;
 
   /* create thread that will read c from stdin */
-  if( thread_id == 0 ) {
-    printf( "master: creating slave\n" );
+  if( thread_id == 0 )
     pthread_create( &thread_id, 0, mint_poll_stdin_helper, (void *) &c );
-  }
 
   /* return if c not ready */
   if( c == -1 )
     return 0; 
 
   /* c ready! */
-
-  printf( "master: got c = %d\n", c );
 
   pthread_join( thread_id, 0 ); /* cleanup */
   event->type = SDL_KEYUP;      /* build SDL_Event */
