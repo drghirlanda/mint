@@ -3,7 +3,6 @@
 #include "camera.h"
 
 #include <stdio.h>
-#include <FreeImage.h>
 
 int main( void ) {
   struct mint_network *net;
@@ -22,8 +21,11 @@ int main( void ) {
   G = mint_network_nodes( net, 1 );
   B = mint_network_nodes( net, 2 );
 
-  for( ;; )
+  for( ;; ) {
     mint_network_operate( net );
+    printf( "." );
+    fflush( stdout );
+  }
 
   img = mint_image_nodes( R, G, B, 1 );
   mint_image_save( img, "image.jpg" );
