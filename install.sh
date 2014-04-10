@@ -1,87 +1,80 @@
-#!/bin/bash
+#!/bin/bash -e
 shopt -s nocasematch
 
-echo -e "*** Configuring MINT:\n"
-
-FREEIMAGE=$(/sbin/ldconfig -NXv | grep libfreeimage | wc -l)
-if [[ $FREEIMAGE -gt 0 ]]; then
-    cat<<EOF
-It seems that you have FreeImage installed.
-MINT can use FreeImage to read image files,
-and to capture images from a webcam.
-Do you want to enable image support only (i),
-image and camera support (c), or neither (n)?
-EOF
-    read -s -n 1 ANS
-    if [[ $ANS == "n" ]]; then
-	echo -e "*** Image and camera support disabled.\n"
-    elif [[ $ANS == "c" ]]; then
-	export image=1
-	export camera=1
-	echo -e "*** Image and camera support enabled.\n"
+# check for necessary SDL libraries; use images only if all are found
+SDL[0]=$(/sbin/ldconfig -NXv | grep 'libSDL\.so' | wc -l)
+SDL[1]=$(/sbin/ldconfig -NXv | grep 'libSDL_image.so' | wc -l)
+SDL[2]=$(/sbin/ldconfig -NXv | grep 'libSDL_ttf.so' | wc -l)
+SDL[3]=$(/sbin/ldconfig -NXv | grep 'libSDL_gfx.so' | wc -l)
+SDLNAMES=("SDL" "SDL_image" "SDL_ttf" "SDL_gfx")
+NOYES=("NO" "YES")
+for i in $(seq 0 3); do
+    if [ ${SDL[$i]} -le 0 ]; then
+	echo -e "* Missing library:" ${SDLNAMES[$i]}
+	echo "* Disabling support for images and graphical interface"
+	export image=0
+	break
     else
 	export image=1
-	export camera=0
-	echo -e "*** Image support enabled, camera support disabled.\n"
     fi
+done
+if [ $image -eq 1 ]; then
+    echo "* Image and graphics support ENABLED"
+fi
+
+CAMSHOT=$(which camshot | wc -l)
+if [ $CAMSHOT -le 0 ]; then
+    echo "* Camshot program not found"
+    echo "* Camera support DISABLED"
+    camera=0
 else
-    cat<<EOF
-FreeImage library not found. Image and camera support disabled."
-EOF
+    echo "* Camera support ENABLED"
+    camera=1
+fi
+
+if [[ -e /usr/local/lib/libpigpio.a || -e /usr/lib/libpigpio.a ]]; then
+    export pi=1
+    echo "* Raspberry Pi GPIO support ENABLED"
+else
+    export pi=0
+    echo "* PiGPIO library not found"
+    echo "* Raspberry Pi support DISABLED"
 fi
 
 cat<<EOF
-Do you want to enable multithreading? [y/n]
+Q: Do you want to enable multithreading? [y/n]
 EOF
 read -s -n 1 ANS
 if [[ $ANS == "y" ]]; then
     export threads=1
-    echo -e "*** Multithreading enabled.\n"
+    echo -e "*  Multithreading enabled.\n"
 else
     export threads=0
-    echo -e "*** Multithreading disabled.\n"
+    echo -e "*  Multithreading disabled.\n"
 fi
-
-
-if [[ -e /usr/local/lib/libpigpio.a || -e /usr/lib/libpigpio.a ]]; then
-    cat<<EOF
-It seems that you have the PIGPIO library installed.
-Do you want to enable Raspberry Pi GPIO support? [y/n]
-EOF
-    read -s -n 1 ANS
-    if [[ $ANS == "y" ]]; then
-	export pi=1
-	echo -e "*** GPIO support enabled.\n"
-    else
-	export pi=0
-	echo -e "*** GPIO support disabled.\n"
-    fi
-fi
-
 
 cat<<EOF
-Do you want to install a debugging version of MINT? [y/n] 
+Q: Do you want to install a debugging version of MINT? [y/n] 
 EOF
 read -s -n 1 ANS
 if [[ $ANS == "y" ]]; then
     DEBUG=1
-    echo -e "*** Debugging version libmint-debug.a enabled.\n"
+    echo -e "*  Debugging version libmint-debug.a enabled.\n"
 else
     DEBUG=0
-    echo -e "*** Debugging version disabled.\n"
+    echo -e "*  Debugging version disabled.\n"
 fi
 
-
 cat<<EOF
-Do you want to install a profiling version of MINT? [y/n] 
+Q: Do you want to install a profiling version of MINT? [y/n] 
 EOF
 read -s -n 1 ANS
 if [[ $ANS == "y" ]]; then
     PROFILE=1
-    echo -e "*** Profiling version libmint-profile.a enabled.\n"
+    echo -e "*  Profiling version libmint-profile.a enabled.\n"
 else
     PROFILE=0
-    echo -e "*** Profiling version disabled.\n"
+    echo -e "*  Profiling version disabled.\n"
 fi
 
 cat<<EOF
@@ -102,9 +95,9 @@ EOF
 	if [[ $ANS == "c" ]]; then
 	    mkdir -p $INSTALL
 	    if [[ ! $? ]]; then
-		echo "*** Cannot create directory. Try again."
+		echo "* Cannot create directory. Try again."
 	    else
-		echo "*** Directory created"
+		echo "* Directory created"
 		break
 	    fi
 	else
@@ -113,36 +106,36 @@ EOF
     fi
 done
 
-echo -e "*** Building libmint.a and MINT documentation ***\n"
+echo -e "* Building libmint.a and MINT documentation ***\n"
 ./yruba mint 
 if [[ $? ]]; then
-    echo "*** Build successful ***"
+    echo "* Build successful ***"
     install=$INSTALL ./yruba install || exit
 else
-    echo "*** Build failed ***"
+    echo "* Build failed ***"
     exit
 fi
 
 if [[ $DEBUG -eq 1 ]]; then
-    echo -e "*** Building debugging version of MINT ***\n"
+    echo -e "* Building debugging version of MINT ***\n"
     debug=1 ./yruba mint
     if [[ $? ]]; then
-	echo "*** Build successful ***"
+	echo "* Build successful ***"
 	install=$INSTALL ./yruba install || exit
     else 
-	echo "*** Build failed ***"
+	echo "* Build failed ***"
 	exit
     fi
 fi
 
 if [[ $PROFILE -eq 1 ]]; then
-    echo -e "*** Building profiling version of MINT ***\n"
+    echo -e "* Building profiling version of MINT ***\n"
     profile=1 ./yruba mint
     if [[ $? ]]; then
-	echo "*** Build successful ***"
+	echo "* Build successful ***"
 	install=$INSTALL ./yruba install || exit
     else 
-	echo "*** Build failed ***"
+	echo "* Build failed ***"
 	exit
     fi
 fi
