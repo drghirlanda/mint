@@ -349,7 +349,7 @@ yruba_makeTarget() {
       if type -p "$yruba_cmd" >/dev/null; then
         $yruba_debug || $yruba_quiet || echo "+ $yruba_t"
         dlog executing: $(lcreate "$yruba_cmd" "$yruba_t" "$@")
-	type "$yruba_cmd" | tail -n +3
+##	type "$yruba_cmd" | tail -n +3
         yruba_savecmd "$yruba_cmd" "$yruba_t" "$@"
       elif ! test -e "$yruba_t"; then
         die no command to make "'$yruba_t'" and file does not exist

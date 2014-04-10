@@ -139,3 +139,6 @@ if [[ $PROFILE -eq 1 ]]; then
 	exit
     fi
 fi
+
+echo "* Building documentation under doc/"
+./yruba doc
