@@ -6,158 +6,187 @@
 
 /** \file nop.h 
 
-    \brief Node operations.
+    \brief This file contains node operations, that is, functions that
+    operate on `mint_nodes` to update their state.
     
-    Update functions for nodes.
+    These functions typically have one or more parameters to configure
+    their behavior. These parameters are of two kinds:
+
+    1. Parameters pertaining to the node update proper, such as the
+    slope of a sigmoid function or the time constant of a leaky
+    integrator.
+
+    2. Parameters indicating on which state variables the function
+    operates. For example, the `noise` operation can be used to add
+    random numbers to the input of a `mint_nodes` variable, to the
+    output, or to any other state variable.
+
 */
 
 /** Sigmoidal non-linearity. 
 
-    State variables: none. 
-
-    Parameters: 0: node output when input is zero.
-                1: maximum slope of the sigmoid function.
-		2: input state variable (default 0).
-		3: output state variable (default 1).
+    - Name: `sigmoid`
+    - State variables required: none
+    - Parameters: 
+      + 0: node output when input is zero (default 0.1)
+      + 1: maximum slope of the sigmoid function (default 1)
+      + 2: input state variable (default 0)
+      + 3: output state variable (default 1)
 
     NOTE: For speed, the nonlinearity is not a logistic function,
-    i.e., we do not use an exponential. Rather, we piece two branches
-    of hyperbola together.  */
+    i.e., we do not compute exponentials. Rather, we piece two
+    branches of hyperbola together to get a similar shape. If this
+    bothers you, use the `mint_node_logistic` function, which is
+    actually a logistic. */
 void mint_node_sigmoid( mint_nodes n, int min, int max, float *p );
 
-/** Logistic tansfer function. 
+/** Logistic tansfer function, implementing the transformation outpu =
+    1 / ( 1 + exp(-slope*( input - offset ) ) ).
 
-    State variables: none. 
-
-    Parameters: 0: offset.
-                1: slope.
-		2: input state variable (default 0).
-		3: output state variable (default 1).
+    - Name: `logistic'
+    - State variables required: none 
+    - Parameters: 
+      + 0: slope (default 1)
+      + 1: offset (default 0)
+      + 2: input state variable (default 0)
+      + 3: output state variable (default 1)
 */
 void mint_node_logistic( mint_nodes n, int min, int max, float *p );
 
-/** Leaky integrator.  with time constant T=param[0] and leak
-    L=param[1]. The update performed is: output += ( input -
-    L*old_output)/T.
+/** Leaky integrator. Given a time constant T and a leak parameter L,
+    the update performed is: `output += ( input - L*old_output) / T`.
 
-    State variables: none.
-
-    Parameters: 0: Time constant (T in equation above).
-                1: Leak (L in equation).
-		2: Index of input variable (default 0).
-		3: Index of output variable (default 1). */
+    - Name: `integrator`
+    - State variables required: none
+    - Parameters: 
+      + 0: Time constant (T in equation above, default 1)
+      + 1: Leak (L in equation above, default 0)
+      + 2: Index of input variable (default 0)
+      + 3: Index of output variable (default 1)
+*/
 void mint_node_integrator( mint_nodes n, int min, int max, float *p );
 
 /** A spiking neuron model from Izikevich EM, IEEE Transactions on
-    Neural Networks 14:1569-1572 (2003). Requires 2 state variables, v
-    and u, and 4 parameters a,b,c,d. The dynamics is:
+    Neural Networks 14:1569-1572 (2003). Requires 2 state variables,
+    noted v and u below, and 4 parameters, noted a,b,c,d. The dynamics
+    is:
 
-    v += 0.04 * v*v + 5*v + 140*u + n[0][i];
+    v += 0.04 * v*v + 5*v + 140*u + input;
     
-    u += p[0]*( p[1]*v - u );
+    u += a*( b*v - u );
   
-    where p is the parameter array. If v reaches 30, then node output
-    is set to 1 (a spike is generated), v is reset to p[2] and u is
-    reset to u + p[3]. If v does not reach 1, the values of v and u
-    are saved (internal state dynamics) and node output is set to
-    zero. (The threshold value is 30 as a models of thresholds of
-    biological neurons, measured in mV.) 
+    where p is the parameter array. If v reaches 30, then the `output`
+    variable is set to 1 (a spike is generated), v is reset to the
+    value c and u is reset to u + d. If v does not reach 30, the
+    values of v and u are saved as internal states and output is set
+    to zero. (The threshold value is 30 as a model of thresholds of
+    biological neurons, measured in mV.)
 
-    State variables: 2, to store the values of v and u.
-
-    Parameters: 0-3: The a,b, c, and d parameters in the equations
-                     above. The defaults are 0.02, 0.2, -65, 8,
-                     corresponding to a pyramidal neuron in the
-                     mammalian cortex.
-		4: Index of input variable (default 0).
-		5: Index of output variable (default 1).
-		6: Index of state variable used to store v values
-		(>=2, default 2).
-		7: Index of state variable used to store u values
-		(>=2, default 3. */
+    - Name: `izzy`
+    - State variables required: 2, to store the values of v and u
+    - Parameters: 
+      + 0-3: The a,b, c, and d parameters in the equations above. 
+        The defaults are 0.02, 0.2, -65, 8, corresponding to a 
+	pyramidal neuron in the mammalian cortex
+      + 4: Index of input variable (default 0)
+      + 5: Index of output variable (default 1)
+      + 6: Index of state variable used to store v values 
+        (>=2, default 2)
+      + 7: Index of state variable used to store u values
+        (>=2, default 3) 
+*/
 void mint_node_izzy( mint_nodes n, int min, int max, float *p );
 
-/** Adds a normally distributed number to a state variable. Note that
+/** Adds a normally distributed number to a state variable. Note that,
+    because operations are executed in the order they are listed,
     noise added to input, or to a state variable, should come before
     the transfer function, while noise added to output should come
-    after (See example/integrator). 
+    after (See example/integrator).
 
-    State variables: none required, can work on any state variable
-                     (see Parameters).  
-
-    Parameters: 0: Mean of normal distribution (default 0).
-		1: Standard deviation of normal distribution (default
-                   0.01).  
-		2: State variable to add noise to.
+    - Name: `noise`
+    - State variables required: none
+    - Parameters: 
+      + 0: Mean of normal distribution (default 0)
+      + 1: Standard deviation of normal distribution (default
+        0.01)
+      + 2: State variable to add noise to
 
      NOTE: You can use this op to simulate tonically active neurons,
      just use it with a positive mean activity and the desired
-     standard deviation (0 also works). */
+     standard deviation (0 works). */
 void mint_node_noise( mint_nodes n, int min, int max, float *p );
 
 /** Restrict a node state variable to a given range. The default
     behavior is to restrict node output between 0 and 1. 
 
-    State variables: none required, can work on any state variable (see
-                     Parameters).  
-
-    Parameters: 0: Minimum value (default 0).
-		1: Maximum value (default 1). 
-                0: State variable to bound (default 1, i.e., output). */
+    - Name: `bounded`
+    - State variables required: none
+    - Parameters: 
+      + 0: Minimum value (default 0)
+      + 1: Maximum value (default 1)
+      + 2: State variable to bound (default 1, i.e., node output)
+*/
 void mint_node_bounded( mint_nodes n, int min, int max, float *p );
 
-/** A counter counts the number of updates since a state variable
-    (default: node output) has been equal to or above a threshold
-    value. 
+/** A counter counts the number of updates ("time steps") since a
+    state variable (default: node output) has been equal to or above a
+    threshold value.
 
-    State variables: 1 required, to store the counter. Works on any
-                     other state variable. 
-
-    Parameters: 0: Threshold value.
-                1: State variable to monitor (default 1, i.e., node
-                   output). 
-		2: State variable that stores the counter
-		   (must be different from parameter 0). 
+    - Name: `counter`
+    - State variables required: 1, to store the counter
+    - Parameters: 
+      + 0: Threshold value (default 1)
+      + 1: State variable to monitor (default 1, i.e., node output)
+      + 2: State variable that stores the counter
 */
 void mint_node_counter( mint_nodes n, int min, int max, float *p );
 
-/** Poissonian source. Sets a state variable to 1 or 0 at random, with
-    a given mean value.
+/** Poissonian source of spikes. Sets a state variable to 1 or 0 at
+    random, with a given mean value (in Hz).
 
-    State variables: none required.
-
-    Parameters: 0: Mean spike rate in Hz, assuming every network
-                   update corresponds to 1 ms of real time (default 5
-                   Hz). 
-                1: Index of state variable to set (default: 1). */
+    - Name: `spikes`
+    - State variables required: none
+    - Parameters: 
+      + 0: Mean spike rate in Hz (assuming every network update
+        corresponds to 1 ms of real time (default 5 Hz)
+      + 1: Index of state variable to set (default 1, i.e., node 
+        output)
+*/
 void mint_node_spikes( mint_nodes n, int min, int max, float *p );
 
-/** This is a geometry op that sets nodes geometry to a rectangular
-    array with a given number of rows.
+/** This is operation merely stores a number that other operations can
+    query, and which is used to effectively endow `mint_nodes` with
+    the geometry of a rectangular array with a given number of
+    rows. This is used, for example, when pasting images onto
+    `mint_nodes` or when building weight matrices that take the
+    spatial arrangement of nodes into account.
 
-    State variables: none required.
-
-    Parameters: 0: Number of rows. Must divide node size exactly as
-                   the number of column is calculated as . There is no
-                   default, the parameter must be given.
-
-    NOTE: This op does not do anything per se but storing the number
-    of rows. It can be used by other ops that need geometry
-    information, such as those that interface nodes with images or the
-    camera, and those establishing weight matrices that take into
-    account the spatial arrangement of nodes. */
+    - Name: rows
+    - State variables required: none
+    - Parameters: 
+      + 0: Number of rows. Must divide node size exactly as
+        the number of column is calculated as size/rows. 
+	There is no default
+*/
 void mint_node_rows( mint_nodes n, int min, int max, float *p );
 
-/** Specify the number of state variables for a nodes object. 
+/** Specify the number of state variables to be created for a nodes
+    object.
 
-    State variables: none required. 
-    Parameters: 0: The number of states. */
+    - Name: 'states'
+    - State variables required: none
+    - Parameters: 
+      + 0: The number of states. There is no default
+*/
 void mint_node_states( mint_nodes n, int min, int max, float *p );
 
-/** Specify the number of nodes in a nodes object. 
+/** Specify the size (number of nodes) of a `mint_nodes` object. 
 
-    State variables: none required. 
-    Parameters: 0: The number of nodes. */
+    - Name: `size`
+    - State variables required: none
+    - Parameters: 
+      + 0: The number of nodes. There is no default
+*/
 void mint_node_size( mint_nodes n, int min, int max, float *p );
 
 /** Marks a node group as being involved in image processing (the
@@ -183,22 +212,30 @@ void mint_node_size( mint_nodes n, int min, int max, float *p );
     channel to node input rather than node output. */
 void mint_node_color( mint_nodes n, float *p );
 
-/** Habituation of a state variable. A habituation variable, h, is set
-    up evolving according to
+/** This operation simulates habituation, and can be used on any state
+    variable. A "habituation" variable, h, is created and evolves
+    according to
 
       T Delta h = a * y - h
 
     where T is a time constant and a the maximum level of habituation
-    (see parameter description below).
+    (see parameters below) and y is the current value of the state
+    variable for which habituation is set up. The value of h is then
+    subtracted from this state variable. The resulting dynamics is
+    that habituation increases when y is high, which ends up
+    detracting from y itself. One use of this operation is to
+    habituate node output to simulate neuron `fatigue`.
 
-    State variables: One required to store habituation level. Also, if
-    you want to habituate a state variable that is not input or
-    output, that state variable must exist...
-
-    Parameters: 0: Time constant (default 1)
-                1: Maximum habituation level, in [0,1] (default 0)
-		2: State variable storing habituation level (default: 2)
-		3: State variable that habituates (default: 1)
+    - Name: `habituation`
+    - State variables required: 1, to store the habituation level
+      (value of h in the above equation). Obviously, if you want to
+      habituate a state variable that is neither  node input nor 
+      output, that state variable must exist...
+    - Parameters: 
+      + 0: Time constant (T in equation above, default 1)
+      + 1: Maximum habituation level, between 0 and 1 (default 0)
+      + 2: State variable storing the habituation level (default 2)
+      + 3: State variable that habituates (default 1, i.e., node output)
  */
 void mint_node_habituation( mint_nodes n, int min, int max, float *p );
  
