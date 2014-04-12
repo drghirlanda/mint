@@ -22,7 +22,5 @@ example/speed/speed
 example/camera/camera
 example/camera+lateral/camera+lateral
 mint-*.zip
-doc/html/*
-
 
 gh-pages/

@@ -64,7 +64,7 @@ int main( void ) {
 
   image = mint_image_weights( mint_network_weights(net,0), 0, 0 );
   mint_image_scale( image, 20 );
-  mint_image_save( image, "weights.jpg", FIF_JPEG );
+  mint_image_save( image, "weights.jpg" );
 
   mint_network_del( net );
 

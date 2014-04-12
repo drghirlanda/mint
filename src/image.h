@@ -30,9 +30,7 @@ void mint_image_init( void );
 /** Read an image from file. */
 struct mint_image *mint_image_load( char *file );
 
-/** Write image to file. The format can be any format suppported by
-    FreeImage; common formats are: jpg, png, svg, tiff, gif, pnm.
-    Corresponding format names are FIF_JPEG, FIF_PNG, and so on. */
+/** Write image to file as bitmap (BMP format). */
 void mint_image_save( const struct mint_image *, char *filename );
 
 /** Delete image object */ 
