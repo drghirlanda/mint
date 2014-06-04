@@ -1,6 +1,37 @@
 #!/bin/bash -e
 shopt -s nocasematch
 
+set -e
+
+cat<<EOF
+Where do you want to install MINT? (Default: /usr/local)
+Include files will be under 'include/', library files under 'lib/'.
+EOF
+while true; do
+    read -e -i "/usr/local" INSTALL
+    if [ -d $INSTALL ]; then
+	echo -e "*** Installing in $INSTALL.\n"
+	break
+    else
+	cat<<EOF
+That directory does not exist. 
+Do you want to create it (c) or to enter a new one (e)?
+EOF
+	read -s -n 1 ANS
+	if [[ $ANS == "c" ]]; then
+	    mkdir -p $INSTALL
+	    if [[ ! $? ]]; then
+		echo "* Cannot create directory. Try again."
+	    else
+		echo "* Directory created"
+		break
+	    fi
+	else
+	    echo "Enter new directory name:"
+	fi
+    fi
+done
+
 # check for necessary SDL libraries; use images only if all are found
 SDL[0]=$(/sbin/ldconfig -NXv | grep 'libSDL\.so' | wc -l)
 SDL[1]=$(/sbin/ldconfig -NXv | grep 'libSDL_image.so' | wc -l)
@@ -22,16 +53,6 @@ if [ $image -eq 1 ]; then
     echo "* Image and graphics support ENABLED"
 fi
 
-CAMSHOT=$(which camshot | wc -l)
-if [ $CAMSHOT -le 0 ]; then
-    echo "* Camshot program not found"
-    echo "* Camera support DISABLED"
-    camera=0
-else
-    echo "* Camera support ENABLED"
-    camera=1
-fi
-
 if [[ -e /usr/local/lib/libpigpio.a || -e /usr/lib/libpigpio.a ]]; then
     export pi=1
     echo "* Raspberry Pi GPIO support ENABLED"
@@ -39,6 +60,24 @@ else
     export pi=0
     echo "* PiGPIO library not found"
     echo "* Raspberry Pi support DISABLED"
+fi
+
+echo
+cat<<EOF
+Q: Do you want to enable camera support? [y/n]
+EOF
+read -s -n 1 ANS
+if [[ $ANS == "y" ]]; then
+    export camera=1
+    echo -e "*  Camera enabled.\n"
+    CAMSHOT=$(which camshot | wc -l)
+    if [ $CAMSHOT -le 0 ]; then
+	echo "* Camshot program not found, compiling"
+	echo "  (Will be installed later)"
+	./yruba camshot
+    fi
+else
+    echo "* Camera disabled"
 fi
 
 cat<<EOF
@@ -77,37 +116,9 @@ else
     echo -e "*  Profiling version disabled.\n"
 fi
 
-cat<<EOF
-Where do you want to install MINT? (Default: /usr/local)
-Include files will be under 'include/', library files under 'lib/'.
-EOF
-while true; do
-    read -e -i "/usr/local" INSTALL
-    if [ -d $INSTALL ]; then
-	echo -e "*** Installing in $INSTALL.\n"
-	break
-    else
-	cat<<EOF
-That directory does not exist. 
-Do you want to create it (c) or to enter a new one (e)?
-EOF
-	read -s -n 1 ANS
-	if [[ $ANS == "c" ]]; then
-	    mkdir -p $INSTALL
-	    if [[ ! $? ]]; then
-		echo "* Cannot create directory. Try again."
-	    else
-		echo "* Directory created"
-		break
-	    fi
-	else
-	    echo "Enter new directory name:"
-	fi
-    fi
-done
 
 echo -e "* Building libmint.a and MINT documentation ***\n"
-./yruba mint 
+camera=$camera threads=$threads image=$image ./yruba mint 
 if [[ $? ]]; then
     echo "* Build successful ***"
     install=$INSTALL ./yruba install || exit
@@ -118,7 +129,7 @@ fi
 
 if [[ $DEBUG -eq 1 ]]; then
     echo -e "* Building debugging version of MINT ***\n"
-    debug=1 ./yruba mint
+    camera=$camera threads=$threads image=$image debug=1 ./yruba mint
     if [[ $? ]]; then
 	echo "* Build successful ***"
 	install=$INSTALL ./yruba install || exit
@@ -130,7 +141,7 @@ fi
 
 if [[ $PROFILE -eq 1 ]]; then
     echo -e "* Building profiling version of MINT ***\n"
-    profile=1 ./yruba mint
+    camera=$camera threads=$threads image=$image profile=1 ./yruba mint
     if [[ $? ]]; then
 	echo "* Build successful ***"
 	install=$INSTALL ./yruba install || exit
