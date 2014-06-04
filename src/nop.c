@@ -195,4 +195,9 @@ void mint_node_habituation( mint_nodes n, int min, int max, float *p ) {
   }
 }
 
+void mint_node_identity( mint_nodes n, int min, int max, float *p ) {
+  memcpy( n[1], n[0], mint_nodes_size(n) * sizeof(float) );
+}
+
+
 #undef SET_VAR

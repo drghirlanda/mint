@@ -35,6 +35,7 @@ static float weights_hebbian_param[] = { 0., 0., 0., 0. };
 static float weights_delta_param[] = { 0.05, 2 };
 static float weights_stdp_param[] = { 0.05, .1, -.12, -.1, .1 };
 static float weights_lateral_param[] = {0, 0, 0, 0};
+static float weights_backprop_param[] = { 2, 2 };
 
 static float weights_init_uniform_param[] = { 0., 1., 1. };
 static float weights_init_normal_param[] = { 0., 0.01, 1. };
@@ -55,7 +56,7 @@ static float network_clocked_param[] = { 25, 0 };
 
     NOTE: change this whenever adding or removing from the table
     above, otherwise crashes can occur when adding ops! */
-#define mint_nop_builtin 36
+#define mint_nop_builtin 38
 
 /* built-in ops */
 static struct mint_op mint_op_static_table[] = {
@@ -88,6 +89,8 @@ static struct mint_op mint_op_static_table[] = {
   { "habituation",mint_op_nodes_update,mint_node_habituation,
     4,node_habituation_param },
 
+  { "identity", mint_op_nodes_update,mint_node_identity,0,0 },
+
   /* nodes init */
 
   { "size", mint_op_nodes_init, mint_node_size, 1, node_size_param },
@@ -114,6 +117,9 @@ static struct mint_op mint_op_static_table[] = {
 
   { "delta",mint_op_weights_update,mint_weights_delta,2,
     weights_delta_param },
+
+  { "backprop",mint_op_weights_update,mint_weights_backprop,2,
+    weights_backprop_param },
 
   { "stdp",mint_op_weights_update,mint_weights_stdp,5,
     weights_stdp_param },

@@ -239,4 +239,6 @@ void mint_node_color( mint_nodes n, float *p );
  */
 void mint_node_habituation( mint_nodes n, int min, int max, float *p );
  
+void mint_node_identity( mint_nodes n, int min, int max, float *p );
+
 #endif
