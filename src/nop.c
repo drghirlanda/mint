@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "fastapprox.h"
+
 struct mint_nodes_str;
 
 #undef SET_VAR
@@ -16,29 +18,7 @@ struct mint_nodes_str;
 	      (int)i, 2+mint_nodes_states(n) );	       \
   x = n[ (int)i ]
 
-void mint_node_sigmoid( mint_nodes n, int min, int max, float *p ) {
-  int i;
-  float x, zero, slope, *in, *out;
-  float x0 = 6. + 2./3.;
-
-  zero = p[0];
-  slope = p[1];
-  SET_VAR( n, in, p[2] );
-  SET_VAR( n, out, p[3] );
-
-  for( i=min; i<max; i++ ) {
-    x = in[i];
-    x *= slope;                       /* scaling */
-    x -= (.5 - zero) / (.075 + zero); /* translation */
-    if( x < -x0 ) 
-      out[i] = 0.;
-    else if( x < x0 ) 
-      out[i] = .5 + .575 * x / ( 1 + fabs(x) );
-    else 
-      out[i] = 1.;
-  }
-}
-
+/* logistic function */
 void mint_node_logistic( mint_nodes n, int min, int max, float *p ) {
   int i;
   float slope, offset, *in, *out;
@@ -48,8 +28,9 @@ void mint_node_logistic( mint_nodes n, int min, int max, float *p ) {
   SET_VAR( n, in, p[2] );
   SET_VAR( n, out, p[3] );
 
-  for( i=min; i<max; i++ )
-    out[i] = 1 / ( 1 + exp( - slope * ( in[i] - offset ) ) );
+  for( i=min; i<max; i++ ) {
+    out[i] = 1.0f / (1.0f + fasterexp( slope*(offset - in[i]) ) );
+  }
 }
 
 /* leaky integrator */

@@ -13,7 +13,7 @@
     their behavior. These parameters are of two kinds:
 
     1. Parameters pertaining to the node update proper, such as the
-    slope of a sigmoid function or the time constant of a leaky
+    slope of a logistic function or the time constant of a leaky
     integrator.
 
     2. Parameters indicating on which state variables the function
@@ -23,24 +23,7 @@
 
 */
 
-/** Sigmoidal non-linearity. 
-
-    - Name: `sigmoid`
-    - State variables required: none
-    - Parameters: 
-      + 0: node output when input is zero (default 0.1)
-      + 1: maximum slope of the sigmoid function (default 1)
-      + 2: input state variable (default 0)
-      + 3: output state variable (default 1)
-
-    NOTE: For speed, the nonlinearity is not a logistic function,
-    i.e., we do not compute exponentials. Rather, we piece two
-    branches of hyperbola together to get a similar shape. If this
-    bothers you, use the `mint_node_logistic` function, which is
-    actually a logistic. */
-void mint_node_sigmoid( mint_nodes n, int min, int max, float *p );
-
-/** Logistic tansfer function, implementing the transformation outpu =
+/** Logistic tansfer function, implementing the transformation output =
     1 / ( 1 + exp(-slope*( input - offset ) ) ).
 
     - Name: `logistic'

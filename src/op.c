@@ -17,7 +17,6 @@ struct mint_ops {
 };
 
 /* default parameter values for ops that need them */
-static float node_sigmoid_param[] = { 0.1, 1., 0, 1 };
 static float node_logistic_param[] = { 1, 0, 0, 1 };
 static float node_integrator_param[] = { 1., 0., 0, 1 };
 static float node_izzy_param[] = { 0.02, 0.2, -65., 8., 0, 1, 2, 3};
@@ -35,7 +34,6 @@ static float weights_hebbian_param[] = { 0., 0., 0., 0. };
 static float weights_delta_param[] = { 0.05, 2 };
 static float weights_stdp_param[] = { 0.05, .1, -.12, -.1, .1 };
 static float weights_lateral_param[] = {0, 0, 0, 0};
-static float weights_backprop_param[] = { 2, 2 };
 
 static float weights_init_uniform_param[] = { 0., 1., 1. };
 static float weights_init_normal_param[] = { 0., 0.01, 1. };
@@ -56,15 +54,12 @@ static float network_clocked_param[] = { 25, 0 };
 
     NOTE: change this whenever adding or removing from the table
     above, otherwise crashes can occur when adding ops! */
-#define mint_nop_builtin 38
+#define mint_nop_builtin 36
 
 /* built-in ops */
 static struct mint_op mint_op_static_table[] = {
 
   /* nodes update */
-
-  { "sigmoid",mint_op_nodes_update,mint_node_sigmoid,4,
-    node_sigmoid_param },
 
   { "logistic",mint_op_nodes_update,mint_node_logistic,4,
     node_logistic_param },
@@ -117,9 +112,6 @@ static struct mint_op mint_op_static_table[] = {
 
   { "delta",mint_op_weights_update,mint_weights_delta,2,
     weights_delta_param },
-
-  { "backprop",mint_op_weights_update,mint_weights_backprop,2,
-    weights_backprop_param },
 
   { "stdp",mint_op_weights_update,mint_weights_stdp,5,
     weights_stdp_param },
