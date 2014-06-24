@@ -66,29 +66,27 @@ void mint_weights_delta( mint_weights w, mint_nodes pre,
   int i, j, k, desired, jmax;
   unsigned int *colind;
   float lrate;
+
   lrate = p[0];
   desired = (int)p[1]; 
   
-  mint_weights_loop( w, 	
-		     w[0][i][k] += lrate * ( post[desired][i] - post[1][i] ) * 
-		     pre[1][j] );
+  if( mint_weights_is_sparse( w ) ) {
+    for( i=rmin; i<rmax; i++ ) {
+      colind = mint_weights_colind( w, i );
+      jmax = mint_weights_rowlen( w, i );
 
-  /* if( mint_weights_is_sparse( w ) ) { */
-  /*   for( i=rmin; i<rmax; i++ ) { */
-  /*     colind = mint_weights_colind( w, i ); */
-  /*     jmax = mint_weights_rowlen( w, i ); */
-  /*     for( j=0; j<jmax; j++ ) */
-  /* 	w[0][i][j] += lrate *  */
-  /* 	  ( post[desired][i] -  post[1][i] ) * pre[ 1 ][ colind[j] ]; */
-  /*   } */
-  /* } else { */
-  /*   jmax = mint_weights_cols( w ); */
-  /*   for( i=rmin; i<rmax; i++ ) { */
-  /*     for( j=0; j<jmax; j++ ) */
-  /* 	w[0][i][j] += lrate * ( post[desired][i] - post[1][i] ) *  */
-  /* 	  pre[1][j]; */
-  /*   } */
-  /* } */
+      for( j=0; j<jmax; j++ )
+  	w[0][i][j] += lrate *
+  	  ( post[desired][i] -  post[1][i] ) * pre[ 1 ][ colind[j] ];
+    }
+  } else {
+    jmax = mint_weights_cols( w );
+    for( i=rmin; i<rmax; i++ ) {
+      for( j=0; j<jmax; j++ )
+  	w[0][i][j] += lrate * ( post[desired][i] - post[1][i] ) *
+  	  pre[1][j];
+    }
+  }
 }
 
 void mint_weights_stdp( mint_weights w, mint_nodes pre, 
