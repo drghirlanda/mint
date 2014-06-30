@@ -116,11 +116,8 @@ $(document).ready(function(){initNavTree('nop_8h.html','');});
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a1f44949d2d984686f7cc6ea1cbb5d55e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="nop_8h.html#a1f44949d2d984686f7cc6ea1cbb5d55e">mint_node_sigmoid</a> (<a class="el" href="nodes_8h.html#a9ca90268f857a6c354034d1a34cecdee">mint_nodes</a> n, int min, int max, float *p)</td></tr>
-<tr class="memdesc:a1f44949d2d984686f7cc6ea1cbb5d55e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sigmoidal non-linearity.  <a href="#a1f44949d2d984686f7cc6ea1cbb5d55e">More...</a><br/></td></tr>
-<tr class="separator:a1f44949d2d984686f7cc6ea1cbb5d55e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2d863c75e7f6a16c974861d9a92506c0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="nop_8h.html#a2d863c75e7f6a16c974861d9a92506c0">mint_node_logistic</a> (<a class="el" href="nodes_8h.html#a9ca90268f857a6c354034d1a34cecdee">mint_nodes</a> n, int min, int max, float *p)</td></tr>
-<tr class="memdesc:a2d863c75e7f6a16c974861d9a92506c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Logistic tansfer function, implementing the transformation outpu = 1 / ( 1 + exp(-slope*( input - offset ) ) ).  <a href="#a2d863c75e7f6a16c974861d9a92506c0">More...</a><br/></td></tr>
+<tr class="memdesc:a2d863c75e7f6a16c974861d9a92506c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Logistic tansfer function, implementing the transformation output = 1 / ( 1 + exp(-slope*( input - offset ) ) ).  <a href="#a2d863c75e7f6a16c974861d9a92506c0">More...</a><br/></td></tr>
 <tr class="separator:a2d863c75e7f6a16c974861d9a92506c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0016678f79a3fef788984731b0872f57"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="nop_8h.html#a0016678f79a3fef788984731b0872f57">mint_node_integrator</a> (<a class="el" href="nodes_8h.html#a9ca90268f857a6c354034d1a34cecdee">mint_nodes</a> n, int min, int max, float *p)</td></tr>
 <tr class="memdesc:a0016678f79a3fef788984731b0872f57"><td class="mdescLeft">&#160;</td><td class="mdescRight">Leaky integrator.  <a href="#a0016678f79a3fef788984731b0872f57">More...</a><br/></td></tr>
@@ -155,12 +152,14 @@ Functions</h2></td></tr>
 <tr class="memitem:a1cf033a3368c4dea5d6931f413e4cd51"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="nop_8h.html#a1cf033a3368c4dea5d6931f413e4cd51">mint_node_habituation</a> (<a class="el" href="nodes_8h.html#a9ca90268f857a6c354034d1a34cecdee">mint_nodes</a> n, int min, int max, float *p)</td></tr>
 <tr class="memdesc:a1cf033a3368c4dea5d6931f413e4cd51"><td class="mdescLeft">&#160;</td><td class="mdescRight">This operation simulates habituation, and can be used on any state variable.  <a href="#a1cf033a3368c4dea5d6931f413e4cd51">More...</a><br/></td></tr>
 <tr class="separator:a1cf033a3368c4dea5d6931f413e4cd51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a643a06056c722b8dd8eecbea015287af"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="nop_8h.html#a643a06056c722b8dd8eecbea015287af">mint_node_identity</a> (<a class="el" href="nodes_8h.html#a9ca90268f857a6c354034d1a34cecdee">mint_nodes</a> n, int min, int max, float *p)</td></tr>
+<tr class="separator:a643a06056c722b8dd8eecbea015287af"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>This file contains node operations, that is, functions that operate on <code>mint_nodes</code> to update their state. </p>
 <p>These functions typically have one or more parameters to configure their behavior. These parameters are of two kinds:</p>
 <ol type="1">
-<li>Parameters pertaining to the node update proper, such as the slope of a sigmoid function or the time constant of a leaky integrator.</li>
+<li>Parameters pertaining to the node update proper, such as the slope of a logistic function or the time constant of a leaky integrator.</li>
 <li>Parameters indicating on which state variables the function operates. For example, the <code>noise</code> operation can be used to add random numbers to the input of a <code>mint_nodes</code> variable, to the output, or to any other state variable. </li>
 </ol>
 
@@ -352,6 +351,44 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a643a06056c722b8dd8eecbea015287af"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void mint_node_identity </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="nodes_8h.html#a9ca90268f857a6c354034d1a34cecdee">mint_nodes</a>&#160;</td>
+          <td class="paramname"><em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>min</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>max</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float *&#160;</td>
+          <td class="paramname"><em>p</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="a0016678f79a3fef788984731b0872f57"></a>
 <div class="memitem">
 <div class="memproto">
@@ -496,7 +533,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Logistic tansfer function, implementing the transformation outpu = 1 / ( 1 + exp(-slope*( input - offset ) ) ). </p>
+<p>Logistic tansfer function, implementing the transformation output = 1 / ( 1 + exp(-slope*( input - offset ) ) ). </p>
 <ul>
 <li>Name: `logistic'</li>
 <li>State variables required: none</li>
@@ -610,58 +647,6 @@ Functions</h2></td></tr>
 </ul>
 </li>
 </ul>
-
-</div>
-</div>
-<a class="anchor" id="a1f44949d2d984686f7cc6ea1cbb5d55e"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void mint_node_sigmoid </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="nodes_8h.html#a9ca90268f857a6c354034d1a34cecdee">mint_nodes</a>&#160;</td>
-          <td class="paramname"><em>n</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>min</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>max</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">float *&#160;</td>
-          <td class="paramname"><em>p</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Sigmoidal non-linearity. </p>
-<ul>
-<li>Name: <code>sigmoid</code></li>
-<li>State variables required: none</li>
-<li>Parameters:<ul>
-<li>0: node output when input is zero (default 0.1)</li>
-<li>1: maximum slope of the sigmoid function (default 1)</li>
-<li>2: input state variable (default 0)</li>
-<li>3: output state variable (default 1)</li>
-</ul>
-</li>
-</ul>
-<p>NOTE: For speed, the nonlinearity is not a logistic function, i.e., we do not compute exponentials. Rather, we piece two branches of hyperbola together to get a similar shape. If this bothers you, use the <code>mint_node_logistic</code> function, which is actually a logistic. </p>
 
 </div>
 </div>
@@ -817,7 +802,7 @@ Functions</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="nop_8h.html">nop.h</a></li>
-    <li class="footer">Generated on Sat Apr 12 2014 14:00:25 for mint by
+    <li class="footer">Generated on Mon Jun 30 2014 09:17:38 for mint by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
   </ul>
