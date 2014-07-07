@@ -21,15 +21,25 @@ struct mint_nodes_str;
 /* logistic function */
 void mint_node_logistic( mint_nodes n, int min, int max, float *p ) {
   int i;
-  float slope, offset, *in, *out;
+  float slope, zero, x, *in, *out;
 
-  slope = p[0];
-  offset = p[1];
+  mint_check( p[0]>0 && p[0]<1, "parameter 1 must be in ]0,1[, but is %f", 
+	      p[0] );
+  mint_check( p[1]>0, "parameter 0 must be >0, but is %f", p[1] );
+
+  slope = p[1];
+  zero = log( 1/p[0] - 1 ) / slope;
   SET_VAR( n, in, p[2] );
   SET_VAR( n, out, p[3] );
 
   for( i=min; i<max; i++ ) {
-    out[i] = 1.0f / (1.0f + fasterexp( slope*(offset - in[i]) ) );
+    x = slope*(zero - in[i]);
+    if( x < -10 )
+      out[i] = 1;
+    else if( x > 10 )
+      out[i] = 0;
+    else
+      out[i] = 1.0f / (1.0f + fasterexp( x ) );
   }
 }
 

@@ -29,8 +29,8 @@
     - Name: `logistic'
     - State variables required: none 
     - Parameters: 
-      + 0: slope (default 1)
-      + 1: offset (default 0)
+      + 0: output when input is zero (default 0.1)
+      + 1: slope (default 1)
       + 2: input state variable (default 0)
       + 3: output state variable (default 1)
 */
