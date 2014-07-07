@@ -435,8 +435,8 @@ void mint_network_graph( const struct mint_network *net, FILE *f ) {
 
   fprintf( f, "digraph network {\n" );
   fprintf( f, "rankdir=LR\n" );
-  fprintf( f, "node [fixedsize=true height=1 shape=circle]\n" );
-  fprintf( f, "edge [fontsize=10]\n" );
+  fprintf( f, "node [fixedsize=true height=1 shape=circle fontname=Helvetica]\n" );
+  fprintf( f, "edge [fontsize=10 fontname=Helvetica]\n" );
   g = mint_network_groups( net );
   for( i=0; i<g; i++ ) {
     n = mint_network_nodes( (struct mint_network *)net, i );
