@@ -16,7 +16,7 @@ nodes receptors
 nodes effectors
   size 1 
   states 1 
-  sigmoid 0.1 1 0 1 
+  logistic 0.1 1 0 1 
 
 8.91455 
 0.999628 

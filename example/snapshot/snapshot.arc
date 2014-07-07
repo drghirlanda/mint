@@ -9,14 +9,14 @@ nodes exc
   rows 50
   noise 1 0.5 0
   integrator 10 0.1 0 2
-  sigmoid .1 1 2 1
+  logistic .1 1 2 1
 
 nodes inh
   size 2500
   states 1
   rows 50
   integrator 10 0.1 0 2
-  sigmoid .1 1 2 1
+  logistic .1 1 2 1
 
 weights exc-inh
   sparse
