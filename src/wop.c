@@ -8,30 +8,44 @@
 
 void mint_weights_init_rows( mint_weights w, int rmin, int rmax, 
 			     float *p ) {
+  MINT_UNUSED( w );
+  MINT_UNUSED( rmin );
+  MINT_UNUSED( rmax );
   mint_check( p[0] != -1, "rows argument missing (parameter 0)" );
   mint_check( p[0] > 0, "rows argument negative" );
 }
 
 void mint_weights_init_cols( mint_weights w, int rmin, int rmax, 
 			     float *p ) {
+  MINT_UNUSED( w );
+  MINT_UNUSED( rmin );
+  MINT_UNUSED( rmax );
   mint_check( p[0] != -1, "cols argument missing (parameter 0)" );
   mint_check( p[0] > 0, "cols argument negative" );
 }
 
 void mint_weights_init_states( mint_weights w, int rmin, int rmax, 
 			       float *p ) {
+  MINT_UNUSED( w );
+  MINT_UNUSED( rmin );
+  MINT_UNUSED( rmax );
   mint_check( p[0] != -1, "states argument missing (parameter 0)" );
   mint_check( p[0] >= 0, "states argument negative" );
 }
 
 void mint_weights_init_sparse( mint_weights w, int rmin, int rmax,
 			       float *p ) {
+  MINT_UNUSED( w );
+  MINT_UNUSED( rmin );
+  MINT_UNUSED( rmax );
+  MINT_UNUSED( p );
 };
 
 void mint_weights_mult( mint_weights w, mint_nodes from, mint_nodes to,
 			int rmin, int rmax, float *p ) {
   int i, j, cols, target, jmax;
   int *colind; 
+  MINT_UNUSED( p );
   target = mint_weights_get_target(w);
   cols = mint_weights_cols(w);
   if( mint_weights_is_sparse( w ) ) {
@@ -201,6 +215,8 @@ void mint_weights_init_diagonal( mint_weights w, int rmin, int rmax,
 
 void mint_weights_init_target( mint_weights w, int rmin, int rmax,
 				 float *p ) {
+  MINT_UNUSED( rmin );
+  MINT_UNUSED( rmax );
   mint_weights_set_target( w, p[0] );
 }
 
@@ -209,6 +225,10 @@ void mint_weights_init_normalize( mint_weights w, int rmin, int rmax,
   float sum, total;
   int rows, cols, i, j, rowlen;
   float *val;
+
+  MINT_UNUSED( rmin );
+  MINT_UNUSED( rmax );
+
   rows = mint_weights_rows( w );
   cols = mint_weights_cols( w );
   total = p[0];
@@ -239,6 +259,9 @@ void mint_weights_lateral( mint_weights w, mint_nodes nfrom, mint_nodes nto,
   int i, ri, rj, ci, cj, size, nrows, ncols;
   struct mint_ops *ops;
   float val, val0, dmax, valmax, d, a, b;
+
+  MINT_UNUSED( rmin );
+  MINT_UNUSED( rmax );
 
   if( p[3] ) /* init done */
     return;

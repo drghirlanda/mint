@@ -8,7 +8,7 @@
 #define MINT_STRLEN 256
 
 struct mint_str {
-  size_t len;
+  int len;
   char *data;
 };
 

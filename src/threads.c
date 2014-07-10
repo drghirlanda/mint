@@ -245,6 +245,8 @@ void mint_network_init_threads( struct mint_network *net, float *p ) {
 #else /* MINT_USE_THREADS */
 
 void mint_network_init_threads( struct mint_network *net, float *p ) {
+  MINT_UNUSED( net );
+  MINT_UNUSED( p );
   mint_check( 0, "threads support not compiled into this libmint" );
 }
 

@@ -2,6 +2,7 @@
 #define _POSIX_C_SOURCE 199309L
 
 #include "netop.h"
+#include "utils.h"
 
 #include <time.h>
 #include <math.h>
@@ -10,6 +11,8 @@ void mint_network_clocked( struct mint_network *net, float *p ) {
   float towait, last, elapsed, tosleep;
   int warn;
   struct timespec t, r;
+
+  MINT_UNUSED( net );
 
   towait = 1. / p[0];
   warn = p[1];

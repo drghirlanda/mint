@@ -42,6 +42,8 @@ void mint_network_init_feedforward( struct mint_network *net,
   struct mint_spread *s;
   mint_weights w;
 
+  MINT_UNUSED( p );
+
   g = mint_network_groups(net);
   m = mint_network_matrices(net);
   s = mint_spread_new( m+g );
@@ -99,6 +101,8 @@ void mint_network_init_synchronous( struct mint_network *net,
 				    float *p ) {
   int i, g, m;
   struct mint_spread *s;
+
+  MINT_UNUSED( p );
 
   g = mint_network_groups( net );
   m = mint_network_matrices( net );

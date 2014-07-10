@@ -139,15 +139,22 @@ void mint_node_spikes( mint_nodes n, int min, int max, float *p ) {
 
 void mint_node_rows( mint_nodes n, int min, int max, float *p ) {
   int size = mint_nodes_size( n );
+  MINT_UNUSED( min );
+  MINT_UNUSED( max );
   mint_check( p[0] != -1, "rows argument missing (parameter 0)" );
   mint_check( p[0]>0 && p[0]<size, "rows argument <0 or too large" );
 }
 
 void mint_node_states( mint_nodes n, int min, int max, float *p ) {
+  MINT_UNUSED( n );
+  MINT_UNUSED( min );
+  MINT_UNUSED( max );
   mint_check( p[0]>0, "states argument %f is negative", p[0] );
 }
 
 void mint_node_size( mint_nodes n, int min, int max, float *p ) {
+  MINT_UNUSED( min );
+  MINT_UNUSED( max );
   mint_check( p[0]>0, "negative size for nodes %s", 
 	      mint_str_char( mint_nodes_get_name(n) ) );
 }
@@ -187,6 +194,9 @@ void mint_node_habituation( mint_nodes n, int min, int max, float *p ) {
 }
 
 void mint_node_identity( mint_nodes n, int min, int max, float *p ) {
+  MINT_UNUSED( min );
+  MINT_UNUSED( max );
+  MINT_UNUSED( p );
   memcpy( n[1], n[0], mint_nodes_size(n) * sizeof(float) );
 }
 
