@@ -38,14 +38,14 @@ void mint_random_multinomial( float *p, int *r, int len, int n );
 /* Compare integers (for use with qsort). */
 int mint_intcmp( const void *x, const void *y );
 
-/* Compare unsigned integers (for use with qsort). */
-int mint_uintcmp( const void *x, const void *y );
+/* Compare integers (for use with qsort). */
+int mint_intcmp( const void *x, const void *y );
 
 /** Stores in the array subs n random integers between min and max. If
     sort==1, the elements are sorted in ascending order. The subset
     array must have already been allocated. */
-void mint_random_subset( unsigned int *subset, unsigned int n, 
-			 unsigned int min, unsigned int max, 
+void mint_random_subset( int *subset, int n, 
+			 int min, int max, 
 			 int sort );
 
 #endif

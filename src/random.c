@@ -118,13 +118,13 @@ int mint_intcmp( const void *x, const void *y ) {
 }
 
 int mint_uintcmp( const void *x, const void *y ) {
-  unsigned int a = *(unsigned int *)x;
-  unsigned int b = *(unsigned int *)y;
+  int a = *(int *)x;
+  int b = *(int *)y;
   return a - b;
 }
 
-void mint_random_subset( unsigned int *subset, unsigned int n, 
-			 unsigned int min, unsigned int max, 
+void mint_random_subset( int *subset, int n, 
+			 int min, int max, 
 			 int sort ) {
   int *perm;
   perm = malloc( (max-min)*sizeof(int) );

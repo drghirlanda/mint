@@ -30,7 +30,7 @@
 typedef float **mint_nodes;
 
 /** Creates a node group of n nodes, each with s state variables. */
-mint_nodes mint_nodes_new( unsigned int n, unsigned int s );
+mint_nodes mint_nodes_new( int n, int s );
 
 /** Destroys a node group, freeing up the memory used. */
 void mint_nodes_del( mint_nodes );
@@ -76,10 +76,10 @@ void mint_nodes_info( const mint_nodes, FILE * );
 void mint_nodes_save_var( const mint_nodes, int var, FILE * );
 
 /** Returns the number of nodes. */
-unsigned int mint_nodes_size( const mint_nodes );
+int mint_nodes_size( const mint_nodes );
 
 /** Returns the number of state variables. */
-unsigned int mint_nodes_states( const mint_nodes );
+int mint_nodes_states( const mint_nodes );
 
 /** Retrieves ops.*/
 struct mint_ops *mint_nodes_get_ops( const mint_nodes );
@@ -88,10 +88,10 @@ struct mint_ops *mint_nodes_get_ops( const mint_nodes );
 int mint_nodes_ops( const mint_nodes );
 
 /** Set variable i of all nodes to x. */
-void mint_nodes_set( mint_nodes n, unsigned int i, float x );
+void mint_nodes_set( mint_nodes n, int i, float x );
 
 /** Resize a nodes object (UNTESTED). */
-mint_nodes mint_nodes_resize( mint_nodes n, unsigned int newsize );
+mint_nodes mint_nodes_resize( mint_nodes n, int newsize );
 
 /** Update all nodes between min (included) and max (excluded), using
     all update ops in sequence. */
@@ -116,7 +116,7 @@ int mint_nodes_set_property( mint_nodes n, const char *prop, int i,
 			     float value );
 
 /* see .c for docs */
-size_t mint_nodes_bytes( unsigned int size, unsigned int states );
+int mint_nodes_bytes( int size, int states );
 
 void mint_nodes_index2coord( mint_nodes n, int i, int *x, int *y );
 

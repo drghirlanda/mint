@@ -30,8 +30,8 @@ void mint_weights_init_sparse( mint_weights w, int rmin, int rmax,
 
 void mint_weights_mult( mint_weights w, mint_nodes from, mint_nodes to,
 			int rmin, int rmax, float *p ) {
-  unsigned int i, j, cols, target, jmax;
-  unsigned int *colind; 
+  int i, j, cols, target, jmax;
+  int *colind; 
   target = mint_weights_get_target(w);
   cols = mint_weights_cols(w);
   if( mint_weights_is_sparse( w ) ) {
@@ -53,7 +53,7 @@ void mint_weights_mult( mint_weights w, mint_nodes from, mint_nodes to,
 void mint_weights_hebbian( mint_weights w, mint_nodes pre, 
 			   mint_nodes post, int rmin, int rmax, float *p ) {
   int i, j, k, jmax;
-  unsigned int *colind;
+  int *colind;
 
   mint_weights_loop( w,	
 		     w[0][i][k] += p[0] * ( ( pre[1][j] - p[1] ) * 
@@ -63,8 +63,8 @@ void mint_weights_hebbian( mint_weights w, mint_nodes pre,
 
 void mint_weights_delta( mint_weights w, mint_nodes pre, 
 			 mint_nodes post, int rmin, int rmax, float *p ) {
-  int i, j, k, desired, jmax;
-  unsigned int *colind;
+  int i, j, desired, jmax;
+  int *colind;
   float lrate;
 
   lrate = p[0];
@@ -92,7 +92,7 @@ void mint_weights_delta( mint_weights w, mint_nodes pre,
 void mint_weights_stdp( mint_weights w, mint_nodes pre, 
 			mint_nodes post, int rmin, int rmax, float *p ) {
   int i, j, jmax, k;
-  unsigned int *colind;
+  int *colind;
   float decay = p[0];
   float plus = p[1];
   float minus = p[2];
@@ -133,7 +133,7 @@ void mint_weights_init_random_sparse( mint_weights w, int rmin,
 				      float (*rnd)( float, float ) ) {
   float *val;
   int len, cols, i, r;
-  unsigned int *ind;
+  int *ind;
   cols = mint_weights_cols(w);
   for( r=rmin; r<rmax; r++ ) {
     len = mint_random_binomial( p[2], cols );
@@ -155,7 +155,7 @@ void mint_weights_init_random_sparse( mint_weights w, int rmin,
 void mint_weights_init_random_dense( mint_weights w, 
 				     int rmin, int rmax, float *p, 
 				     float (*rnd)( float, float ) ) {
-  unsigned int i, j, r, c;
+  int i, j, r, c;
   c = mint_weights_cols(w);
   r = mint_weights_rows(w);
   mint_check( rmin>=0 && rmax<=r, "rmin, rmax out of range" );
@@ -191,7 +191,7 @@ void mint_weights_init_normal( mint_weights w, int rmin, int rmax,
 
 void mint_weights_init_diagonal( mint_weights w, int rmin, int rmax,
 				 float *p ) {
-  unsigned int i, r, c;
+  int i, r, c;
   r = mint_weights_rows(w);
   c = mint_weights_cols(w);
   mint_check( r==c, "from size != to size" );

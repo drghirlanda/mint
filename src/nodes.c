@@ -8,8 +8,8 @@
 #include <ctype.h>
 
 struct mint_nodes_str {
-  unsigned int size;
-  unsigned int states;
+  int size;
+  int states;
   struct mint_ops *ops;
   struct mint_str *name;
 };
@@ -18,19 +18,19 @@ struct mint_nodes_str {
 
 /* size in bytes of a mint_nodes object, includes input and output
    values, node states and a struct mint_nodes_str */
-size_t mint_nodes_bytes( unsigned int size, unsigned int states ) {
-  size_t b = 0;
+int mint_nodes_bytes( int size, int states ) {
+  int b = 0;
   b += size * (2 + states) * sizeof(float); /* values + states */
   b += (2+states) * sizeof(float *);        /* pointers */
   b += sizeof(struct mint_nodes_str);       
   return b;
 }
 
-mint_nodes mint_nodes_new( unsigned int size, unsigned int states ) {
-  size_t offset;
+mint_nodes mint_nodes_new( int size, int states ) {
+  int offset;
   struct mint_nodes_str *nstr;
   mint_nodes n;
-  unsigned int s, i;
+  int s, i;
   nstr = malloc( mint_nodes_bytes(size, states) );
   mint_check( nstr!=0, "out of memory!" );
   nstr->size = size;
@@ -84,7 +84,7 @@ void mint_nodes_cpy( mint_nodes dst, const mint_nodes src ) {
 }
 
 mint_nodes mint_nodes_load( FILE *file ) {
-  unsigned int size, states, read;
+  int size, states, read;
   int i, k;
   long pos;
   mint_nodes n;
@@ -151,7 +151,7 @@ void mint_nodes_save_var( const mint_nodes n, int k, FILE *f  ) {
 }
 
 void mint_nodes_save( const mint_nodes n, FILE *f ) {
-  unsigned int k;
+  int k;
   struct mint_nodes_str *nstr = _STR( n );
 
   mint_nodes_info( n, f );
@@ -165,11 +165,11 @@ void mint_nodes_info( const mint_nodes n, FILE *f ) {
   mint_ops_save( nstr->ops, f );
 }
 
-unsigned int mint_nodes_size( const mint_nodes n ) {
+int mint_nodes_size( const mint_nodes n ) {
   return _STR( n )->size;
 }
 
-unsigned int mint_nodes_states( const mint_nodes  n ) {
+int mint_nodes_states( const mint_nodes  n ) {
   return _STR( n )->states;
 }
 
@@ -178,8 +178,8 @@ struct mint_ops *mint_nodes_get_ops( const mint_nodes n ) {
   return nstr->ops;
 }
 
-void mint_nodes_set( mint_nodes n, unsigned int i, float x ) {
-  unsigned int j;
+void mint_nodes_set( mint_nodes n, int i, float x ) {
+  int j;
   struct mint_nodes_str *nstr;
   nstr = _STR(n);
   mint_check( i>=0 && i<2+nstr->states, "index out of range" );
@@ -187,9 +187,8 @@ void mint_nodes_set( mint_nodes n, unsigned int i, float x ) {
     n[i][j] = x;
 }
 
-mint_nodes mint_nodes_resize( mint_nodes n, unsigned int s2 ) {
-  int s1;
-  size_t to_copy;
+mint_nodes mint_nodes_resize( mint_nodes n, int s2 ) {
+  int s1, to_copy;
   mint_nodes n2;
 
   s1 = _STR(n)->size;

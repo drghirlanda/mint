@@ -12,27 +12,27 @@
 #include <time.h>
 
 struct mint_weights_str {
-  unsigned int rows;
-  unsigned int cols;
-  unsigned int states;
+  int rows;
+  int cols;
+  int states;
   int from;
   int to;
   struct mint_str *name;
-  unsigned int target; /* which 'to' variable results are stored in */
+  int target; /* which 'to' variable results are stored in */
   struct mint_ops *ops;
 
   /* these are for sparse matrices */
-  unsigned int **cind; /* cind[r][i] = col index of value i in row r */
-  unsigned int *rlen;  /* rlen[r] = # elements in row r */
+  int **cind; /* cind[r][i] = col index of value i in row r */
+  int *rlen;  /* rlen[r] = # elements in row r */
 };
 
 #define _STR( w ) ( (struct mint_weights_str *)w - 1 )
 
 /* calculate the number of bytes needed to store a dense or sparse
    matrix of given size. */ 
-size_t mint_weights_bytes( unsigned int rows, unsigned int cols, 
-			   unsigned int states, int sparse ) {
-  size_t b = 0;
+int mint_weights_bytes( int rows, int cols, 
+			int states, int sparse ) {
+  int b = 0;
   b += sizeof(struct mint_weights_str);
   b += (1+states) * sizeof(float **); /* w[s] */
   b += (1+states) * rows * sizeof(float *); /* w[s][r] */
@@ -43,12 +43,12 @@ size_t mint_weights_bytes( unsigned int rows, unsigned int cols,
 
 /* this internal function handles memory allocation and basic setup
    for dense and sparse matrices */
-static mint_weights mint_weights_alloc( unsigned int rows,
-					unsigned int cols,
-					unsigned int states,
+static mint_weights mint_weights_alloc( int rows,
+					int cols,
+					int states,
 					int sparse ) {
   mint_weights w;
-  unsigned int s, r, c;
+  int s, r, c;
   char *start1, *start2;
   struct mint_weights_str *wstr;
 
@@ -101,8 +101,8 @@ static mint_weights mint_weights_alloc( unsigned int rows,
   return w;
 }
 
-mint_weights mint_weights_new( unsigned int rows, unsigned int cols, 
-			       unsigned int states ) {
+mint_weights mint_weights_new( int rows, int cols, 
+			       int states ) {
   mint_weights w;
   struct mint_weights_str *wstr;
   w = mint_weights_alloc( rows, cols, states, 0 );
@@ -112,15 +112,15 @@ mint_weights mint_weights_new( unsigned int rows, unsigned int cols,
   return w;
 }
 
-mint_weights mint_weights_sparse_new( unsigned int rows, unsigned int cols, 
-				      unsigned int states ) {
+mint_weights mint_weights_sparse_new( int rows, int cols, 
+				      int states ) {
   mint_weights w;
   struct mint_weights_str *wstr;
   int r;
   w = mint_weights_alloc( rows, cols, states, 1 );
   wstr = _STR(w);
-  wstr->rlen = malloc( rows*sizeof(unsigned int) );
-  wstr->cind = malloc( rows*sizeof(unsigned int *) );
+  wstr->rlen = malloc( rows*sizeof(int) );
+  wstr->cind = malloc( rows*sizeof(int *) );
   for( r=0; r<rows; r++ ) {
     wstr->rlen[r] = 0;
     wstr->cind[r] = 0;
@@ -155,7 +155,7 @@ mint_weights mint_weights_dup( const mint_weights src ) {
 }
 
 void mint_weights_cpy( mint_weights dst, const mint_weights src ) {
-  unsigned int r, s, rows, cols, states;
+  int r, s, rows, cols, states;
   struct mint_weights_str *dstr, *sstr; 
 
   if( dst == src ) return;
@@ -203,7 +203,7 @@ void mint_weights_load_values( mint_weights w, FILE *f ) {
       mint_check( i==1, "cannot read row length" );
       for( s=0; s<1+wstr->states; s++)
 	w[s][r] = malloc( nval*sizeof(float) );
-      wstr->cind[r] = malloc( wstr->rlen[r] * sizeof(unsigned int) );
+      wstr->cind[r] = malloc( wstr->rlen[r] * sizeof(int) );
       for( c=0; c<wstr->rlen[r]; c++ ) {
 	i = fscanf( f, " %d", wstr->cind[r]+c );
 	mint_check( i==1, "cannot read column indices" );
@@ -231,7 +231,7 @@ mint_weights mint_weights_load( FILE *file, struct mint_network *net ) {
   struct mint_op *op;
   struct mint_ops *ops;
   struct mint_str *fromname, *toname, *name;
-  unsigned int rows, cols, states, sparse;
+  int rows, cols, states, sparse;
   int from, to, i, j;
   long pos;
 
@@ -399,7 +399,7 @@ mint_weights mint_weights_load( FILE *file, struct mint_network *net ) {
 }
 
 void mint_weights_save_values( const mint_weights w, FILE *f ) {
-  unsigned int r, c, s, nval;
+  int r, c, s, nval;
   struct mint_weights_str *wstr;
   wstr = _STR(w);
   for( r=0; r<wstr->rows; r++ ) {
@@ -450,22 +450,22 @@ void mint_weights_save( const mint_weights w, FILE *f,
   mint_weights_save_values( w ,f );
 }
 
-unsigned int mint_weights_rows( const mint_weights w ) {
+int mint_weights_rows( const mint_weights w ) {
   struct mint_weights_str *wstr = _STR(w);
   return wstr->rows;
 }
 
-unsigned int mint_weights_cols( const mint_weights w ) {
+int mint_weights_cols( const mint_weights w ) {
   struct mint_weights_str *wstr = _STR(w);
   return wstr->cols;
 }
 
-unsigned int mint_weights_states( const mint_weights w ) {
+int mint_weights_states( const mint_weights w ) {
   struct mint_weights_str *wstr = _STR(w);
   return wstr->states;
 }
 
-unsigned int mint_weights_get_from( const mint_weights w ) {
+int mint_weights_get_from( const mint_weights w ) {
   struct mint_weights_str *wstr = _STR(w);
   return wstr->from;
 }
@@ -474,27 +474,27 @@ struct mint_str *mint_weights_get_name( const mint_weights w ) {
   return _STR(w)->name;
 }
 
-unsigned int mint_weights_get_to( const mint_weights w ) {
+int mint_weights_get_to( const mint_weights w ) {
   struct mint_weights_str *wstr = _STR(w);
   return wstr->to;
 }
 
-unsigned int mint_weights_get_target( const mint_weights w ) {
+int mint_weights_get_target( const mint_weights w ) {
   struct mint_weights_str *wstr = _STR(w);
   return wstr->target;
 }
 
-void mint_weights_set_from( mint_weights w, unsigned int i ) {
+void mint_weights_set_from( mint_weights w, int i ) {
   struct mint_weights_str *wstr = _STR(w);
   wstr->from = i;
 }
 
-void mint_weights_set_to( mint_weights w, unsigned int i ) {
+void mint_weights_set_to( mint_weights w, int i ) {
   struct mint_weights_str *wstr = _STR(w);
   wstr->to = i;
 }
 
-void mint_weights_set_target( mint_weights w, unsigned int i ) {
+void mint_weights_set_target( mint_weights w, int i ) {
   struct mint_weights_str *wstr = _STR(w);
   wstr->target = i;
 }
@@ -533,10 +533,10 @@ int mint_weights_nonzero( const mint_weights w ) {
 }
 
 void mint_weights_set_row( mint_weights w, int r, int newlen,
-			   float *newval, unsigned int *newind,
+			   float *newval, int *newind,
 			   int var ) {
   int i, states;
-  unsigned int *ind;
+  int *ind;
   struct mint_weights_str *wstr = _STR(w);
 
   mint_check( newlen >= 0, "newlen is negative" );
@@ -546,7 +546,7 @@ void mint_weights_set_row( mint_weights w, int r, int newlen,
   if( newind ) 
     ind = newind;
   else {
-    ind = malloc( newlen*sizeof(unsigned int) );
+    ind = malloc( newlen*sizeof(int) );
     for( i=0; i<newlen; )
       ind[i] = i;
   }
@@ -555,13 +555,13 @@ void mint_weights_set_row( mint_weights w, int r, int newlen,
 
      /* reallocate memory if needed */
     if( wstr->rlen[r] != newlen ) {
-      wstr->cind[r] = realloc( wstr->cind[r], newlen*sizeof(unsigned int) );
+      wstr->cind[r] = realloc( wstr->cind[r], newlen*sizeof(int) );
       for( i=0; i<1+states; i++ )
 	w[i][r] = realloc( w[i][r], newlen*sizeof(float) );
     }
     /* copy new values */
     if( newlen ) {
-      memcpy( wstr->cind[r], ind, newlen*sizeof(unsigned int) );
+      memcpy( wstr->cind[r], ind, newlen*sizeof(int) );
       memcpy( w[ var ][r], newval, newlen*sizeof(float) );
     }
     wstr->rlen[r] = newlen;
@@ -590,13 +590,13 @@ void mint_weights_set_row( mint_weights w, int r, int newlen,
 }
 
 
-unsigned int *mint_weights_colind( mint_weights w, int r ) {
+int *mint_weights_colind( mint_weights w, int r ) {
   struct mint_weights_str *wstr = _STR(w);
   mint_check( r>=0 && r<wstr->rows, "row index out of range" );
   return mint_weights_is_sparse(w) ? wstr->cind[r] : 0;
 }
 
-unsigned int mint_weights_rowlen( mint_weights w, int r ) {
+int mint_weights_rowlen( mint_weights w, int r ) {
   struct mint_weights_str *wstr = _STR(w);
   mint_check( r>=0 && r<wstr->rows, "row index out of range" );
   return mint_weights_is_sparse(w) ? wstr->rlen[r] : wstr->cols;
@@ -627,9 +627,9 @@ void mint_weights_set( mint_weights w, int s, int r, int c, float x ) {
 
       /* copy indices */
       wstr->cind[r] = realloc( wstr->cind[r], 
-			       (rlen+1)*sizeof(unsigned int) );
+			       (rlen+1)*sizeof(int) );
       memmove( wstr->cind[r]+i+1, wstr->cind[r]+i, 
-	       (rlen-i)*sizeof(unsigned int) );
+	       (rlen-i)*sizeof(int) );
       wstr->cind[r][i] = c;
 
       wstr->rlen[r]++; /* now we have one more value */
@@ -643,7 +643,7 @@ mint_weights mint_weights_prune( mint_weights src, float cutoff, int sparse ) {
   struct mint_weights_str *sstr, *dstr;
   int rows, cols, states, r, c, s, i;
   float *val;
-  unsigned int *ind;
+  int *ind;
 
   rows = mint_weights_rows( src );
   cols = mint_weights_cols( src );
@@ -659,7 +659,7 @@ mint_weights mint_weights_prune( mint_weights src, float cutoff, int sparse ) {
     /* allocate val and ind to largest possible size */
     i = mint_weights_rowlen( src, r );
     val = malloc( i * sizeof(float) );
-    ind = malloc( i * sizeof(unsigned int) );
+    ind = malloc( i * sizeof(int) );
     
     i = 0; /* # values that pass cutoff */
     for( c=0; c<cols; c++ ) {
