@@ -74,17 +74,3 @@ int mint_default( const char *name ) {
   }
   return 0;
 }
-
-/* strictly speaking, having a library-wide global variable is not
-   thread safe, but reading from file is not multithreaded, so it
-   should be OK */
-
-static FILE *mint_file = 0;
-
-void mint_set_file( FILE *file ) {
-  mint_file = file;
-}
-
-FILE *mint_get_file( void ) {
-  return mint_file;
-}

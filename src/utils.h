@@ -32,10 +32,4 @@ int mint_keyword( char *name );
    weights, or networks, 0 otherwise. */
 int mint_default( const char *string );
 
-
-/* these two functions are undocumented because they are only used
-   internally. do not use. */
-void mint_set_file( FILE *file );
-FILE *mint_get_file( void );
-
 #endif
