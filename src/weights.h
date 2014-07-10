@@ -20,7 +20,7 @@
    elements. The following variables must have been declared:
 
    int i, j, k, jmax;
-   unsigned int *colind;
+   int *colind;
 
 */
 #define mint_weights_loop( w, code )	    \
@@ -69,8 +69,8 @@ typedef float ***mint_weights;
 
 /** Create a (dense) weight matrix with given rows, columns and
      states. */
-mint_weights mint_weights_new( unsigned int rows, unsigned int cols, 
-			       unsigned int states );
+mint_weights mint_weights_new( int rows, int cols, 
+			       int states );
 
 /** Destroy a weight matrix, freeing up used memory. */
 void mint_weights_del( mint_weights  );
@@ -117,25 +117,25 @@ void mint_weights_info( mint_weights , FILE *,
 			struct mint_network *net );
 
 /** Get the number of rows */
-unsigned int mint_weights_rows( mint_weights  );
+int mint_weights_rows( mint_weights  );
 
 /** Get the number of columns */
-unsigned int mint_weights_cols( mint_weights  );
+int mint_weights_cols( mint_weights  );
 
 /** Get the number of states */
-unsigned int mint_weights_states( mint_weights  );
+int mint_weights_states( mint_weights  );
 
 /** Retrieve index of 'pre-synaptic' node group. See network.h. */
-unsigned int mint_weights_get_from( const mint_weights w );
+int mint_weights_get_from( const mint_weights w );
 
 /** Set index of 'pre-synaptic' node group. See network.h. */
-void mint_weights_set_from( mint_weights w, unsigned int );
+void mint_weights_set_from( mint_weights w, int );
 
 /** Retrieve index of 'post-synaptic' node group. See network.h. */
-unsigned int mint_weights_get_to( const mint_weights w );
+int mint_weights_get_to( const mint_weights w );
 
 /** Set index of 'post-synaptic' node group. See network.h. */
-void mint_weights_set_to( mint_weights w, unsigned int );
+void mint_weights_set_to( mint_weights w, int );
 
 /** Retrieve name string. Manipulating this object will directly
     change the name. */
@@ -144,11 +144,11 @@ struct mint_str *mint_weights_get_name( const mint_weights w );
 /** Retrieve which variable of 'post-synaptic' that is the target of this
     matrix (it will be variable 0, i.e., node input, unless you change
     it explicitly. */
-unsigned int mint_weights_get_target( const mint_weights w );
+int mint_weights_get_target( const mint_weights w );
 
 /** Set which variable 'post-synaptic' node group is the target of
     this weight matrix. */
-void mint_weights_set_target( mint_weights w, unsigned int );
+void mint_weights_set_target( mint_weights w, int );
 
 /** Retrieve op list. */
 struct mint_ops *mint_weights_get_ops( const mint_weights );
@@ -180,9 +180,9 @@ void mint_weights_connect( mint_weights w, mint_nodes pre,
 
 /** Create a sparse weight matrix. The matrix is initially empty (no
     non-zero values) and can be filled with mint_weights_set_row. */
-mint_weights mint_weights_sparse_new( unsigned int rows, 
-				      unsigned int cols,
-				      unsigned int states );
+mint_weights mint_weights_sparse_new( int rows, 
+				      int cols,
+				      int states );
 
 /** Returns 1 if matrix is sparse, 0 otherwise. */
 int mint_weights_is_sparse( const mint_weights );
@@ -197,16 +197,16 @@ int mint_weights_nonzero( const mint_weights );
     other states). This function works with both full and sparse
     matrices (it is more helpful with sparse matrices). */
 void mint_weights_set_row( mint_weights w,  int r, int len,
-			   float *val, unsigned int *ind, int var );
+			   float *val, int *ind, int var );
 
 /** Returns number of elements existing in a row (equal to the number
     of columns for dense matrices, possibly less for sparse
     matrices. */
-unsigned int mint_weights_rowlen( mint_weights w, int r );
+int mint_weights_rowlen( mint_weights w, int r );
 
 /** Returns the column indices of elements in row r of a sparse
     matrix, or 0 for a dense matrix. */
-unsigned int *mint_weights_colind( mint_weights w, int r );
+int *mint_weights_colind( mint_weights w, int r );
 
 /** Sets the element of a sparse matrix to a given value (element is
     created if it does not exist. */
