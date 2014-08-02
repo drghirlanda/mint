@@ -17,7 +17,7 @@ struct mint_ops {
 };
 
 /* default parameter values for ops that need them */
-static float node_logistic_param[] = { 1, 0.1, 0, 1 };
+static float node_logistic_param[] = { 0.1, 1, 0, 1 };
 static float node_integrator_param[] = { 1., 0., 0, 1 };
 static float node_izzy_param[] = { 0.02, 0.2, -65., 8., 0, 1, 2, 3};
 static float node_noise_param[] = { 0, 0.01, 0 };
