@@ -139,6 +139,8 @@ void mint_network_camera( struct mint_network *net, float *p ) {
   int i, groups;
   struct mint_image *img;
   mint_nodes n;
+  
+  MINT_UNUSED( p );
 
   groups = mint_network_groups( net );
   img = mint_camera_image();

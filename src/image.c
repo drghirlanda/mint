@@ -266,14 +266,18 @@ struct mint_image *mint_image_weights( const mint_weights w, int irows,
 }
 
 void mint_image_fliph( struct mint_image *image ) {
+  MINT_UNUSED( image );
   mint_check( 0, "unimplemented" );
 }
 
 void mint_image_flipv( struct mint_image *image ) {
+  MINT_UNUSED( image );
   mint_check( 0, "unimplemented" );
 }
 
 void mint_image_rotate( struct mint_image *image, float angle ) {
+  MINT_UNUSED( image );
+  MINT_UNUSED( angle );
   mint_check( 0, "unimplemented" );
 }
 
@@ -420,7 +424,7 @@ void mint_node_key( mint_nodes n, int min, int max, float *p,
 	      2+states );
   mint_check( mode==0 || mode==1, "mode (param 3) must be 0 or 1" );
 
-  if( ev.type != SDL_KEYUP || ev.key.keysym.sym != key )
+  if( ev.type != SDL_KEYUP || ev.key.keysym.sym != (unsigned int)key )
     return;
 
   /* mode 0/1 switches between increment value or set value */
@@ -434,6 +438,9 @@ void mint_node_snapshot( mint_nodes n, int min, int max, float *p ) {
   struct mint_image *img;
   char *filename;
   struct mint_str *name;
+
+  MINT_UNUSED( min );
+  MINT_UNUSED( max );
 
   frequency = p[0];
   state = p[1];
@@ -546,6 +553,8 @@ void mint_image_display( struct mint_image *src,
   int i;
   float scale;
 
+  MINT_UNUSED( h );
+
   mint_init_screen( 1 );
 
   scale = (float)w / src->surf->w;
@@ -599,6 +608,8 @@ void mint_network_events( struct mint_network *net, float *p ) {
   SDL_Event event;
   SDLKey key;
   float active, rate;
+
+  MINT_UNUSED( p );
 
   if( !mint_screen && 
       !mint_network_get_property( net, "display", 0, 0 ) ) {
