@@ -111,45 +111,39 @@ $(document).ready(function(){initNavTree('utils_8h_source.html','');});
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;stdlib.h&gt;</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &lt;stdarg.h&gt;</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;</div>
-<div class="line"><a name="l00008"></a><span class="lineno"><a class="line" href="utils_8h.html#ac2800eefc0006f47ef4029229b3667fd">    8</a></span>&#160;<span class="preprocessor">#define mint_check( test, ... ) if(!(test)) { fprintf( stderr, &quot;%s (%s:%d): &quot;, __FUNCTION__, __FILE__, __LINE__ ); fprintf( stderr, __VA_ARGS__ ); fprintf( stderr, &quot;\n&quot; ); abort(); }</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno"><a class="line" href="utils_8h.html#ae556be0e513778fc4963c69af3ecc33e">    8</a></span>&#160;<span class="preprocessor">#define MINT_UNUSED(x) (void)(x)</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment">/* check whether a specific string is on file. if yes, return 1 and</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment">   advance file position past the string. if no, return 0 and do not</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="comment">   change file position. */</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keywordtype">int</span> <a class="code" href="utils_8h.html#ac53dfb065a14d74a5c8a8e83fe4eb6a9">mint_next_string</a>( FILE *file, <span class="keywordtype">char</span> *<span class="keywordtype">string</span>, <span class="keywordtype">int</span> len );</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="comment">/* advance until a non space character, the latter remains available</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="comment">   for reading and is also returned */</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keywordtype">int</span> <a class="code" href="utils_8h.html#a7278ed2954f88906ca9090e4d50be67f">mint_skip_space</a>( FILE *file );</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment">/* returns 1 if the first non-space charachter is a digit, a dot, a</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="comment">   plus or a minus sign, otherwise returns 0; the character remains</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment">   available for reading */</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keywordtype">int</span> <a class="code" href="utils_8h.html#aacba3e09811752f44d209fe817fd1094">mint_values_waiting</a>( FILE *file );</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="comment">/* returns 1 if the next string in file is a mint keyword (network,</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="comment">   nodes, weights, spread), 0 otherwise. The file position is not</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="comment">   changed, i.e., anything that was available for reading before</span></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="comment">   mint_keyword is called remains available for reading after the</span></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="comment">   function returns. */</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="keywordtype">int</span> <a class="code" href="utils_8h.html#a5f63841d9840c17d79120d3c707a8327">mint_keyword</a>( <span class="keywordtype">char</span> *name );</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="comment">/* returns 1 if the string is the name of a default op for nodes,</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="comment">   weights, or networks, 0 otherwise. */</span></div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="keywordtype">int</span> <a class="code" href="utils_8h.html#ac35fdeca9ec7cf621b861bbf49521560">mint_default</a>( <span class="keyword">const</span> <span class="keywordtype">char</span> *<span class="keywordtype">string</span> );</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="comment">/* these two functions are undocumented because they are only used</span></div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="comment">   internally. do not use. */</span></div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="keywordtype">void</span> <a class="code" href="utils_8h.html#a0d73cbafc679dab639fd19f568f8ff3b">mint_set_file</a>( FILE *file );</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;FILE *<a class="code" href="utils_8h.html#a6b4ceb4a9be194e36c246e5df3c1c400">mint_get_file</a>( <span class="keywordtype">void</span> );</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno"><a class="line" href="utils_8h.html#ac2800eefc0006f47ef4029229b3667fd">   10</a></span>&#160;<span class="preprocessor">#define mint_check( test, ... ) if(!(test)) { fprintf( stderr, &quot;%s (%s:%d): &quot;, __FUNCTION__, __FILE__, __LINE__ ); fprintf( stderr, __VA_ARGS__ ); fprintf( stderr, &quot;\n&quot; ); abort(); }</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="comment">/* check whether a specific string is on file. if yes, return 1 and</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="comment">   advance file position past the string. if no, return 0 and do not</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="comment">   change file position. */</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keywordtype">int</span> <a class="code" href="utils_8h.html#ac53dfb065a14d74a5c8a8e83fe4eb6a9">mint_next_string</a>( FILE *file, <span class="keywordtype">char</span> *<span class="keywordtype">string</span>, <span class="keywordtype">int</span> len );</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="comment">/* advance until a non space character, the latter remains available</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="comment">   for reading and is also returned */</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keywordtype">int</span> <a class="code" href="utils_8h.html#a7278ed2954f88906ca9090e4d50be67f">mint_skip_space</a>( FILE *file );</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment">/* returns 1 if the first non-space charachter is a digit, a dot, a</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="comment">   plus or a minus sign, otherwise returns 0; the character remains</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment">   available for reading */</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="keywordtype">int</span> <a class="code" href="utils_8h.html#aacba3e09811752f44d209fe817fd1094">mint_values_waiting</a>( FILE *file );</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="comment">/* returns 1 if the next string in file is a mint keyword (network,</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="comment">   nodes, weights, spread), 0 otherwise. The file position is not</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="comment">   changed, i.e., anything that was available for reading before</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="comment">   mint_keyword is called remains available for reading after the</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="comment">   function returns. */</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keywordtype">int</span> <a class="code" href="utils_8h.html#a5f63841d9840c17d79120d3c707a8327">mint_keyword</a>( <span class="keywordtype">char</span> *name );</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="comment">/* returns 1 if the string is the name of a default op for nodes,</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="comment">   weights, or networks, 0 otherwise. */</span></div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="keywordtype">int</span> <a class="code" href="utils_8h.html#ac35fdeca9ec7cf621b861bbf49521560">mint_default</a>( <span class="keyword">const</span> <span class="keywordtype">char</span> *<span class="keywordtype">string</span> );</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="ttc" id="utils_8h_html_aacba3e09811752f44d209fe817fd1094"><div class="ttname"><a href="utils_8h.html#aacba3e09811752f44d209fe817fd1094">mint_values_waiting</a></div><div class="ttdeci">int mint_values_waiting(FILE *file)</div></div>
-<div class="ttc" id="utils_8h_html_a6b4ceb4a9be194e36c246e5df3c1c400"><div class="ttname"><a href="utils_8h.html#a6b4ceb4a9be194e36c246e5df3c1c400">mint_get_file</a></div><div class="ttdeci">FILE * mint_get_file(void)</div></div>
 <div class="ttc" id="utils_8h_html_a5f63841d9840c17d79120d3c707a8327"><div class="ttname"><a href="utils_8h.html#a5f63841d9840c17d79120d3c707a8327">mint_keyword</a></div><div class="ttdeci">int mint_keyword(char *name)</div></div>
 <div class="ttc" id="utils_8h_html_ac35fdeca9ec7cf621b861bbf49521560"><div class="ttname"><a href="utils_8h.html#ac35fdeca9ec7cf621b861bbf49521560">mint_default</a></div><div class="ttdeci">int mint_default(const char *string)</div></div>
-<div class="ttc" id="utils_8h_html_a0d73cbafc679dab639fd19f568f8ff3b"><div class="ttname"><a href="utils_8h.html#a0d73cbafc679dab639fd19f568f8ff3b">mint_set_file</a></div><div class="ttdeci">void mint_set_file(FILE *file)</div></div>
 <div class="ttc" id="utils_8h_html_ac53dfb065a14d74a5c8a8e83fe4eb6a9"><div class="ttname"><a href="utils_8h.html#ac53dfb065a14d74a5c8a8e83fe4eb6a9">mint_next_string</a></div><div class="ttdeci">int mint_next_string(FILE *file, char *string, int len)</div></div>
 <div class="ttc" id="utils_8h_html_a7278ed2954f88906ca9090e4d50be67f"><div class="ttname"><a href="utils_8h.html#a7278ed2954f88906ca9090e4d50be67f">mint_skip_space</a></div><div class="ttdeci">int mint_skip_space(FILE *file)</div></div>
 </div><!-- fragment --></div><!-- contents -->
@@ -158,7 +152,7 @@ $(document).ready(function(){initNavTree('utils_8h_source.html','');});
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="utils_8h.html">utils.h</a></li>
-    <li class="footer">Generated on Mon Jun 30 2014 09:17:38 for mint by
+    <li class="footer">Generated on Wed Aug 6 2014 12:08:37 for mint by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
   </ul>

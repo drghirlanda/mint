@@ -8,7 +8,6 @@ var random_8h =
     [ "mint_random_normal", "random_8h.html#a1c1bc981cbbcbf4a2a7f1df61948fe68", null ],
     [ "mint_random_permutation", "random_8h.html#a2800706e7d04fbff4e2ae8a334a01280", null ],
     [ "mint_random_seed", "random_8h.html#a5d1a4b969e39c6b3d6cc58f764612698", null ],
-    [ "mint_random_subset", "random_8h.html#a802462733750f066105627bc1f2cc08c", null ],
-    [ "mint_random_uniform", "random_8h.html#ae9f1f6b16b56bc8c6fe05ee064ba204f", null ],
-    [ "mint_uintcmp", "random_8h.html#ab013117b5d57b6a3cf3a5514656778d2", null ]
+    [ "mint_random_subset", "random_8h.html#a12520f12c3160b2636f0b8e7c20ce031", null ],
+    [ "mint_random_uniform", "random_8h.html#ae9f1f6b16b56bc8c6fe05ee064ba204f", null ]
 ];

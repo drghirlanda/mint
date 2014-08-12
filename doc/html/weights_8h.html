@@ -131,9 +131,9 @@ Typedefs</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a9b18dd156441bd42f6d4317ef999d56f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="weights_8h.html#a9b18dd156441bd42f6d4317ef999d56f">mint_weights_new</a> (unsigned int rows, unsigned int cols, unsigned int states)</td></tr>
-<tr class="memdesc:a9b18dd156441bd42f6d4317ef999d56f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a (dense) weight matrix with given rows, columns and states.  <a href="#a9b18dd156441bd42f6d4317ef999d56f">More...</a><br/></td></tr>
-<tr class="separator:a9b18dd156441bd42f6d4317ef999d56f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:addda58d6b600c9a785ef7289597e81a1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="weights_8h.html#addda58d6b600c9a785ef7289597e81a1">mint_weights_new</a> (int rows, int cols, int states)</td></tr>
+<tr class="memdesc:addda58d6b600c9a785ef7289597e81a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a (dense) weight matrix with given rows, columns and states.  <a href="#addda58d6b600c9a785ef7289597e81a1">More...</a><br/></td></tr>
+<tr class="separator:addda58d6b600c9a785ef7289597e81a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af128b117c9e5e78632f709cf9b77bcfc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="weights_8h.html#af128b117c9e5e78632f709cf9b77bcfc">mint_weights_del</a> (<a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a>)</td></tr>
 <tr class="memdesc:af128b117c9e5e78632f709cf9b77bcfc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroy a weight matrix, freeing up used memory.  <a href="#af128b117c9e5e78632f709cf9b77bcfc">More...</a><br/></td></tr>
 <tr class="separator:af128b117c9e5e78632f709cf9b77bcfc"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -154,36 +154,36 @@ Functions</h2></td></tr>
 <tr class="memitem:ad0f98c4851b0614e89c33fab5dad0179"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="weights_8h.html#ad0f98c4851b0614e89c33fab5dad0179">mint_weights_info</a> (<a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a>, FILE *, struct mint_network *net)</td></tr>
 <tr class="memdesc:ad0f98c4851b0614e89c33fab5dad0179"><td class="mdescLeft">&#160;</td><td class="mdescRight">Save a weight matrix to file, aprt from the values.  <a href="#ad0f98c4851b0614e89c33fab5dad0179">More...</a><br/></td></tr>
 <tr class="separator:ad0f98c4851b0614e89c33fab5dad0179"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abe17e0f763df6d5c2d3b68c073cc98de"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="weights_8h.html#abe17e0f763df6d5c2d3b68c073cc98de">mint_weights_rows</a> (<a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a>)</td></tr>
-<tr class="memdesc:abe17e0f763df6d5c2d3b68c073cc98de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of rows.  <a href="#abe17e0f763df6d5c2d3b68c073cc98de">More...</a><br/></td></tr>
-<tr class="separator:abe17e0f763df6d5c2d3b68c073cc98de"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1375c76a5485ae3e7796e5482e154d13"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="weights_8h.html#a1375c76a5485ae3e7796e5482e154d13">mint_weights_cols</a> (<a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a>)</td></tr>
-<tr class="memdesc:a1375c76a5485ae3e7796e5482e154d13"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of columns.  <a href="#a1375c76a5485ae3e7796e5482e154d13">More...</a><br/></td></tr>
-<tr class="separator:a1375c76a5485ae3e7796e5482e154d13"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a43a006ae8083cd48d8c46b96ef87b8c0"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="weights_8h.html#a43a006ae8083cd48d8c46b96ef87b8c0">mint_weights_states</a> (<a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a>)</td></tr>
-<tr class="memdesc:a43a006ae8083cd48d8c46b96ef87b8c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of states.  <a href="#a43a006ae8083cd48d8c46b96ef87b8c0">More...</a><br/></td></tr>
-<tr class="separator:a43a006ae8083cd48d8c46b96ef87b8c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a13e63966152a3e5eb98a39fb6b400cd6"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="weights_8h.html#a13e63966152a3e5eb98a39fb6b400cd6">mint_weights_get_from</a> (const <a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a> w)</td></tr>
-<tr class="memdesc:a13e63966152a3e5eb98a39fb6b400cd6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve index of 'pre-synaptic' node group.  <a href="#a13e63966152a3e5eb98a39fb6b400cd6">More...</a><br/></td></tr>
-<tr class="separator:a13e63966152a3e5eb98a39fb6b400cd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a162fe26c5cb1c3c93c13187939213b49"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="weights_8h.html#a162fe26c5cb1c3c93c13187939213b49">mint_weights_set_from</a> (<a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a> w, unsigned int)</td></tr>
-<tr class="memdesc:a162fe26c5cb1c3c93c13187939213b49"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set index of 'pre-synaptic' node group.  <a href="#a162fe26c5cb1c3c93c13187939213b49">More...</a><br/></td></tr>
-<tr class="separator:a162fe26c5cb1c3c93c13187939213b49"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2c9383b6cbb22774a972cf0ac7fc131a"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="weights_8h.html#a2c9383b6cbb22774a972cf0ac7fc131a">mint_weights_get_to</a> (const <a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a> w)</td></tr>
-<tr class="memdesc:a2c9383b6cbb22774a972cf0ac7fc131a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve index of 'post-synaptic' node group.  <a href="#a2c9383b6cbb22774a972cf0ac7fc131a">More...</a><br/></td></tr>
-<tr class="separator:a2c9383b6cbb22774a972cf0ac7fc131a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1599dcff61ee9942ae0ee5a7b5714b4e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="weights_8h.html#a1599dcff61ee9942ae0ee5a7b5714b4e">mint_weights_set_to</a> (<a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a> w, unsigned int)</td></tr>
-<tr class="memdesc:a1599dcff61ee9942ae0ee5a7b5714b4e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set index of 'post-synaptic' node group.  <a href="#a1599dcff61ee9942ae0ee5a7b5714b4e">More...</a><br/></td></tr>
-<tr class="separator:a1599dcff61ee9942ae0ee5a7b5714b4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a60b20eb5ab9679a8f616f310a8aa4fb1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="weights_8h.html#a60b20eb5ab9679a8f616f310a8aa4fb1">mint_weights_rows</a> (<a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a>)</td></tr>
+<tr class="memdesc:a60b20eb5ab9679a8f616f310a8aa4fb1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of rows.  <a href="#a60b20eb5ab9679a8f616f310a8aa4fb1">More...</a><br/></td></tr>
+<tr class="separator:a60b20eb5ab9679a8f616f310a8aa4fb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab734c663b28688e1a14ded98aa8dd5e5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="weights_8h.html#ab734c663b28688e1a14ded98aa8dd5e5">mint_weights_cols</a> (<a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a>)</td></tr>
+<tr class="memdesc:ab734c663b28688e1a14ded98aa8dd5e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of columns.  <a href="#ab734c663b28688e1a14ded98aa8dd5e5">More...</a><br/></td></tr>
+<tr class="separator:ab734c663b28688e1a14ded98aa8dd5e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5714b1f1175294f2ab8e221486d1716"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="weights_8h.html#ae5714b1f1175294f2ab8e221486d1716">mint_weights_states</a> (<a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a>)</td></tr>
+<tr class="memdesc:ae5714b1f1175294f2ab8e221486d1716"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of states.  <a href="#ae5714b1f1175294f2ab8e221486d1716">More...</a><br/></td></tr>
+<tr class="separator:ae5714b1f1175294f2ab8e221486d1716"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a177ffe08b97f1d698c906b3726503f68"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="weights_8h.html#a177ffe08b97f1d698c906b3726503f68">mint_weights_get_from</a> (const <a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a> w)</td></tr>
+<tr class="memdesc:a177ffe08b97f1d698c906b3726503f68"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve index of 'pre-synaptic' node group.  <a href="#a177ffe08b97f1d698c906b3726503f68">More...</a><br/></td></tr>
+<tr class="separator:a177ffe08b97f1d698c906b3726503f68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b973ed77ed2e0b337a266f1555b8179"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="weights_8h.html#a3b973ed77ed2e0b337a266f1555b8179">mint_weights_set_from</a> (<a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a> w, int)</td></tr>
+<tr class="memdesc:a3b973ed77ed2e0b337a266f1555b8179"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set index of 'pre-synaptic' node group.  <a href="#a3b973ed77ed2e0b337a266f1555b8179">More...</a><br/></td></tr>
+<tr class="separator:a3b973ed77ed2e0b337a266f1555b8179"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afcc490f3c1f2ec3df8f79f0097af875d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="weights_8h.html#afcc490f3c1f2ec3df8f79f0097af875d">mint_weights_get_to</a> (const <a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a> w)</td></tr>
+<tr class="memdesc:afcc490f3c1f2ec3df8f79f0097af875d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve index of 'post-synaptic' node group.  <a href="#afcc490f3c1f2ec3df8f79f0097af875d">More...</a><br/></td></tr>
+<tr class="separator:afcc490f3c1f2ec3df8f79f0097af875d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc1323ffea0423a8f0952245acd75a6c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="weights_8h.html#adc1323ffea0423a8f0952245acd75a6c">mint_weights_set_to</a> (<a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a> w, int)</td></tr>
+<tr class="memdesc:adc1323ffea0423a8f0952245acd75a6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set index of 'post-synaptic' node group.  <a href="#adc1323ffea0423a8f0952245acd75a6c">More...</a><br/></td></tr>
+<tr class="separator:adc1323ffea0423a8f0952245acd75a6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa8952ca0ae2b93c3d1792b57b0d563bc"><td class="memItemLeft" align="right" valign="top">struct mint_str *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="weights_8h.html#aa8952ca0ae2b93c3d1792b57b0d563bc">mint_weights_get_name</a> (const <a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a> w)</td></tr>
 <tr class="memdesc:aa8952ca0ae2b93c3d1792b57b0d563bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve name string.  <a href="#aa8952ca0ae2b93c3d1792b57b0d563bc">More...</a><br/></td></tr>
 <tr class="separator:aa8952ca0ae2b93c3d1792b57b0d563bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adabde64d4c8487409569a94b88f8bd69"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="weights_8h.html#adabde64d4c8487409569a94b88f8bd69">mint_weights_get_target</a> (const <a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a> w)</td></tr>
-<tr class="memdesc:adabde64d4c8487409569a94b88f8bd69"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve which variable of 'post-synaptic' that is the target of this matrix (it will be variable 0, i.e., node input, unless you change it explicitly.  <a href="#adabde64d4c8487409569a94b88f8bd69">More...</a><br/></td></tr>
-<tr class="separator:adabde64d4c8487409569a94b88f8bd69"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab2ab65fb8c95fb88b9745e4a54cb3ac8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="weights_8h.html#ab2ab65fb8c95fb88b9745e4a54cb3ac8">mint_weights_set_target</a> (<a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a> w, unsigned int)</td></tr>
-<tr class="memdesc:ab2ab65fb8c95fb88b9745e4a54cb3ac8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set which variable 'post-synaptic' node group is the target of this weight matrix.  <a href="#ab2ab65fb8c95fb88b9745e4a54cb3ac8">More...</a><br/></td></tr>
-<tr class="separator:ab2ab65fb8c95fb88b9745e4a54cb3ac8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2fb1a0d9c24668d9226c259dfc34f8b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="weights_8h.html#ae2fb1a0d9c24668d9226c259dfc34f8b">mint_weights_get_target</a> (const <a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a> w)</td></tr>
+<tr class="memdesc:ae2fb1a0d9c24668d9226c259dfc34f8b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve which variable of 'post-synaptic' that is the target of this matrix (it will be variable 0, i.e., node input, unless you change it explicitly.  <a href="#ae2fb1a0d9c24668d9226c259dfc34f8b">More...</a><br/></td></tr>
+<tr class="separator:ae2fb1a0d9c24668d9226c259dfc34f8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e65bf28b95d51a531840972aadf30a7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="weights_8h.html#a6e65bf28b95d51a531840972aadf30a7">mint_weights_set_target</a> (<a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a> w, int)</td></tr>
+<tr class="memdesc:a6e65bf28b95d51a531840972aadf30a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set which variable 'post-synaptic' node group is the target of this weight matrix.  <a href="#a6e65bf28b95d51a531840972aadf30a7">More...</a><br/></td></tr>
+<tr class="separator:a6e65bf28b95d51a531840972aadf30a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa90740fb512226e40324ffffb25c05b4"><td class="memItemLeft" align="right" valign="top">struct mint_ops *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="weights_8h.html#aa90740fb512226e40324ffffb25c05b4">mint_weights_get_ops</a> (const <a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a>)</td></tr>
 <tr class="memdesc:aa90740fb512226e40324ffffb25c05b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve op list.  <a href="#aa90740fb512226e40324ffffb25c05b4">More...</a><br/></td></tr>
 <tr class="separator:aa90740fb512226e40324ffffb25c05b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -199,24 +199,24 @@ Functions</h2></td></tr>
 <tr class="memitem:a02844cca37c76c2350c34e55c45973d6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="weights_8h.html#a02844cca37c76c2350c34e55c45973d6">mint_weights_connect</a> (<a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a> w, <a class="el" href="nodes_8h.html#a9ca90268f857a6c354034d1a34cecdee">mint_nodes</a> pre, <a class="el" href="nodes_8h.html#a9ca90268f857a6c354034d1a34cecdee">mint_nodes</a> post, int rmin, int rmax)</td></tr>
 <tr class="memdesc:a02844cca37c76c2350c34e55c45973d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Connect pre and post synaptic nodes through weight matrix w.  <a href="#a02844cca37c76c2350c34e55c45973d6">More...</a><br/></td></tr>
 <tr class="separator:a02844cca37c76c2350c34e55c45973d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad1a47f9f01c1ded239344bcee2f7fbb2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="weights_8h.html#ad1a47f9f01c1ded239344bcee2f7fbb2">mint_weights_sparse_new</a> (unsigned int rows, unsigned int cols, unsigned int states)</td></tr>
-<tr class="memdesc:ad1a47f9f01c1ded239344bcee2f7fbb2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a sparse weight matrix.  <a href="#ad1a47f9f01c1ded239344bcee2f7fbb2">More...</a><br/></td></tr>
-<tr class="separator:ad1a47f9f01c1ded239344bcee2f7fbb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62fb825427596c31a12c14ad46c7a089"><td class="memItemLeft" align="right" valign="top"><a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="weights_8h.html#a62fb825427596c31a12c14ad46c7a089">mint_weights_sparse_new</a> (int rows, int cols, int states)</td></tr>
+<tr class="memdesc:a62fb825427596c31a12c14ad46c7a089"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a sparse weight matrix.  <a href="#a62fb825427596c31a12c14ad46c7a089">More...</a><br/></td></tr>
+<tr class="separator:a62fb825427596c31a12c14ad46c7a089"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a08bf524f92c09fe7ce27beda838046e9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="weights_8h.html#a08bf524f92c09fe7ce27beda838046e9">mint_weights_is_sparse</a> (const <a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a>)</td></tr>
 <tr class="memdesc:a08bf524f92c09fe7ce27beda838046e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns 1 if matrix is sparse, 0 otherwise.  <a href="#a08bf524f92c09fe7ce27beda838046e9">More...</a><br/></td></tr>
 <tr class="separator:a08bf524f92c09fe7ce27beda838046e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a056fd38c219e9f0de96722e133585061"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="weights_8h.html#a056fd38c219e9f0de96722e133585061">mint_weights_nonzero</a> (const <a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a>)</td></tr>
 <tr class="memdesc:a056fd38c219e9f0de96722e133585061"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns number of nonzero elements in a weight matrix.  <a href="#a056fd38c219e9f0de96722e133585061">More...</a><br/></td></tr>
 <tr class="separator:a056fd38c219e9f0de96722e133585061"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac049474a63b628a2bdc74566dc4f8d7f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="weights_8h.html#ac049474a63b628a2bdc74566dc4f8d7f">mint_weights_set_row</a> (<a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a> w, int r, int len, float *val, unsigned int *ind, int var)</td></tr>
-<tr class="memdesc:ac049474a63b628a2bdc74566dc4f8d7f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set weight values or state variable by row (most useful for sparse matrices).  <a href="#ac049474a63b628a2bdc74566dc4f8d7f">More...</a><br/></td></tr>
-<tr class="separator:ac049474a63b628a2bdc74566dc4f8d7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac384e6c0db402449bf8f02f4ccf81b26"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="weights_8h.html#ac384e6c0db402449bf8f02f4ccf81b26">mint_weights_rowlen</a> (<a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a> w, int r)</td></tr>
-<tr class="memdesc:ac384e6c0db402449bf8f02f4ccf81b26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns number of elements existing in a row (equal to the number of columns for dense matrices, possibly less for sparse matrices.  <a href="#ac384e6c0db402449bf8f02f4ccf81b26">More...</a><br/></td></tr>
-<tr class="separator:ac384e6c0db402449bf8f02f4ccf81b26"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab452fc23936c34f28b4d647a8ea29eea"><td class="memItemLeft" align="right" valign="top">unsigned int *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="weights_8h.html#ab452fc23936c34f28b4d647a8ea29eea">mint_weights_colind</a> (<a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a> w, int r)</td></tr>
-<tr class="memdesc:ab452fc23936c34f28b4d647a8ea29eea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the column indices of elements in row r of a sparse matrix, or 0 for a dense matrix.  <a href="#ab452fc23936c34f28b4d647a8ea29eea">More...</a><br/></td></tr>
-<tr class="separator:ab452fc23936c34f28b4d647a8ea29eea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3510db613b2e5b77c2c243b997e967f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="weights_8h.html#aa3510db613b2e5b77c2c243b997e967f">mint_weights_set_row</a> (<a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a> w, int r, int len, float *val, int *ind, int var)</td></tr>
+<tr class="memdesc:aa3510db613b2e5b77c2c243b997e967f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set weight values or state variable by row (most useful for sparse matrices).  <a href="#aa3510db613b2e5b77c2c243b997e967f">More...</a><br/></td></tr>
+<tr class="separator:aa3510db613b2e5b77c2c243b997e967f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adec9b0c1041def699cd258f419ccf07b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="weights_8h.html#adec9b0c1041def699cd258f419ccf07b">mint_weights_rowlen</a> (<a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a> w, int r)</td></tr>
+<tr class="memdesc:adec9b0c1041def699cd258f419ccf07b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns number of elements existing in a row (equal to the number of columns for dense matrices, possibly less for sparse matrices.  <a href="#adec9b0c1041def699cd258f419ccf07b">More...</a><br/></td></tr>
+<tr class="separator:adec9b0c1041def699cd258f419ccf07b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9c0393f7787886f00822ac1f5c89986"><td class="memItemLeft" align="right" valign="top">int *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="weights_8h.html#ad9c0393f7787886f00822ac1f5c89986">mint_weights_colind</a> (<a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a> w, int r)</td></tr>
+<tr class="memdesc:ad9c0393f7787886f00822ac1f5c89986"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the column indices of elements in row r of a sparse matrix, or 0 for a dense matrix.  <a href="#ad9c0393f7787886f00822ac1f5c89986">More...</a><br/></td></tr>
+<tr class="separator:ad9c0393f7787886f00822ac1f5c89986"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa602de02734adc7dfaf6762da440257a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="weights_8h.html#aa602de02734adc7dfaf6762da440257a">mint_weights_set</a> (<a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a> w, int s, int r, int c, float x)</td></tr>
 <tr class="memdesc:aa602de02734adc7dfaf6762da440257a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the element of a sparse matrix to a given value (element is created if it does not exist.  <a href="#aa602de02734adc7dfaf6762da440257a">More...</a><br/></td></tr>
 <tr class="separator:aa602de02734adc7dfaf6762da440257a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -270,8 +270,8 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">if</span>( <a class="code" href="weights_8h.html#a08bf524f92c09fe7ce27beda838046e9">mint_weights_is_sparse</a>( w ) ) {         \</div>
 <div class="line">    for( i=rmin; i&lt;rmax; i++ ) {            \</div>
-<div class="line">      colind = <a class="code" href="weights_8h.html#ab452fc23936c34f28b4d647a8ea29eea">mint_weights_colind</a>( w, i ); \</div>
-<div class="line">      jmax = <a class="code" href="weights_8h.html#ac384e6c0db402449bf8f02f4ccf81b26">mint_weights_rowlen</a>( w, i );   \</div>
+<div class="line">      colind = <a class="code" href="weights_8h.html#ad9c0393f7787886f00822ac1f5c89986">mint_weights_colind</a>( w, i ); \</div>
+<div class="line">      jmax = <a class="code" href="weights_8h.html#adec9b0c1041def699cd258f419ccf07b">mint_weights_rowlen</a>( w, i );   \</div>
 <div class="line">      for( k=0; k&lt;jmax; k++ ) {             \</div>
 <div class="line">        j = colind[k];                      \</div>
 <div class="line">        code;                               \</div>
@@ -279,23 +279,23 @@ Functions</h2></td></tr>
 <div class="line">    }                                       \</div>
 <div class="line">  } <span class="keywordflow">else</span> {                                  \</div>
 <div class="line">    for( i=rmin; i&lt;rmax; i++ ) {            \</div>
-<div class="line">      jmax = <a class="code" href="weights_8h.html#a1375c76a5485ae3e7796e5482e154d13">mint_weights_cols</a>( w );        \</div>
+<div class="line">      jmax = <a class="code" href="weights_8h.html#ab734c663b28688e1a14ded98aa8dd5e5">mint_weights_cols</a>( w );        \</div>
 <div class="line">      for( k=0; k&lt;jmax; k++ ) {             \</div>
 <div class="line">        j = k;                              \</div>
 <div class="line">        code;                               \</div>
 <div class="line">      }                                     \</div>
 <div class="line">    }                                       \</div>
 <div class="line">  }                                         \</div>
-<div class="ttc" id="weights_8h_html_ac384e6c0db402449bf8f02f4ccf81b26"><div class="ttname"><a href="weights_8h.html#ac384e6c0db402449bf8f02f4ccf81b26">mint_weights_rowlen</a></div><div class="ttdeci">unsigned int mint_weights_rowlen(mint_weights w, int r)</div><div class="ttdoc">Returns number of elements existing in a row (equal to the number of columns for dense matrices...</div></div>
-<div class="ttc" id="weights_8h_html_a1375c76a5485ae3e7796e5482e154d13"><div class="ttname"><a href="weights_8h.html#a1375c76a5485ae3e7796e5482e154d13">mint_weights_cols</a></div><div class="ttdeci">unsigned int mint_weights_cols(mint_weights)</div><div class="ttdoc">Get the number of columns. </div></div>
+<div class="ttc" id="weights_8h_html_adec9b0c1041def699cd258f419ccf07b"><div class="ttname"><a href="weights_8h.html#adec9b0c1041def699cd258f419ccf07b">mint_weights_rowlen</a></div><div class="ttdeci">int mint_weights_rowlen(mint_weights w, int r)</div><div class="ttdoc">Returns number of elements existing in a row (equal to the number of columns for dense matrices...</div></div>
+<div class="ttc" id="weights_8h_html_ab734c663b28688e1a14ded98aa8dd5e5"><div class="ttname"><a href="weights_8h.html#ab734c663b28688e1a14ded98aa8dd5e5">mint_weights_cols</a></div><div class="ttdeci">int mint_weights_cols(mint_weights)</div><div class="ttdoc">Get the number of columns. </div></div>
+<div class="ttc" id="weights_8h_html_ad9c0393f7787886f00822ac1f5c89986"><div class="ttname"><a href="weights_8h.html#ad9c0393f7787886f00822ac1f5c89986">mint_weights_colind</a></div><div class="ttdeci">int * mint_weights_colind(mint_weights w, int r)</div><div class="ttdoc">Returns the column indices of elements in row r of a sparse matrix, or 0 for a dense matrix...</div></div>
 <div class="ttc" id="weights_8h_html_a08bf524f92c09fe7ce27beda838046e9"><div class="ttname"><a href="weights_8h.html#a08bf524f92c09fe7ce27beda838046e9">mint_weights_is_sparse</a></div><div class="ttdeci">int mint_weights_is_sparse(const mint_weights)</div><div class="ttdoc">Returns 1 if matrix is sparse, 0 otherwise. </div></div>
-<div class="ttc" id="weights_8h_html_ab452fc23936c34f28b4d647a8ea29eea"><div class="ttname"><a href="weights_8h.html#ab452fc23936c34f28b4d647a8ea29eea">mint_weights_colind</a></div><div class="ttdeci">unsigned int * mint_weights_colind(mint_weights w, int r)</div><div class="ttdoc">Returns the column indices of elements in row r of a sparse matrix, or 0 for a dense matrix...</div></div>
 </div><!-- fragment -->
 <p>This macro allows to loop over bith sparse and dense weight matrices without caring of the differene, provided the code fragment 'code' uses these conventions for indexing: index i is used for i-th matrix row and the i-th post-synpatic node, index j is the j-th pre-synaptic node, index k is the k-th element of the i-th matrix row. </p>
 <p>For instance, the inner loop of matrix-vector multiplication is written like this:</p>
 <p>post[0][i] += w[0][i][k] * pre[1][j];</p>
 <p>The macro sets k = j for dense matrices, while for sparse matrices k and j are set to approproate values to loop only over existing elements. The following variables must have been declared:</p>
-<p>int i, j, k, jmax; unsigned int *colind; </p>
+<p>int i, j, k, jmax; int *colind; </p>
 
 <p>Definition at line <a class="el" href="weights_8h_source.html#l00026">26</a> of file <a class="el" href="weights_8h_source.html">weights.h</a>.</p>
 
@@ -322,12 +322,12 @@ w[1+k][i][j] &ndash;&gt; k-th state variable of weight (i,j) <br/>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="ab452fc23936c34f28b4d647a8ea29eea"></a>
+<a class="anchor" id="ad9c0393f7787886f00822ac1f5c89986"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">unsigned int* mint_weights_colind </td>
+          <td class="memname">int* mint_weights_colind </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a>&#160;</td>
           <td class="paramname"><em>w</em>, </td>
@@ -350,12 +350,12 @@ w[1+k][i][j] &ndash;&gt; k-th state variable of weight (i,j) <br/>
 
 </div>
 </div>
-<a class="anchor" id="a1375c76a5485ae3e7796e5482e154d13"></a>
+<a class="anchor" id="ab734c663b28688e1a14ded98aa8dd5e5"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">unsigned int mint_weights_cols </td>
+          <td class="memname">int mint_weights_cols </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a>&#160;</td>
           <td class="paramname"></td><td>)</td>
@@ -526,12 +526,12 @@ w[1+k][i][j] &ndash;&gt; k-th state variable of weight (i,j) <br/>
 
 </div>
 </div>
-<a class="anchor" id="a13e63966152a3e5eb98a39fb6b400cd6"></a>
+<a class="anchor" id="a177ffe08b97f1d698c906b3726503f68"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">unsigned int mint_weights_get_from </td>
+          <td class="memname">int mint_weights_get_from </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a>&#160;</td>
           <td class="paramname"><em>w</em></td><td>)</td>
@@ -623,12 +623,12 @@ w[1+k][i][j] &ndash;&gt; k-th state variable of weight (i,j) <br/>
 
 </div>
 </div>
-<a class="anchor" id="adabde64d4c8487409569a94b88f8bd69"></a>
+<a class="anchor" id="ae2fb1a0d9c24668d9226c259dfc34f8b"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">unsigned int mint_weights_get_target </td>
+          <td class="memname">int mint_weights_get_target </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a>&#160;</td>
           <td class="paramname"><em>w</em></td><td>)</td>
@@ -641,12 +641,12 @@ w[1+k][i][j] &ndash;&gt; k-th state variable of weight (i,j) <br/>
 
 </div>
 </div>
-<a class="anchor" id="a2c9383b6cbb22774a972cf0ac7fc131a"></a>
+<a class="anchor" id="afcc490f3c1f2ec3df8f79f0097af875d"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">unsigned int mint_weights_get_to </td>
+          <td class="memname">int mint_weights_get_to </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a>&#160;</td>
           <td class="paramname"><em>w</em></td><td>)</td>
@@ -808,26 +808,26 @@ w[1+k][i][j] &ndash;&gt; k-th state variable of weight (i,j) <br/>
 
 </div>
 </div>
-<a class="anchor" id="a9b18dd156441bd42f6d4317ef999d56f"></a>
+<a class="anchor" id="addda58d6b600c9a785ef7289597e81a1"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname"><a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a> mint_weights_new </td>
           <td>(</td>
-          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>rows</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>cols</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>states</em>&#160;</td>
         </tr>
         <tr>
@@ -984,12 +984,12 @@ w[1+k][i][j] &ndash;&gt; k-th state variable of weight (i,j) <br/>
 
 </div>
 </div>
-<a class="anchor" id="ac384e6c0db402449bf8f02f4ccf81b26"></a>
+<a class="anchor" id="adec9b0c1041def699cd258f419ccf07b"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">unsigned int mint_weights_rowlen </td>
+          <td class="memname">int mint_weights_rowlen </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a>&#160;</td>
           <td class="paramname"><em>w</em>, </td>
@@ -1012,12 +1012,12 @@ w[1+k][i][j] &ndash;&gt; k-th state variable of weight (i,j) <br/>
 
 </div>
 </div>
-<a class="anchor" id="abe17e0f763df6d5c2d3b68c073cc98de"></a>
+<a class="anchor" id="a60b20eb5ab9679a8f616f310a8aa4fb1"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">unsigned int mint_weights_rows </td>
+          <td class="memname">int mint_weights_rows </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a>&#160;</td>
           <td class="paramname"></td><td>)</td>
@@ -1110,7 +1110,7 @@ w[1+k][i][j] &ndash;&gt; k-th state variable of weight (i,j) <br/>
 
 </div>
 </div>
-<a class="anchor" id="a162fe26c5cb1c3c93c13187939213b49"></a>
+<a class="anchor" id="a3b973ed77ed2e0b337a266f1555b8179"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1123,8 +1123,8 @@ w[1+k][i][j] &ndash;&gt; k-th state variable of weight (i,j) <br/>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">unsigned&#160;</td>
-          <td class="paramname"><em>int</em>&#160;</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname">&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1180,7 +1180,7 @@ w[1+k][i][j] &ndash;&gt; k-th state variable of weight (i,j) <br/>
 
 </div>
 </div>
-<a class="anchor" id="ac049474a63b628a2bdc74566dc4f8d7f"></a>
+<a class="anchor" id="aa3510db613b2e5b77c2c243b997e967f"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1211,7 +1211,7 @@ w[1+k][i][j] &ndash;&gt; k-th state variable of weight (i,j) <br/>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">unsigned int *&#160;</td>
+          <td class="paramtype">int *&#160;</td>
           <td class="paramname"><em>ind</em>, </td>
         </tr>
         <tr>
@@ -1233,7 +1233,7 @@ w[1+k][i][j] &ndash;&gt; k-th state variable of weight (i,j) <br/>
 
 </div>
 </div>
-<a class="anchor" id="ab2ab65fb8c95fb88b9745e4a54cb3ac8"></a>
+<a class="anchor" id="a6e65bf28b95d51a531840972aadf30a7"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1246,8 +1246,8 @@ w[1+k][i][j] &ndash;&gt; k-th state variable of weight (i,j) <br/>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">unsigned&#160;</td>
-          <td class="paramname"><em>int</em>&#160;</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname">&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1261,7 +1261,7 @@ w[1+k][i][j] &ndash;&gt; k-th state variable of weight (i,j) <br/>
 
 </div>
 </div>
-<a class="anchor" id="a1599dcff61ee9942ae0ee5a7b5714b4e"></a>
+<a class="anchor" id="adc1323ffea0423a8f0952245acd75a6c"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1274,8 +1274,8 @@ w[1+k][i][j] &ndash;&gt; k-th state variable of weight (i,j) <br/>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">unsigned&#160;</td>
-          <td class="paramname"><em>int</em>&#160;</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname">&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1290,26 +1290,26 @@ w[1+k][i][j] &ndash;&gt; k-th state variable of weight (i,j) <br/>
 
 </div>
 </div>
-<a class="anchor" id="ad1a47f9f01c1ded239344bcee2f7fbb2"></a>
+<a class="anchor" id="a62fb825427596c31a12c14ad46c7a089"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname"><a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a> mint_weights_sparse_new </td>
           <td>(</td>
-          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>rows</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>cols</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>states</em>&#160;</td>
         </tr>
         <tr>
@@ -1325,12 +1325,12 @@ w[1+k][i][j] &ndash;&gt; k-th state variable of weight (i,j) <br/>
 
 </div>
 </div>
-<a class="anchor" id="a43a006ae8083cd48d8c46b96ef87b8c0"></a>
+<a class="anchor" id="ae5714b1f1175294f2ab8e221486d1716"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">unsigned int mint_weights_states </td>
+          <td class="memname">int mint_weights_states </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a>&#160;</td>
           <td class="paramname"></td><td>)</td>
@@ -1396,7 +1396,7 @@ w[1+k][i][j] &ndash;&gt; k-th state variable of weight (i,j) <br/>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="weights_8h.html">weights.h</a></li>
-    <li class="footer">Generated on Mon Jun 30 2014 09:17:38 for mint by
+    <li class="footer">Generated on Wed Aug 6 2014 12:08:37 for mint by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
   </ul>

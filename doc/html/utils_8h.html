@@ -115,6 +115,8 @@ $(document).ready(function(){initNavTree('utils_8h.html','');});
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
+<tr class="memitem:ae556be0e513778fc4963c69af3ecc33e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="utils_8h.html#ae556be0e513778fc4963c69af3ecc33e">MINT_UNUSED</a>(x)&#160;&#160;&#160;(void)(x)</td></tr>
+<tr class="separator:ae556be0e513778fc4963c69af3ecc33e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac2800eefc0006f47ef4029229b3667fd"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="utils_8h.html#ac2800eefc0006f47ef4029229b3667fd">mint_check</a>(test,...)&#160;&#160;&#160;if(!(test)) { fprintf( stderr, &quot;%s (%s:%d): &quot;, __FUNCTION__, __FILE__, __LINE__ ); fprintf( stderr, __VA_ARGS__ ); fprintf( stderr, &quot;\n&quot; ); abort(); }</td></tr>
 <tr class="separator:ac2800eefc0006f47ef4029229b3667fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -130,10 +132,6 @@ Functions</h2></td></tr>
 <tr class="separator:a5f63841d9840c17d79120d3c707a8327"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac35fdeca9ec7cf621b861bbf49521560"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="utils_8h.html#ac35fdeca9ec7cf621b861bbf49521560">mint_default</a> (const char *string)</td></tr>
 <tr class="separator:ac35fdeca9ec7cf621b861bbf49521560"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0d73cbafc679dab639fd19f568f8ff3b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="utils_8h.html#a0d73cbafc679dab639fd19f568f8ff3b">mint_set_file</a> (FILE *file)</td></tr>
-<tr class="separator:a0d73cbafc679dab639fd19f568f8ff3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6b4ceb4a9be194e36c246e5df3c1c400"><td class="memItemLeft" align="right" valign="top">FILE *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="utils_8h.html#a6b4ceb4a9be194e36c246e5df3c1c400">mint_get_file</a> (void)</td></tr>
-<tr class="separator:a6b4ceb4a9be194e36c246e5df3c1c400"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a class="anchor" id="ac2800eefc0006f47ef4029229b3667fd"></a>
@@ -160,6 +158,24 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Definition at line <a class="el" href="utils_8h_source.html#l00010">10</a> of file <a class="el" href="utils_8h_source.html">utils.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ae556be0e513778fc4963c69af3ecc33e"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MINT_UNUSED</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">x</td><td>)</td>
+          <td>&#160;&#160;&#160;(void)(x)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
 <p>Definition at line <a class="el" href="utils_8h_source.html#l00008">8</a> of file <a class="el" href="utils_8h_source.html">utils.h</a>.</p>
 
 </div>
@@ -174,22 +190,6 @@ Functions</h2></td></tr>
           <td>(</td>
           <td class="paramtype">const char *&#160;</td>
           <td class="paramname"><em>string</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a class="anchor" id="a6b4ceb4a9be194e36c246e5df3c1c400"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">FILE* mint_get_file </td>
-          <td>(</td>
-          <td class="paramtype">void&#160;</td>
-          <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -245,22 +245,6 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a0d73cbafc679dab639fd19f568f8ff3b"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void mint_set_file </td>
-          <td>(</td>
-          <td class="paramtype">FILE *&#160;</td>
-          <td class="paramname"><em>file</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a class="anchor" id="a7278ed2954f88906ca9090e4d50be67f"></a>
 <div class="memitem">
 <div class="memproto">
@@ -299,7 +283,7 @@ Functions</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="utils_8h.html">utils.h</a></li>
-    <li class="footer">Generated on Mon Jun 30 2014 09:17:38 for mint by
+    <li class="footer">Generated on Wed Aug 6 2014 12:08:37 for mint by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
   </ul>

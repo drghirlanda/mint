@@ -1,0 +1,2 @@
+\frametitle{Code (2)}
+\lstinputlisting[linerange={17-32},firstnumber=17]{../../example/recnet/recnet.c}

@@ -1,0 +1,11 @@
+digraph network {
+rankdir=LR
+node [fixedsize=true height=1 shape=circle fontname=Helvetica]
+edge [fontsize=10 fontname=Helvetica]
+n0 [label="receptors\n10"]
+n1 [label="brain\n10"]
+n2 [label="effectors\n2"]
+n0 -> n1 [label="100"]
+n1 -> n1 [label="53"]
+n1 -> n2 [label="20"]
+}
