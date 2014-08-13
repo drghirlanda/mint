@@ -1,6 +1,6 @@
 #include "network.h"
 #include "spread.h"
-#include "str.h"
+#include "string.h"
 #include "weights.h"
 #include "utils.h"
 

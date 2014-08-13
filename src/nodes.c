@@ -1,7 +1,7 @@
 #include "nodes.h"
 #include "utils.h"
 #include "op.h"
-#include "str.h"
+#include "string.h"
 
 #include <string.h>
 #include <stdlib.h>

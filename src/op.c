@@ -4,7 +4,7 @@
 #include "wop.h"
 #include "netop.h"
 #include "utils.h"
-#include "str.h"
+#include "string.h"
 #include "threads.h"
 
 #include <stdlib.h>

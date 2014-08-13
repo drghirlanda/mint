@@ -1,6 +1,6 @@
 #include "nop.h"
 #include "random.h"
-#include "str.h"
+#include "string.h"
 #include "utils.h"
 
 #include <math.h>

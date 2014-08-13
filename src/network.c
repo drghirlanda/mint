@@ -4,7 +4,7 @@
 #include "utils.h"
 #include "threads.h"
 #include "spread.h"
-#include "str.h"
+#include "string.h"
 
 #include <stdlib.h>
 #include <string.h>

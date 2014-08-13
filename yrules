@@ -1,5 +1,6 @@
 # list of c files 
-FILES="netop network nodes nop op random random_search spread str threads utils weights wop"
+FILES="netop network nodes nop op random random_search spread string 
+threads utils weights wop"
 
 # list of dependencies of the libmint task (updated in several places)
 DEPS=""

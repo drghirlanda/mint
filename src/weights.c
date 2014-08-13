@@ -3,7 +3,7 @@
 #include "random.h"
 #include "network.h"
 #include "op.h"
-#include "str.h"
+#include "string.h"
 #include "wop.h"
 
 #include <string.h>

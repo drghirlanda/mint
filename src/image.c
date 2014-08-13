@@ -1,7 +1,7 @@
 #include "image.h"
 #include "utils.h"
 #include "op.h"
-#include "str.h"
+#include "string.h"
 #include "network.h"
 
 #include <stdlib.h>
