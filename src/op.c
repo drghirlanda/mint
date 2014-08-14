@@ -454,8 +454,6 @@ void mint_ops_save( const struct mint_ops *ops, FILE *dest ) {
     if( !mint_default( ops->p[i]->name ) )
       mint_op_save( ops->p[i], dest );
   }
-  if( ops->n )
-    fprintf( dest, "\n" );
 }
 
 struct mint_ops *mint_ops_load( FILE *file, int type ) {
