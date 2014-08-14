@@ -270,20 +270,20 @@ struct mint_op *mint_op_load( FILE *file, int type ) {
   int i, j;
   long pos;
   struct mint_op *h;
-  struct mint_str *name;
+  mint_string name;
 
   pos = ftell( file );
-  name = mint_str_load( file );
+  name = mint_string_load( file );
 
   if( !name ) 
     return 0;
 
-  if( mint_keyword( mint_str_char( name ) ) ) {
+  if( mint_keyword( name ) ) {
     fseek( file, pos, SEEK_SET );
     return 0;
   }
 
-  h = mint_op_new( mint_str_char( name ), type );
+  h = mint_op_new( name, type );
 
   /* load parameters (missing ones already got a default value */
   j = 0;

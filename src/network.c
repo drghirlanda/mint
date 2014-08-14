@@ -152,7 +152,7 @@ void mint_network_info( const struct mint_network *net, FILE *dest ) {
 }
 
 void mint_network_check_names( struct mint_network *net ) {
-  struct mint_str *name1, *name2;
+  mint_string name1, name2;
   int i, j;
   
  resolve_nodes:
@@ -161,22 +161,20 @@ void mint_network_check_names( struct mint_network *net ) {
     /* node-node conflicts: */
     for( j=i+1; j<net->groups; j++ ) {
       name2 = mint_nodes_get_name( mint_network_nodes( net, j ) );
-      if( strcmp( mint_str_char(name1), 
-		  mint_str_char(name2) ) == 0 ) {
-	mint_str_incr( name2 );
+      if( strcmp( name1, name2 ) == 0 ) {
+	name2 = mint_string_incr( name2 );
 	fprintf( stderr, "mint_network_load: changing '%s' to '%s'\n", 
-		 mint_str_char(name1), mint_str_char(name2) );
+		 name1, name2 );
 	goto resolve_nodes;
       }
     }
     /* node-matrix conflicts: */
     for( j=i+1; j<net->matrices; j++ ) {
       name2 = mint_weights_get_name( mint_network_weights( net, j ) );
-      if( strcmp( mint_str_char(name1), 
-		  mint_str_char(name2) ) == 0 ) {
-	mint_str_incr( name2 );
+      if( strcmp( name1, name2 ) == 0 ) {
+	mint_string_incr( name2 );
 	fprintf( stderr, "mint_network_load: changing '%s' to '%s'\n", 
-		 mint_str_char(name1), mint_str_char(name2) );
+		 name1, name2 );
 	goto resolve_nodes;
       }
     }
@@ -188,11 +186,10 @@ void mint_network_check_names( struct mint_network *net ) {
     /* matrix-matrix conflicts: */
     for( j=i+1; j<net->matrices; j++ ) {
       name2 = mint_weights_get_name( mint_network_weights( net, j ) );
-      if( strcmp( mint_str_char(name1), 
-		  mint_str_char(name2) ) == 0 ) {
-	mint_str_incr( name2 );
+      if( strcmp( name1, name2 ) == 0 ) {
+	mint_string_incr( name2 );
 	fprintf( stderr, "mint_network_load: changing '%s' to '%s'\n", 
-		 mint_str_char(name1), mint_str_char(name2) );
+		 name1, name2 );
 	goto resolve_matrices;
       }
     }
@@ -208,12 +205,12 @@ void mint_weights_compatibility( mint_weights w,
   cols = mint_weights_cols(w);
   mint_check( rows == tosize, 
 	      "matrix %s has %d rows, but group %s has %d nodes",
-	      mint_str_char( mint_weights_get_name(w) ), rows,
-	      mint_str_char( mint_nodes_get_name(nto) ), tosize );
+	      mint_weights_get_name(w), rows,
+	      mint_nodes_get_name(nto), tosize );
   mint_check( cols == fromsize, 
 	      "matrix %s has %d cols, but group %s has %d nodes",
-	      mint_str_char( mint_weights_get_name(w) ), cols,
-	      mint_str_char( mint_nodes_get_name(nfrom) ), fromsize );
+	      mint_weights_get_name(w), cols,
+	      mint_nodes_get_name(nfrom), fromsize );
 }
 
 struct mint_network *mint_network_load( FILE *file ) {
@@ -308,10 +305,8 @@ mint_nodes mint_network_nodes( struct mint_network *net, int i ) {
 
 int mint_network_nodes_find( struct mint_network *net, char *name ) {
   int i;
-  struct mint_str *nname;
   for( i=0; i<net->groups; i++ ) {
-    nname = mint_nodes_get_name( net->n[i] );
-    if( strcmp( mint_str_char(nname), name ) == 0 )
+    if( strcmp( mint_nodes_get_name( net->n[i] ), name ) == 0 )
       return i;
   }
   return -1;
@@ -340,12 +335,10 @@ mint_weights mint_network_weights( struct mint_network *net, int i ) {
 int mint_network_weights_find( struct mint_network *net, char *name ) {
   int i;
   mint_weights w;
-  struct mint_str *wname;
 
   for( i=0; i<net->matrices; i++ ) {
     w = mint_network_weights( net, i );
-    wname = mint_weights_get_name( w );
-    if( strcmp( mint_str_char(wname), name ) == 0 )
+    if( strcmp( mint_weights_get_name( w ), name ) == 0 )
       return i;
   }
 
@@ -441,8 +434,7 @@ void mint_network_graph( const struct mint_network *net, FILE *f ) {
   for( i=0; i<g; i++ ) {
     n = mint_network_nodes( (struct mint_network *)net, i );
     fprintf( f, "n%d [label=\"%s\\n%d\"]\n", i, 
-	     mint_str_char( mint_nodes_get_name(n) ),
-	     mint_nodes_size(n) );
+	     mint_nodes_get_name(n), mint_nodes_size(n) );
   }
   m = mint_network_matrices( net );
   for( i=0; i<m; i++ ) {

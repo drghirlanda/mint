@@ -5,48 +5,54 @@
 #include <string.h>
 #include <ctype.h>
 
-#define MINT_STRLEN 256
+/* this is only to stop looking for '\0' in malformed user-supplied
+   char arrays  */
+#define MINT_STRMAX (10*1024)
 
-struct mint_str {
-  int len;
-  char *data;
-};
+#define MINT_STRBASE(s) ( (int *)s - 1)
 
-struct mint_str *mint_str_new( const char *str ) {
-  int len = 0;
-  struct mint_str *s;
-  s = malloc( sizeof(struct mint_str) );
-  s->data = malloc( MINT_STRLEN );
-  /* we make sure data is null terminated and up to MINT_STRLEN in size */
-  while( len < MINT_STRLEN && str[ len ] != '\0' ) {
-    s->data[ len ] = str[ len ];
-    len++;
-  }
-  s->data[ len ] = '\0';
-  s->len = len;
+/* we store the length of the string immediately before the pointer we
+   return to the user, this is why we allocate sizeof(int) more
+   bytes. we also allocate 1 byte for null termination. */
+mint_string mint_string_alloc( int size ) {
+  mint_string s;
+  s = malloc( size + 1 + sizeof(int) );
+  *( (int *)s ) = 0;            /* current length */ 
+  s = (char *)( (int *)s + 1 ); /* advance by sizeof(int) bytes */
+  s[0] = '\0';                  /* null termination */
   return s;
 }
 
-void mint_str_del( struct mint_str *str ) {
-  free( str->data );
-  free( str );
+mint_string mint_string_new( const char *str ) {
+  int len;
+  mint_string s;
+
+  len = 0;
+  while( str[len] != '\0' && len < MINT_STRMAX )
+    len++;
+
+  mint_check( len<MINT_STRMAX, "cannot find end of supplied string" );
+
+  s = mint_string_alloc( len );
+  memcpy( s, str, len ); /* copy str to s */
+  s[ len ] = '\0';       /* ensure null termination */
+  return s;
 }
 
-struct mint_str *mint_str_dup( const struct mint_str *src ) {
-  return mint_str_new( src->data );
+void mint_string_del( mint_string str ) {
+  free( MINT_STRBASE(str) );
 }
 
-void mint_str_cpy( struct mint_str *dst, const struct mint_str *src ) {
-  dst->data = realloc( dst->data, src->len + 1 );
-  memcpy( dst->data, src->data, src->len + 1 );
-  dst->len = src->len;
+mint_string mint_string_dup( const mint_string src ) {
+  return mint_string_new( (const char *)src );
 }
 
-struct mint_str *mint_str_load( FILE *f ) {
+mint_string mint_string_load( FILE *f ) {
   long pos;
   int len;
   int c;
-  struct mint_str *s;
+  mint_string s;
+  char format[256];
 
   /* it's not a MINT string if it starts with a number */
   if( mint_values_waiting( f ) || feof( f ) )
@@ -54,91 +60,95 @@ struct mint_str *mint_str_load( FILE *f ) {
 
   pos = ftell( f );
   len = 0;
-  while( len<MINT_STRLEN && !feof(f) ) {
+  while( len<MINT_STRMAX && !feof(f) ) {
     c = fgetc( f );
     if( isalnum(c) || c == '-' || c == '.' || c == '_' ) len++;
     else break;
   }
   fseek( f, pos, SEEK_SET );
   if( !len ) return 0;
-  s = (struct mint_str *)malloc( sizeof(struct mint_str) );
-  s->data = malloc( len + 1 );
-  fscanf( f, "%s", s->data );
-  s->data[ len ] = '\0';
-  s->len = len;
+  s = mint_string_alloc( len );
+  sprintf( format, "%%%ds", len );
+  fscanf( f, format, s );
+  s[ len ] = '\0';
+  *MINT_STRBASE(s) = len;
   return s;
 }
 
-void mint_str_save( const struct mint_str *s, FILE *f ) {
+void mint_string_save( const mint_string s, FILE *f ) {
   if( !s ) return;
-  fprintf( f, "%s ", s->data );
+  fprintf( f, "%s ", s );
 }
 
-int mint_str_size( const struct mint_str *s ) {
-  if( s ) return s->len;
+int mint_string_size( const mint_string s ) {
+  mint_check( s, "asked for size of null object" );
+  return *MINT_STRBASE(s);
+}
+
+char *mint_string_char( mint_string s ) {
+  if( s ) return (char *)s;
   else return 0;
 }
 
-char *mint_str_char( struct mint_str *s ) {
-  if( s && s->len ) return s->data;
-  else return 0;
-}
+int mint_string_find( mint_string str, char c ) {
+  int i, len;
 
-void mint_str_append( struct mint_str *str, char *more ) {
-  int len;
-  len = str->len + strlen(more);
-  str->data = realloc( str->data, len );
-  str->data = strncat( str->data, more, len );
-}
-
-int mint_str_find( struct mint_str *str, char c ) {
-  int i;
-  for( i=0; i<str->len; i++ ) {
-    if( str->data[i] == c )
+  len = *MINT_STRBASE( str );
+  for( i=0; i<len; i++ ) {
+    if( str[i] == c )
       return i;
   }
   return -1;
 }
 
-struct mint_str *mint_str_substr( struct mint_str *str, int start, 
-				  int stop ) {
-  struct mint_str *substr;
+mint_string mint_string_substr( mint_string str, 
+				int start, 
+				int stop ) {
+  mint_string substr;
+  int len;
 
   mint_check( str, "null string" );
-  mint_check( start>=0 && start<str->len, "start out of range" );
-  mint_check( stop>=start && stop<=str->len, "stop out of range" );
 
-  substr = malloc( sizeof(struct mint_str) );
-  substr->len = stop - start + 1;
-  substr->data = malloc( substr->len );
-  memcpy( substr->data, str->data + start, substr->len - 1 );
-  substr->data[ substr->len - 1 ] = '\0';
+  len = *MINT_STRBASE(str);
+  mint_check( start>=0 && start<len, "start out of range" );
+  mint_check( stop>=start && stop<=len, "stop out of range" );
+
+  substr = mint_string_alloc( stop - start ); 
+  memcpy( substr, str + start, stop - start );
+  substr[ stop - start ] = '\0';
   return substr;
 }
 
 /* # of digits an integer will print to (adapted from a stackoverflow
    answer). we don't need to handle negative numbers. */
-int mint_str_numlen( int n ) {
+int mint_string_numlen( int n ) {
   if (n < 10) 
     return 1;
-  return 1 + mint_str_numlen( n/10 );
+  return 1 + mint_string_numlen( n/10 );
 }
 
-void mint_str_incr( struct mint_str *str ) {
-  int i, j, added_len;
+mint_string mint_string_incr( mint_string str ) {
+  int dotpos, j, oldlen, addedlen;
+  mint_string newstr;
 
-  i = mint_str_find( str, '.' );
-  if( i == -1 ) {
-    str->data = realloc( str->data, str->len + 2 );
-    sprintf( str->data + str->len, ".2" );
-    str->len += 2;
+  oldlen = *MINT_STRBASE( str );
+  dotpos = mint_string_find( str, '.' );
+  if( dotpos == -1 ) {
+    dotpos = oldlen;
+    j = 0;
+    addedlen = 2;
   } else {
-    sscanf( str->data + i + 1, "%d", &j );
-    added_len = mint_str_numlen(j+1) - mint_str_numlen(j);
-    if( added_len )
-      str->data = realloc( str->data, str->len + added_len );
-    sprintf( str->data + i + 1, "%d", j+1 );
+    sscanf( str + dotpos + 1, "%d", &j );
+    addedlen = mint_string_numlen(j+1) - mint_string_numlen(j);
   }
+  newstr = mint_string_alloc( oldlen + addedlen );
+  memcpy( newstr, str, dotpos );
+  sprintf( newstr + dotpos, ".%d", j+1 );
+  newstr[ oldlen + addedlen ] = '\0';
+  *MINT_STRBASE( newstr ) = oldlen + addedlen;
+  mint_string_del( str );
+  return newstr;
 }
 
-#undef MINT_STRLEN
+#undef MINT_STRMAX
+#undef MINT_STRBASE

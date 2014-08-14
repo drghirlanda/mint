@@ -3,32 +3,32 @@
 
 #include <stdio.h>
 
-struct mint_str *mint_str_new( const char *name );
+typedef char *mint_string;
+ 
+mint_string mint_string_new( const char *name );
 
-void mint_str_del( struct mint_str *str );
+void mint_string_del( mint_string str );
 
-struct mint_str *mint_str_dup( const struct mint_str *src );
+mint_string mint_string_dup( const mint_string src );
 
-void mint_str_cpy( struct mint_str *dst, const struct mint_str *src );
+void mint_string_cpy( mint_string dst, const mint_string src );
 
-struct mint_str *mint_str_load( FILE * );
+mint_string mint_string_load( FILE * );
 
-void mint_str_save( const struct mint_str *, FILE * );
+void mint_string_save( const mint_string, FILE * );
 
-int mint_str_size( const struct mint_str * );
+int mint_string_size( const mint_string );
 
-char *mint_str_char( struct mint_str * );
+char *mint_string_char( mint_string );
 
-void mint_str_append( struct mint_str *, char * );
+int mint_string_find( mint_string, char );
 
-int mint_str_find( struct mint_str *, char );
+mint_string mint_string_substr( mint_string str, int start, 
+				int stop );
 
-struct mint_str *mint_str_substr( struct mint_str *str, int start, 
-				  int stop );
+mint_string mint_string_incr( mint_string str );
 
-void mint_str_incr( struct mint_str *str );
-
-int mint_str_numlen( int n );
+int mint_string_numlen( int n );
 
 #endif
 

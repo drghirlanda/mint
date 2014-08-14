@@ -1,7 +1,6 @@
 #include "nodes.h"
 #include "utils.h"
 #include "op.h"
-#include "string.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -11,7 +10,7 @@ struct mint_nodes_str {
   int size;
   int states;
   struct mint_ops *ops;
-  struct mint_str *name;
+  mint_string name;
 };
 
 #define _STR(n) ( (struct mint_nodes_str *)n - 1 )
@@ -36,7 +35,7 @@ mint_nodes mint_nodes_new( int size, int states ) {
   nstr->size = size;
   nstr->states = states;
   nstr->ops = mint_ops_new();
-  nstr->name = mint_str_new( "n" );
+  nstr->name = mint_string_new( "n" );
   n = (mint_nodes) ++nstr;
   /* values start at offset, before we store n[s] pointers */
   offset = (2+states)*sizeof(float *);
@@ -57,7 +56,7 @@ void mint_nodes_del( mint_nodes n ) {
   if( !n ) return;
   struct mint_nodes_str *nstr = _STR(n);
   mint_ops_del( nstr->ops );
-  mint_str_del( nstr->name );
+  mint_string_del( nstr->name );
   free( nstr );
 }
 
@@ -78,7 +77,7 @@ void mint_nodes_cpy( mint_nodes dst, const mint_nodes src ) {
 	      "state variables differ: %d != %d", dstr->size, sstr->size );
   mint_ops_del( dstr->ops );
   dstr->ops = mint_ops_dup( sstr->ops );
-  dstr->name = mint_str_dup( sstr->name );
+  dstr->name = mint_string_dup( sstr->name );
   memcpy( &dst[0][0], &src[0][0], 
 	  (2+dstr->states) * dstr->size * sizeof(float) );
 }
@@ -88,7 +87,7 @@ mint_nodes mint_nodes_load( FILE *file ) {
   int i, k;
   long pos;
   mint_nodes n;
-  struct mint_str *name;
+  mint_string name;
   struct mint_nodes_str *nstr;
   struct mint_op *op;
   struct mint_ops *ops;
@@ -99,11 +98,11 @@ mint_nodes mint_nodes_load( FILE *file ) {
   /* attempt to read nodes name. if 'name' turns out to be op or
      keyword, create default name and rewind file */
   pos = ftell( file );
-  name = mint_str_load( file );
-  if( mint_op_exists( mint_str_char(name), mint_op_nodes_any) ||
-      mint_keyword( mint_str_char(name) ) ) {
-    mint_str_del( name );
-    name = mint_str_new( "n" );
+  name = mint_string_load( file );
+  if( mint_op_exists( name, mint_op_nodes_any) ||
+      mint_keyword( name ) ) {
+    mint_string_del( name );
+    name = mint_string_new( "n" );
     fseek( file, pos, SEEK_SET );
   }
 
@@ -126,7 +125,7 @@ mint_nodes mint_nodes_load( FILE *file ) {
   n = mint_nodes_new( size, states );
 
   nstr = _STR(n);
-  mint_str_del( nstr->name ); /* default set in mint_nodes_new */
+  mint_string_del( nstr->name ); /* default set in mint_nodes_new */
   nstr->name = name;
   nstr->ops = ops;
   
@@ -161,7 +160,7 @@ void mint_nodes_save( const mint_nodes n, FILE *f ) {
 
 void mint_nodes_info( const mint_nodes n, FILE *f ) {
   struct mint_nodes_str *nstr = _STR( n );
-  fprintf( f, "nodes %s\n", mint_str_char( nstr->name ) );
+  fprintf( f, "nodes %s\n", mint_string_char( nstr->name ) );
   mint_ops_save( nstr->ops, f );
 }
 
@@ -202,7 +201,7 @@ mint_nodes mint_nodes_resize( mint_nodes n, int s2 ) {
   return n2;
 }
 
-struct mint_str *mint_nodes_get_name( mint_nodes n ) {
+mint_string mint_nodes_get_name( mint_nodes n ) {
   return _STR(n)->name ;
 }
 

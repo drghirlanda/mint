@@ -2,6 +2,8 @@
 #define MINT_WEIGHTS_H
 
 #include "nodes.h"
+#include "string.h"
+
 #include <stddef.h>
 #include <stdio.h>
 
@@ -139,7 +141,7 @@ void mint_weights_set_to( mint_weights w, int );
 
 /** Retrieve name string. Manipulating this object will directly
     change the name. */
-struct mint_str *mint_weights_get_name( const mint_weights w );
+mint_string mint_weights_get_name( const mint_weights w );
 
 /** Retrieve which variable of 'post-synaptic' that is the target of this
     matrix (it will be variable 0, i.e., node input, unless you change

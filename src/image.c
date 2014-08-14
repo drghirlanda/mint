@@ -437,7 +437,7 @@ void mint_node_snapshot( mint_nodes n, int min, int max, float *p ) {
   int frequency, state, overwrite, len;
   struct mint_image *img;
   char *filename;
-  struct mint_str *name;
+  mint_string name;
 
   MINT_UNUSED( min );
   MINT_UNUSED( max );
@@ -454,18 +454,18 @@ void mint_node_snapshot( mint_nodes n, int min, int max, float *p ) {
   img = mint_image_nodes( n, 0, 0, state ); 
 
   name = mint_nodes_get_name( n );
-  len = mint_str_size( name );
+  len = mint_string_size( name );
   len += 9; /* "mint/" + ".bmp" */
 
   if( !overwrite )
-    len += mint_str_numlen( (int)p[3] ) + 1;
+    len += mint_string_numlen( (int)p[3] ) + 1;
 
   filename = malloc( len + 1 );
   
   if( overwrite )
-    sprintf( filename, "mint/%s.bmp", mint_str_char(name) );
+    sprintf( filename, "mint/%s.bmp", name );
   else
-    sprintf( filename, "mint/%s-%d.bmp", mint_str_char(name), (int)p[3] );
+    sprintf( filename, "mint/%s-%d.bmp", name, (int)p[3] );
 
   mint_image_save( img, filename );
   mint_image_del( img );
@@ -737,7 +737,7 @@ void mint_network_display( struct mint_network *net, float *p ) {
     mint_image_display( img, x, y, w, h );
     mint_image_del( img );
 
-    mint_text_display( mint_str_char( mint_nodes_get_name(n) ),
+    mint_text_display( mint_nodes_get_name(n),
 		       x + .5*w, y + h + 0.1 * mint_screen->h, 
 		       mint_font );
   }

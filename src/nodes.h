@@ -1,6 +1,8 @@
 #ifndef MINT_NODES_H
 #define MINT_NODES_H
 
+#include "string.h"
+
 #include <stdio.h>
 
 /** \file mint.h
@@ -99,7 +101,7 @@ void mint_nodes_update( mint_nodes n, int min, int max );
 
 /** Get nodes name string. Manipulating the returned string will
     directly change the name. */
-struct mint_str *mint_nodes_get_name( mint_nodes s );
+mint_string mint_nodes_get_name( mint_nodes s );
 
 /** Store the value of parameter i of property prop in *value. If the
     propert is found, return 1, if not found returns 0 (*value is not
