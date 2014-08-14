@@ -1,9 +1,9 @@
-#ifndef MINT_STR_H
-#define MINT_STR_H
+#ifndef MINT_STRING_H
+#define MINT_STRING_H
 
 #include <stdio.h>
 
-typedef char *mint_string;
+typedef char mint_string;
  
 mint_string mint_string_new( const char *name );
 
