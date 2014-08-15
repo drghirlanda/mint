@@ -221,6 +221,19 @@ int mint_nodes_get_property( mint_nodes n, const char *prop, int i,
   return 1;
 }
 
+void mint_nodes_update( mint_nodes n, int min, int max ) {
+  int i, nops;
+  struct mint_ops *ops;
+  struct mint_op *op;
+  ops = mint_nodes_get_ops( n );
+  nops = mint_ops_size( ops );
+  for( i=0; i<nops; i++ ) {
+    op = mint_ops_get( ops, i );
+    if( mint_op_type( op ) == mint_op_nodes_update )
+      mint_op_run( op, n, min, max, mint_op_get_params( op ) );
+  }
+}
+
 int mint_nodes_set_property( mint_nodes n, const char *prop, int i,
 			 float value ) {
   struct mint_ops *ops;

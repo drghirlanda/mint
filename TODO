@@ -2,7 +2,30 @@
 
   - uninstall
 
+
 - improvements:
+
+  - given that we have moved op-running functions for weights, nodes,
+    and networks, back into the .c files (wehre they should have been
+    in the first place...), the only place where optype.h is needed is
+    threds.c. we could get rid of it if setting threaded spread was
+    implemented more cleanly - right now we need access to op
+    internals to overwrite the op function of run_spread. ideally we
+    would add a new threads_spread rather than abuse run_spread. the
+    only downside is that mint_network_load and mint_network_save
+    would have to take care of threads_spread too in a way similar to
+    run_spread. but there should be a neater way! I think it would be
+    doable to have a single spread running function decide whether to
+    run threaded or non-threaded spread when a spread exists and no
+    other network_operate ops exist. 
+
+  - should we make using threads in a non-threaded environment a
+    non-fatal error? (issue a warning) is it better than aborting.
+
+  - there are a number of op-running functions in weights.c, and two
+    in network.c and nodes.c, which could use a unified interface like
+    mint_weights_run( mint_weights op, int op_type ), as all functions
+    internally do basically the same thing.
 
   - document the new event system for nodes (see op.c and image.c,
     where the event loop resides)

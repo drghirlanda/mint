@@ -682,3 +682,19 @@ int mint_network_set_property( struct mint_network *net,
   return 1;
 
 }
+
+
+void mint_network_init( struct mint_network *net ) {
+  int i, nops;
+  struct mint_ops *ops;
+  struct mint_op *op;
+
+  ops = mint_network_get_ops( net );
+  nops = mint_ops_size( ops );
+
+  for( i=0; i<nops; i++ ) {
+    op = mint_ops_get( ops, i );
+    if( mint_op_type( op ) == mint_op_network_init )
+      mint_op_run( op, net, mint_op_get_params( op ) );
+  }  
+}

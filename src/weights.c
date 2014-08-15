@@ -780,4 +780,73 @@ int mint_weights_set_property( mint_weights w, const char *prop, int i,
   return -1;
 }
 
+void mint_weights_operate( mint_weights w, mint_nodes pre,
+			   mint_nodes post, int rmin, int rmax ) {
+  int i, nops;
+  struct mint_ops *ops;
+  struct mint_op *op;
+  ops = mint_weights_get_ops( w );
+  nops = mint_ops_size( ops );
+  for( i=0; i<nops; i++ ) {
+    op = mint_ops_get( ops, i );
+    if( mint_op_type( op ) == mint_op_weights_operate )
+      mint_op_run( op , w, pre, post, rmin, rmax, 
+		   mint_op_get_params( op ) );
+  }
+}
+
+void mint_weights_update( mint_weights w, mint_nodes pre, mint_nodes post,
+			  int rmin, int rmax ) {
+  int i, nops;
+  struct mint_ops *ops;
+  struct mint_op *op;
+
+  ops = mint_weights_get_ops( w );
+
+  if( mint_ops_find( ops, "frozen", mint_op_weights_update ) >= 0 )
+    return;
+
+  nops = mint_ops_size( ops );
+  for( i=0; i<nops; i++ ) {
+    op = mint_ops_get( ops, i );
+    if( mint_op_type( op ) == mint_op_weights_update )
+      mint_op_run( op, w, pre, post, rmin, rmax, 
+		   mint_op_get_params( op ) );
+  }
+} 
+
+
+void mint_weights_connect( mint_weights w, mint_nodes pre, 
+			   mint_nodes post,
+			   int rmin, int rmax ) {
+  int i, nops;
+  struct mint_ops *ops;
+  struct mint_op *op;
+
+  ops = mint_weights_get_ops( w );
+  nops = mint_ops_size( ops );
+
+  for( i=0; i<nops; i++ ) {
+    op = mint_ops_get( ops, i );
+    if( mint_op_type( op ) == mint_op_weights_connect )
+      mint_op_run( op, w, pre, post, rmin, rmax, 
+		   mint_op_get_params( op ) );
+  }
+} 
+
+void mint_weights_init( mint_weights w, int rmin, int rmax ) {
+  int i, nops;
+  struct mint_ops *ops;
+  struct mint_op *op;
+
+  ops = mint_weights_get_ops( w );
+  nops = mint_ops_size( ops );
+
+  for( i=0; i<nops; i++ ) {
+    op = mint_ops_get( ops, i );
+    if( mint_op_type( op ) == mint_op_weights_init )
+      mint_op_run( op, w, rmin, rmax, mint_op_get_params( op )  );
+  }
+}
+
 #undef _STR
