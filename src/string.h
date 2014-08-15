@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-typedef char mint_string;
+typedef char *mint_string;
  
 mint_string mint_string_new( const char *name );
 
