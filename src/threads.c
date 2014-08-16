@@ -39,8 +39,10 @@ void *mint_threads_weights_helper( void *arg ) {
   mint_check( td->min >= 0, "td->min is negative" );
   mint_check( td->max > td->min, "td->max not larger than td->min" );
 
-  mint_weights_operate( td->w, td->n1, td->n2, td->min, td->max );
-  mint_weights_update( td->w, td->n1, td->n2, td->min, td->max );
+  mint_weights_run( td->w, td->n1, td->n2, td->min, td->max,
+		    mint_op_weights_operate );
+  mint_weights_run( td->w, td->n1, td->n2, td->min, td->max,
+		    mint_op_weights_update );
 
   return 0;
 }
@@ -203,10 +205,12 @@ void mint_threads_spread( struct mint_network *net, float *p ) {
       if( threaded_weights )
 	mint_threads_weights( tmpl, nthreads );
       else {
-	mint_weights_operate( tmpl.w, tmpl.n1, tmpl.n2, 0,
-			      mint_weights_rows( tmpl.w ) );
-	mint_weights_update( tmpl.w, tmpl.n1, tmpl.n2, 0,
-			     mint_weights_rows( tmpl.w ) );
+	mint_weights_run( tmpl.w, tmpl.n1, tmpl.n2, 0,
+			  mint_weights_rows( tmpl.w ),
+			  mint_op_weights_operate );
+	mint_weights_run( tmpl.w, tmpl.n1, tmpl.n2, 0,
+			  mint_weights_rows( tmpl.w ),
+			  mint_op_weights_update );
       }
     } else if( nid > -1 ) { /* node update */
       tmpl.n1 = mint_network_nodes( net, nid );

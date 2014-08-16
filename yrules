@@ -42,7 +42,7 @@ getlibs() {
 }
 
 # set CFLAGS according to production, debug, or profile mode
-CFLAGS="-ansi -Wall -Wextra -Werror -Ijsmn"
+CFLAGS="-ansi -Wall -Wextra -Werror"
 if [[ $debug -eq 1 ]]; then
     LIBRARY=libmint-debug.a
     CFLAGS="-g -O0 $CFLAGS"
@@ -89,7 +89,7 @@ for FEATURE in camera image threads pi; do
     fi
 done
 
-echo -e "compilation options:\n$CFLAGS"
+#echo -e "compilation options:\n$CFLAGS"
 
 # make sure build directory exists
 mkdir -p $BUILD

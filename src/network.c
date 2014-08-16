@@ -248,8 +248,9 @@ struct mint_network *mint_network_load( FILE *file ) {
       from = mint_weights_get_from( w );
       to = mint_weights_get_to( w );
       mint_weights_compatibility( w, net->n[from], net->n[to] );
-      mint_weights_connect( w, net->n[from], net->n[to], 
-			    0, mint_weights_rows( w ) );
+      mint_weights_run( w, net->n[from], net->n[to], 
+			0, mint_weights_rows( w ),
+			mint_op_weights_connect );
     } else 
       break;
   }
@@ -587,7 +588,8 @@ void mint_network_asynchronous( struct mint_network *net, float *p ) {
     for( k=0; k<net->matrices; k++ ) {
       if( mint_weights_get_to(net->w[k]) == i ) { /* leads to this node */
 	from = mint_weights_get_from(net->w[k]);
-	mint_weights_operate( net->w[k], net->n[from], net->n[i], j, j+1 );
+	mint_weights_run( net->w[k], net->n[from], net->n[i], j, j+1,
+			  mint_op_weights_operate );
       }
     }
     mint_nodes_update( net->n[i], j, j+1 );
@@ -596,7 +598,8 @@ void mint_network_asynchronous( struct mint_network *net, float *p ) {
     for( k=0; k<net->matrices; k++ ) {
       if( mint_weights_get_to(net->w[k]) == i ) { /* leads to this node */
 	from = mint_weights_get_from(net->w[k]);
-	mint_weights_update( net->w[k], net->n[from], net->n[i], j, j+1 );
+	mint_weights_run( net->w[k], net->n[from], net->n[i], j, j+1,
+			  mint_op_weights_update );
       }
     }
   }
@@ -628,10 +631,12 @@ void mint_network_spread( struct mint_network *net ) {
     if( k > -1 ) {
       to = mint_weights_get_to( net->w[k] );
       from = mint_weights_get_from( net->w[k] );
-      mint_weights_operate( net->w[k], net->n[from], net->n[to],
-			    0, mint_weights_rows(net->w[k]) );
-      mint_weights_update( net->w[k], net->n[from], net->n[to], 
-			   0, mint_weights_rows(net->w[k]) );
+      mint_weights_run( net->w[k], net->n[from], net->n[to],
+			0, mint_weights_rows(net->w[k]),
+			mint_op_weights_operate );
+      mint_weights_run( net->w[k], net->n[from], net->n[to], 
+			0, mint_weights_rows(net->w[k]),
+			mint_op_weights_update );
     }
 
     /* node update */

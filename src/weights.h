@@ -163,6 +163,10 @@ struct mint_ops *mint_weights_get_ops( const mint_weights );
 void mint_weights_operate( mint_weights w, mint_nodes pre,
 			   mint_nodes post, int rmin, int rmax );
 
+void mint_weights_run( mint_weights w, mint_nodes pre,
+		       mint_nodes post, int rmin, int rmax,
+		       int op_type );
+
 /** Update weights in rows between rmin (included) and rmax
     (excluded). This function invokes all update ops defined for the
     weight matrix. */

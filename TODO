@@ -19,9 +19,6 @@
     run threaded or non-threaded spread when a spread exists and no
     other network_operate ops exist. 
 
-  - should we make using threads in a non-threaded environment a
-    non-fatal error? (issue a warning) is it better than aborting.
-
   - there are a number of op-running functions in weights.c, and two
     in network.c and nodes.c, which could use a unified interface like
     mint_weights_run( mint_weights op, int op_type ), as all functions
