@@ -5,7 +5,6 @@
 #include "nodes.h"
 #include "spread.h"
 #include "op.h"
-#include "optype.h"
 #include "wop.h"
 
 #include <stdio.h>
@@ -228,22 +227,27 @@ void mint_threads_spread( struct mint_network *net, float *p ) {
 void mint_network_init_threads( struct mint_network *net, float *p ) {
   struct mint_ops *ops;
   struct mint_op *op;
+  float pdef[3] = { 1, 0, 0 };
+
+  /* add threads_spread op to mint */
+  if( !mint_op_exists( "threads_spread", mint_op_network_operate ) )
+    mint_op_add( "threads_spread", mint_op_network_operate,
+		 mint_threads_spread, 3, pdef );
 
   ops = mint_network_get_ops( net );
-  op = mint_ops_get_name( ops, "spread", mint_op_network_operate );
-  if( !op ) {
-    op = mint_op_new( "spread", mint_op_network_operate );
-    mint_ops_append( ops, op );
-    mint_op_del( op );
-    op = mint_ops_get_name( ops, "spread", mint_op_network_operate );
-  }
 
-  op->op = mint_threads_spread;
-  op->nparam = 3;
-  op->param = realloc( op->param, 3 * sizeof(float) );
+  /* delete spread op if present */
+  op = mint_ops_get_name( ops, "spread", mint_op_network_operate );
+  if( op )
+    mint_op_del( op );
+  
+  /* now add threads_spread op to network */
+  op = mint_op_new( "threads_spread", mint_op_network_operate );
   mint_op_set_param( op, 0, p[0] );
   mint_op_set_param( op, 1, p[1] );
   mint_op_set_param( op, 2, p[2] );
+  mint_ops_append( ops, op );
+  mint_op_del( op ); /* mint_ops_append stores a copy */
 }
 
 #else /* MINT_USE_THREADS */

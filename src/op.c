@@ -1,5 +1,4 @@
 #include "op.h"
-#include "optype.h"
 #include "nop.h"
 #include "wop.h"
 #include "netop.h"
@@ -10,6 +9,14 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
+
+struct mint_op {
+  char *name;   /* op name: a unique identifier */
+  int type;     /* see enum in op.h */
+  void *op;     /* the op function */
+  int nparam;   /* # op parameters */
+  float *param; /* parameter values */
+};
 
 struct mint_ops {
   int n;               /* number of ops in the list */
@@ -323,7 +330,7 @@ void mint_op_set_param( struct mint_op *h, int i, float x ) {
 
 /* this internal function avoids duplication in following functions */
 void mint_op_add( const char *name, int type, void *f, 
-		 int nparam, float *param ) {
+		  int nparam, float *param ) {
   int i, len;
   struct mint_op *h;
   /* first time this function is called mint_op_table can't be realloc'd */  
