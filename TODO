@@ -19,11 +19,6 @@
     run threaded or non-threaded spread when a spread exists and no
     other network_operate ops exist. 
 
-  - there are a number of op-running functions in weights.c, and two
-    in network.c and nodes.c, which could use a unified interface like
-    mint_weights_run( mint_weights op, int op_type ), as all functions
-    internally do basically the same thing.
-
   - document the new event system for nodes (see op.c and image.c,
     where the event loop resides)
 

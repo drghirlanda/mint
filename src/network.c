@@ -111,10 +111,10 @@ void mint_network_save_ops( const struct mint_network *net,
 			    FILE *dest ) {
   struct mint_ops *ops;
   
-  /* we do not save run_spread (default) or threads_spread (will be
-     added back by threads) */
+  /* we do not save spread (default) or threads_spread (will be
+     added back by threads op) */
   ops = mint_ops_dup( net->ops );
-  mint_ops_del_name( ops, "run_spread" );
+  mint_ops_del_name( ops, "spread" );
   mint_ops_del_name( ops, "threads_spread" );
   mint_ops_save( ops, dest );
   mint_ops_del( ops );
@@ -283,13 +283,13 @@ struct mint_network *mint_network_load( FILE *file ) {
   }
 
   /* if there is a spread (possibly created by the synchronous op that
-     might have just run), add the run_spread op, unless it is already
+     might have just run), add the spread op, unless it is already
      there, in which case do nothing */
   if( net->spread ) {
-    op = mint_ops_get_name( net->ops, "run_spread", 
+    op = mint_ops_get_name( net->ops, "spread", 
 			    mint_op_network_operate );
     if( !op ) {
-      op = mint_op_new( "run_spread", mint_op_network_operate );
+      op = mint_op_new( "spread", mint_op_network_operate );
       mint_ops_append( net->ops, op );
       mint_op_del( op );
     }

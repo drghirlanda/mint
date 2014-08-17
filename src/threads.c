@@ -230,12 +230,12 @@ void mint_network_init_threads( struct mint_network *net, float *p ) {
   struct mint_op *op;
 
   ops = mint_network_get_ops( net );
-  op = mint_ops_get_name( ops, "run_spread", mint_op_network_operate );
+  op = mint_ops_get_name( ops, "spread", mint_op_network_operate );
   if( !op ) {
-    op = mint_op_new( "run_spread", mint_op_network_operate );
+    op = mint_op_new( "spread", mint_op_network_operate );
     mint_ops_append( ops, op );
     mint_op_del( op );
-    op = mint_ops_get_name( ops, "run_spread", mint_op_network_operate );
+    op = mint_ops_get_name( ops, "spread", mint_op_network_operate );
   }
 
   op->op = mint_threads_spread;

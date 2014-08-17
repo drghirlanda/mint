@@ -173,7 +173,7 @@ static struct mint_op mint_op_static_table[] = {
   { "clocked", mint_op_network_operate,mint_network_clocked,2,
     network_clocked_param },
 
-  { "run_spread", mint_op_network_operate, mint_network_spread, 0, 0 }
+  { "spread", mint_op_network_operate, mint_network_spread, 0, 0 }
 
 };
 
