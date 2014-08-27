@@ -1,18 +1,22 @@
 #!/bin/bash -e
 
-N=2000
-TMAX=5
+N=1000
+TMAX=10
 
 /bin/rm -f *.dat
+
+#ACT="states 2 izzy"
+#ACT="states 2 logistic habituation noise izzy izzy izzy"
 
 function writearc {
     cat<<EOF>threads.arc
 network
 threads $1 $2 $3 
-nodes n1 size $4 logistic
-nodes n2 size $4 logistic
-nodes n3 size $4 logistic
+nodes n1 size $4 $ACT
+nodes n2 size $4 $ACT
+nodes n3 size $4 $ACT
 weights n1-n2 uniform 0 1 0.01
+weights n2-n2 uniform 0 1 0.01
 weights n2-n3 uniform 0 1 0.01
 EOF
 }
@@ -21,10 +25,11 @@ EOF
 echo "single-threaded"
 cat<<EOF>threads.arc
 network
-nodes n1 size $N logistic
-nodes n2 size $N logistic
-nodes n3 size $N logistic
+nodes n1 size $N $ACT
+nodes n2 size $N $ACT
+nodes n3 size $N $ACT
 weights n1-n2 uniform 0 1 0.01
+weights n2-n2 uniform 0 1 0.01
 weights n2-n3 uniform 0 1 0.01
 EOF
 /usr/bin/time -f '%e %M' ./threads 1>&2 2>>nothreads.dat
