@@ -77,7 +77,7 @@ int mint_network_size( struct mint_network *net );
 mint_nodes mint_network_nodes( struct mint_network *, int i );
 
 /** Return index of nodes with given name, or -1 if no such name. */
-int mint_network_nodes_find( struct mint_network *, char *name );
+mint_nodes mint_network_nodes_find( struct mint_network *, char *name );
 
 /** Return index of the first node group that has an op with given
     name, or -1 if no such group. */

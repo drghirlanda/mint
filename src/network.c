@@ -308,13 +308,14 @@ mint_nodes mint_network_nodes( struct mint_network *net, int i ) {
   return net->n[i];
 }
 
-int mint_network_nodes_find( struct mint_network *net, char *name ) {
+mint_nodes mint_network_nodes_find( struct mint_network *net, 
+				    char *name ) {
   int i;
   for( i=0; i<net->groups; i++ ) {
     if( strcmp( mint_nodes_get_name( net->n[i] ), name ) == 0 )
-      return i;
+      return net->n[i];
   }
-  return -1;
+  return 0;
 }
 
 int mint_network_nodes_find_op( struct mint_network *net, char *name ) {
