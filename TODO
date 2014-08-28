@@ -5,7 +5,7 @@
 
 - improvements:
 
-  - given that we have moved op-running functions for weights, nodes,
+DONE  - given that we have moved op-running functions for weights, nodes,
     and networks, back into the .c files (wehre they should have been
     in the first place...), the only place where optype.h is needed is
     threds.c. we could get rid of it if setting threaded spread was
