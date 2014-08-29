@@ -263,8 +263,8 @@ mint_weights mint_weights_load( FILE *file, struct mint_network *net ) {
     if( j == -1 )
       j = mint_string_size( name );
     toname = mint_string_substr( name, i+1, j );
-    from = mint_network_nodes_find( net, fromname );
-    to = mint_network_nodes_find( net, toname );
+    from = mint_network_nodes_index( net, fromname );
+    to = mint_network_nodes_index( net, toname );
     mint_check( from != -1, "cannot find 'from' nodes: %s", fromname );
     mint_check( to != -1, "cannot find 'to' nodes: %s", toname );
   }
@@ -316,10 +316,10 @@ mint_weights mint_weights_load( FILE *file, struct mint_network *net ) {
      or through the fromname info, if net is provided */
   n = 0;
   if( net ) {
-    from = mint_network_nodes_find( net, fromname );
+    from = mint_network_nodes_index( net, fromname );
     mint_check( from != -1, "cannot find 'from' nodes %s in network", 
 		fromname );
-    n = mint_network_nodes( net, from );
+    n = mint_network_get_nodes( net, from );
     if( cols ) {
       mint_check( cols == mint_nodes_size( n ),
 		  "'cols' and 'from' give different sizes!" );
@@ -332,10 +332,10 @@ mint_weights mint_weights_load( FILE *file, struct mint_network *net ) {
      or through the toname info, if net is provided */
   n = 0;
   if( net ) {
-    to = mint_network_nodes_find( net, toname );
+    to = mint_network_nodes_index( net, toname );
     mint_check( to != -1, "cannot find 'to' nodes %s in network", 
 		toname );
-    n = mint_network_nodes( net, to );
+    n = mint_network_get_nodes( net, to );
     if( rows ) {
       mint_check( rows == mint_nodes_size( n ),
 		  "'rows' and 'from' give different sizes!" );
@@ -426,12 +426,12 @@ void mint_weights_info( const mint_weights w, FILE *f,
   /* save 'to' and 'from' if available from the network */
   if( mint_string_find( wstr->name, '-' ) == -1 && net ) {
     if( wstr->from > -1 ) {
-      n = mint_network_nodes( net, wstr->from );
+      n = mint_network_get_nodes( net, wstr->from );
       name = mint_nodes_get_name( n );
       fprintf( f, " from %s",  name );
     }
     if( wstr->to > -1 ) {
-      n = mint_network_nodes( net, wstr->to );
+      n = mint_network_get_nodes( net, wstr->to );
       name = mint_nodes_get_name( n );
       fprintf( f, " to %s", name );
     }

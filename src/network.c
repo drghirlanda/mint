@@ -157,10 +157,10 @@ void mint_network_check_names( struct mint_network *net ) {
   
  resolve_nodes:
   for( i=0; i<net->groups; i++ ) {
-    name1 = mint_nodes_get_name( mint_network_nodes( net, i ) );
+    name1 = mint_nodes_get_name( mint_network_get_nodes( net, i ) );
     /* node-node conflicts: */
     for( j=i+1; j<net->groups; j++ ) {
-      name2 = mint_nodes_get_name( mint_network_nodes( net, j ) );
+      name2 = mint_nodes_get_name( mint_network_get_nodes( net, j ) );
       if( strcmp( name1, name2 ) == 0 ) {
 	name2 = mint_string_incr( name2 );
 	fprintf( stderr, "mint_network_load: changing '%s' to '%s'\n", 
@@ -170,7 +170,7 @@ void mint_network_check_names( struct mint_network *net ) {
     }
     /* node-matrix conflicts: */
     for( j=i+1; j<net->matrices; j++ ) {
-      name2 = mint_weights_get_name( mint_network_weights( net, j ) );
+      name2 = mint_weights_get_name( mint_network_get_weights( net, j ) );
       if( strcmp( name1, name2 ) == 0 ) {
 	mint_string_incr( name2 );
 	fprintf( stderr, "mint_network_load: changing '%s' to '%s'\n", 
@@ -182,10 +182,10 @@ void mint_network_check_names( struct mint_network *net ) {
 
  resolve_matrices:
   for( i=0; i<net->matrices; i++ ) {
-    name1 = mint_weights_get_name( mint_network_weights( net, i ) );
+    name1 = mint_weights_get_name( mint_network_get_weights( net, i ) );
     /* matrix-matrix conflicts: */
     for( j=i+1; j<net->matrices; j++ ) {
-      name2 = mint_weights_get_name( mint_network_weights( net, j ) );
+      name2 = mint_weights_get_name( mint_network_get_weights( net, j ) );
       if( strcmp( name1, name2 ) == 0 ) {
 	mint_string_incr( name2 );
 	fprintf( stderr, "mint_network_load: changing '%s' to '%s'\n", 
@@ -302,13 +302,13 @@ struct mint_network *mint_network_load( FILE *file ) {
   return net;
 }
 
-mint_nodes mint_network_nodes( struct mint_network *net, int i ) {
+mint_nodes mint_network_get_nodes( struct mint_network *net, int i ) {
   mint_check( i>=0 && i<net->groups, "index %d out of range 0-%d",
 	      i, net->groups - 1);
   return net->n[i];
 }
 
-mint_nodes mint_network_nodes_find( struct mint_network *net, 
+mint_nodes mint_network_find_nodes( struct mint_network *net, 
 				    char *name ) {
   int i;
   for( i=0; i<net->groups; i++ ) {
@@ -318,37 +318,46 @@ mint_nodes mint_network_nodes_find( struct mint_network *net,
   return 0;
 }
 
-int mint_network_nodes_find_op( struct mint_network *net, char *name ) {
-  int i, j;
-  struct mint_ops *ops;
-
+int mint_network_nodes_index( struct mint_network *net, 
+			      char *name ) {
+  int i;
   for( i=0; i<net->groups; i++ ) {
-    ops = mint_nodes_get_ops( net->n[i] );
-    j = mint_ops_find( ops, name, 
-		       mint_op_nodes_init + mint_op_nodes_update );
-    if( j != -1 )
+    if( strcmp( mint_nodes_get_name( net->n[i] ), name ) == 0 )
       return i;
   }
-  return -1;
+  return 0;
 }
 
-mint_weights mint_network_weights( struct mint_network *net, int i ) {
+mint_weights mint_network_get_weights( struct mint_network *net, 
+				       int i ) {
   mint_check( i>=0 && i<net->matrices, "index %d out of range 0-%d",
 	      i, net->matrices - 1);
   return net->w[i];
 }
 
-int mint_network_weights_find( struct mint_network *net, char *name ) {
+int mint_network_weights_index( struct mint_network *net, char *name ) {
   int i;
   mint_weights w;
 
   for( i=0; i<net->matrices; i++ ) {
-    w = mint_network_weights( net, i );
+    w = mint_network_get_weights( net, i );
     if( strcmp( mint_weights_get_name( w ), name ) == 0 )
       return i;
   }
-
   return -1;
+}
+
+mint_weights mint_network_find_weights( struct mint_network *net, 
+					char *name ) {
+  int i;
+  mint_weights w;
+
+  for( i=0; i<net->matrices; i++ ) {
+    w = mint_network_get_weights( net, i );
+    if( strcmp( mint_weights_get_name( w ), name ) == 0 )
+      return w;
+  }
+  return 0;
 }
 
 int mint_network_groups( const struct mint_network *n ) {
@@ -438,13 +447,13 @@ void mint_network_graph( const struct mint_network *net, FILE *f ) {
   fprintf( f, "edge [fontsize=10 fontname=Helvetica]\n" );
   g = mint_network_groups( net );
   for( i=0; i<g; i++ ) {
-    n = mint_network_nodes( (struct mint_network *)net, i );
+    n = mint_network_get_nodes( (struct mint_network *)net, i );
     fprintf( f, "n%d [label=\"%s\\n%d\"]\n", i, 
 	     mint_nodes_get_name(n), mint_nodes_size(n) );
   }
   m = mint_network_matrices( net );
   for( i=0; i<m; i++ ) {
-    w = mint_network_weights( (struct mint_network *)net, i );
+    w = mint_network_get_weights( (struct mint_network *)net, i );
     fprintf( f, "n%d -> n%d [label=\"%d\"]\n", 
 	     mint_weights_get_from(w),
 	     mint_weights_get_to(w),
@@ -471,7 +480,7 @@ void mint_network_graph_full( const struct mint_network *net_in, FILE *f ) {
   /* node groups */
   g = mint_network_groups( net );
   for( i=0; i<g; i++ ) {
-    n = mint_network_nodes( (struct mint_network *)net, i );
+    n = mint_network_get_nodes( (struct mint_network *)net, i );
     fprintf( f, "subgraph cluster_%d {\n color=grey label=\"n%d %d %d ", 
 	     i, i, mint_nodes_size(n), mint_nodes_states(n) );
     mint_ops_save( mint_nodes_get_ops(n), f );
@@ -486,11 +495,11 @@ void mint_network_graph_full( const struct mint_network *net_in, FILE *f ) {
   m = mint_network_matrices( net );
   wmax = 0;
   for( i=0; i<m; i++ ) {
-    w = mint_network_weights( net, i );
+    w = mint_network_get_weights( net, i );
     ifrom = mint_weights_get_from(w);
-    nfrom = mint_network_nodes( net, ifrom );
+    nfrom = mint_network_get_nodes( net, ifrom );
     ito = mint_weights_get_to(w);
-    nto = mint_network_nodes( net, mint_weights_get_to(w) );
+    nto = mint_network_get_nodes( net, mint_weights_get_to(w) );
     for( j=0; j<mint_nodes_size(nfrom); j++ ) {
       for( k=0; k<mint_nodes_size(nto); k++ ) {
 	if( fabs(w[0][k][j]) > wmax )
@@ -500,11 +509,11 @@ void mint_network_graph_full( const struct mint_network *net_in, FILE *f ) {
   }
 
   for( i=0; i<m; i++ ) {
-    w = mint_network_weights( net, i );
+    w = mint_network_get_weights( net, i );
     ifrom = mint_weights_get_from(w);
-    nfrom = mint_network_nodes( net, ifrom );
+    nfrom = mint_network_get_nodes( net, ifrom );
     ito = mint_weights_get_to(w);
-    nto = mint_network_nodes( net, mint_weights_get_to(w) );
+    nto = mint_network_get_nodes( net, mint_weights_get_to(w) );
     for( j=0; j<mint_nodes_size(nfrom); j++ ) {
       for( k=0; k<mint_nodes_size(nto); k++ ) {
 	val = w[0][k][j]/wmax;
@@ -580,7 +589,7 @@ void mint_network_asynchronous( struct mint_network *net, float *p ) {
     i = j = 0; 
     k = mint_random_int( 0, size );
     while( j<=k ) {
-      n = mint_network_nodes( net, i );
+      n = mint_network_get_nodes( net, i );
       j += mint_nodes_size( net->n[i] );
       i++;
     }

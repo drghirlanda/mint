@@ -74,21 +74,24 @@ int mint_network_matrices( const struct mint_network *n );
 int mint_network_size( struct mint_network *net );
 
 /** Access to node group i of the network */
-mint_nodes mint_network_nodes( struct mint_network *, int i );
+mint_nodes mint_network_get_nodes( struct mint_network *, int i );
+
+/** Access to network nodes by name */
+mint_nodes mint_network_find_nodes( struct mint_network *, char *name );
 
 /** Return index of nodes with given name, or -1 if no such name. */
-mint_nodes mint_network_nodes_find( struct mint_network *, char *name );
-
-/** Return index of the first node group that has an op with given
-    name, or -1 if no such group. */
-int mint_network_nodes_find_op( struct mint_network *, char *name );
+int mint_network_nodes_index( struct mint_network *, char *name );
 
 /** Return index of weight matrix connecting nodes with given names,
     or -1 if no such matrix. */
-int mint_network_weights_find( struct mint_network *, char *name );
+int mint_network_weights_index( struct mint_network *, char *name );
 
 /** Access to weight matrix i of the network */
-mint_weights mint_network_weights( struct mint_network *, int i );
+mint_weights mint_network_get_weights( struct mint_network *, int i );
+
+/** Access to weight matrices, by name */
+mint_weights mint_network_find_weights( struct mint_network *, 
+					char *name );
 
 /** Update network nodes, performing matrix-vector multiplications and
    invoking node update functions, according to the current update
