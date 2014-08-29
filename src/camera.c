@@ -145,7 +145,7 @@ void mint_network_camera( struct mint_network *net, float *p ) {
   groups = mint_network_groups( net );
   img = mint_camera_image();
   for( i=0; i<groups; i++ ) {
-    n = mint_network_nodes( net, i );
+    n = mint_network_get_nodes( net, i );
     mint_image_paste( img, n, 0, 0, 1 );
   }
   mint_image_del( img );

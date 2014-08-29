@@ -170,9 +170,9 @@ void mint_threads_spread( struct mint_network *net, float *p ) {
   groups = mint_network_groups(net);
   if( threaded_nodes ) {
     for( i = 0; i < mint_network_matrices( net ); i++ ) {
-      tmpl.w = mint_network_weights( net, i );
+      tmpl.w = mint_network_get_weights( net, i );
       ito = mint_weights_get_to( tmpl.w );
-      tmpl.n1 = mint_network_nodes( net, ito );
+      tmpl.n1 = mint_network_get_nodes( net, ito );
       tmpl.var = mint_weights_get_target( tmpl.w );
       tmpl.w = 0; /* not needed */
       tmpl.n2 = 0;
@@ -180,10 +180,10 @@ void mint_threads_spread( struct mint_network *net, float *p ) {
     }
   } else {
     for( i=0; i<mint_network_matrices( net ); i++ ) {
-      tmpl.w = mint_network_weights( net, i );
+      tmpl.w = mint_network_get_weights( net, i );
       ito =  mint_weights_get_to( tmpl.w );
       target = mint_weights_get_target( tmpl.w );
-      mint_nodes_set( mint_network_nodes(net, ito), target, 0. );
+      mint_nodes_set( mint_network_get_nodes(net, ito), target, 0. );
     }
   }
 
@@ -195,11 +195,11 @@ void mint_threads_spread( struct mint_network *net, float *p ) {
     nid = mint_spread_get_nodes( spread, i );
     
     if( wid > -1 ) { /* operate and update matrix */
-      tmpl.w = mint_network_weights( net, wid );
+      tmpl.w = mint_network_get_weights( net, wid );
       ifrom = mint_weights_get_from( tmpl.w );
-      tmpl.n1 = mint_network_nodes( net, ifrom );
+      tmpl.n1 = mint_network_get_nodes( net, ifrom );
       ito = mint_weights_get_to( tmpl.w );
-      tmpl.n2 = mint_network_nodes( net, ito );
+      tmpl.n2 = mint_network_get_nodes( net, ito );
       tmpl.var = -1; /* not needed */
       if( threaded_weights )
 	mint_threads_weights( tmpl, nthreads );
@@ -212,7 +212,7 @@ void mint_threads_spread( struct mint_network *net, float *p ) {
 			  mint_op_weights_update );
       }
     } else if( nid > -1 ) { /* node update */
-      tmpl.n1 = mint_network_nodes( net, nid );
+      tmpl.n1 = mint_network_get_nodes( net, nid );
       if( threaded_nodes ) {
 	tmpl.w = 0;
 	tmpl.n2 = 0;

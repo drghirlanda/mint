@@ -236,8 +236,6 @@ cmd_camshot() {
 
 # build examples: ######################################################
 
-EXAMPLES="clocked dcmotor servomotor deltarule integrator izikevich sigmoid sparse"
-
 mapTarget 'example/*' compileEx
 
 dep_compileEx() {
@@ -263,6 +261,8 @@ dep_example() {
 cmd_example() {
     echo "examples built"
 }
+
+# build all examples
 
 # documentation strings: ###############################################
 

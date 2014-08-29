@@ -668,7 +668,7 @@ void mint_network_events( struct mint_network *net, float *p ) {
       } else {
 	/* other events */
 	for( i=0; i<mint_network_groups(net); i++ ) {
-	  n = mint_network_nodes( net, i );
+	  n = mint_network_get_nodes( net, i );
 	  mint_nodes_event( n, 0, mint_nodes_size(n), event );
 	}
       }
@@ -721,8 +721,7 @@ void mint_network_display( struct mint_network *net, float *p ) {
   w = ( ( 1.0 - 0.05 * (groups+1) ) / groups ) * mint_screen->w;
 
   for( i=0; i<groups; i++ ) {
-
-    n = mint_network_nodes( net, i );
+    n = mint_network_get_nodes( net, i );
     size = mint_nodes_size( n );
 
     if( mint_nodes_get_property( n, "rows", 0, &frows ) )

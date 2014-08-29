@@ -65,7 +65,7 @@ void mint_network_init_feedforward( struct mint_network *net,
 	/* loop over weight matrices: group is ready for update only
 	   if it only receives inputs from groups already updated. */
 	for( j=0; j<m; j++ ) {
-	  w = mint_network_weights(net, j);
+	  w = mint_network_get_weights(net, j);
 	  to = mint_weights_get_to(w);
 	  from = mint_weights_get_from(w);
 	  mint_check( to != from, "matrix %d is self-recurrent!", j );
@@ -77,7 +77,7 @@ void mint_network_init_feedforward( struct mint_network *net,
 	  ndone_old = ndone++;
 	  /* schedule matrix mults leading to this group */
 	  for( j=0; j<m; j++ ) {
-	    w = mint_network_weights(net, j);
+	    w = mint_network_get_weights(net, j);
 	    if( mint_weights_get_to(w) == i ) {
 	      s->w[step] = j;
 	      s->n[step] = -1;
@@ -147,11 +147,11 @@ struct mint_spread *mint_spread_load( FILE *f,
     name = mint_string_load( f );
     if( !name || mint_keyword( name ) ) 
       break;
-    ni = mint_network_nodes_find( net, name );
+    ni = mint_network_nodes_index( net, name );
     if( ni >= 0 ) {
       wi = -1;
     } else {
-      wi = mint_network_weights_find( net, name );
+      wi = mint_network_weights_index( net, name );
       if( wi >= 0 ) { 
 	ni = -1;
       } else {
@@ -184,11 +184,11 @@ void mint_spread_save( struct mint_spread *s, FILE *f,
 
   for( i=0; i<s->len; i++ ) {
     if( s->w[i] > -1 ) {
-      w = mint_network_weights( net, s->w[i] );
+      w = mint_network_get_weights( net, s->w[i] );
       fprintf( f, "  %s\n", mint_weights_get_name( w ) );
     }
     if( s->n[i] > -1 ) {
-      n = mint_network_nodes( net, s->n[i] );
+      n = mint_network_get_nodes( net, s->n[i] );
       fprintf( f, "  %s\n", mint_nodes_get_name( n ) );
     }
   }
