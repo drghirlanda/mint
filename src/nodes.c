@@ -252,11 +252,9 @@ int mint_nodes_set_property( mint_nodes n, const char *prop, int i,
 void mint_nodes_index2coord( mint_nodes n, int i, int *x, int *y ) {
   static mint_nodes nlast = 0;
   static int rows = 0;
-  static int size = 0;
   float frows;
 
   if( n != nlast ) { /* set rows, cols, and size */
-    size = mint_nodes_size( n );
     if( mint_nodes_get_property( n, "rows", 0, &frows ) )
       rows = frows;
     else
@@ -271,11 +269,9 @@ void mint_nodes_index2coord( mint_nodes n, int i, int *x, int *y ) {
 int mint_nodes_coord2index( mint_nodes n, int x, int y ) {
   static mint_nodes nlast = 0;
   static int rows = 0;
-  static int size = 0;
   float frows;
 
   if( n != nlast ) { /* set rows, cols, and size */
-    size = mint_nodes_size( n );
     if( mint_nodes_get_property( n, "rows", 0, &frows ) )
       rows = frows;
     else

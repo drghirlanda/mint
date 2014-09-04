@@ -570,7 +570,6 @@ void mint_network_replace_weights( struct mint_network *net,
 
 void mint_network_asynchronous( struct mint_network *net, float *p ) {
   int i, j, k, steps, from, size;
-  mint_nodes n;
 
   size = mint_network_size( net );
 
@@ -589,14 +588,13 @@ void mint_network_asynchronous( struct mint_network *net, float *p ) {
     i = j = 0; 
     k = mint_random_int( 0, size );
     while( j<=k ) {
-      n = mint_network_get_nodes( net, i );
       j += mint_nodes_size( net->n[i] );
       i++;
     }
     i--;
 
     /* pick node at random from group i */
-    j = mint_random_int( 0, mint_nodes_size(net->n[i]) );
+    j = mint_random_int( 0, mint_nodes_size( net->n[i] ) );
 
     /* calculate input to this node */
     for( k=0; k<net->matrices; k++ ) {
@@ -620,13 +618,12 @@ void mint_network_asynchronous( struct mint_network *net, float *p ) {
 }
 
 void mint_network_spread( struct mint_network *net ) {
-  int i, j, k, from, to, len, target, groups;
+  int i, j, k, from, to, len, target;
 
   if( !net->spread ) 
     return;
 
   /* reset the targets of weight matrices */
-  groups = mint_network_groups(net);
   for( i=0; i<net->matrices; i++ ) {
     to =  mint_weights_get_to( net->w[i] );
     target = mint_weights_get_target( net->w[i] );
