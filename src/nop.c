@@ -1,3 +1,4 @@
+#include "op.h"
 #include "nop.h"
 #include "random.h"
 #include "string.h"
@@ -18,13 +19,13 @@ struct mint_nodes_str;
 	      (int)i, 2+mint_nodes_states(n) );	       \
   x = n[ (int)i ]
 
-/* logistic function */
-void mint_node_logistic( mint_nodes n, int min, int max, float *p ) {
+/* fast logistic function */
+void mint_node_fastlogistic( mint_nodes n, int min, int max, float *p ) {
   int i;
   float slope, zero, x, *in, *out;
 
-  mint_check( p[0]>0 && p[0]<1, "parameter 0 must be in ]0,1[, but is %f", 
-	      p[0] );
+  mint_check( p[0]>0 && p[0]<1, 
+	      "parameter 0 must be in ]0,1[, but is %f", p[0] );
   mint_check( p[1]>0, "parameter 1 must be >0, but is %f", p[1] );
 
   slope = p[1];
@@ -42,6 +43,26 @@ void mint_node_logistic( mint_nodes n, int min, int max, float *p ) {
       out[i] = 1.0f / (1.0f + fasterexp( x ) );
   }
 }
+
+void mint_node_logistic( mint_nodes n, int min, int max, float *p ) {
+  int i;
+  float slope, zero, x, *in, *out;
+
+  mint_check( p[0]>0 && p[0]<1, 
+	      "parameter 0 must be in ]0,1[, but is %f", p[0] );
+  mint_check( p[1]>0, "parameter 1 must be >0, but is %f", p[1] );
+
+  slope = p[1];
+  zero = log( 1/p[0] - 1 ) / slope;
+  SET_VAR( n, in, p[2] );
+  SET_VAR( n, out, p[3] );
+
+  for( i=min; i<max; i++ ) {
+    x = slope*(zero - in[i]);
+    out[i] = 1.0 / ( 1.0 + exp( x ) );
+  }
+}
+
 
 /* leaky integrator */
 void mint_node_integrator( mint_nodes n, int min, int max, float *p ) {
@@ -184,8 +205,8 @@ void mint_node_habituation( mint_nodes n, int min, int max, float *p ) {
   mint_check( a>=0 && a<=1, 
 	      "max habituation (parameter 1) must be in [0,1]" );
   
-  SET_VAR( n, h, p[2] );
-  SET_VAR( n, y, p[3] );
+  SET_VAR( n, h, p[2] ); /* habituation level is n[ p[2] ] */
+  SET_VAR( n, y, p[3] ); /* habituating variable is n[ p[3] ] */
 
   for( i=min; i<max; i++ ) {
     h[i] += ( a*y[i] - h[i] ) / T;
@@ -200,5 +221,76 @@ void mint_node_identity( mint_nodes n, int min, int max, float *p ) {
   memcpy( n[1], n[0], mint_nodes_size(n) * sizeof(float) );
 }
 
+
+#include <float.h>
+
+/* the algorithm for numerical differentiation is derived from
+   en.wikipedia.org/wiki/Numerical_differentiation, second two-point
+   method. */
+
+void mint_node_gradient( mint_nodes n, int min, int max, float *p  ) {
+  int i, j, nops, s, running;
+  float *old, *x, *y, *g;
+  float y1, y2, step;
+  struct mint_op *op;
+  struct mint_ops *ops;
+
+  SET_VAR( n, y, p[0] );
+  SET_VAR( n, x, p[1] );
+  SET_VAR( n, g, p[2] );
+
+  step = p[3];
+  running = 4;
+
+  /* 'running' is an undocumented parameter to used to check whether a
+     gradient op is running. if it is set it means that we are being
+     called as part of a node update used in a gradient calculation,
+     so we should not be doing such a calculation ourselves.  */
+  if( p[running] ) 
+    return;
+
+  /* if we need to run, disable all further gradient calculations but
+     setting p[3] to 1 in all gradient ops */
+  ops = mint_nodes_get_ops( n );
+  nops = mint_ops_size( ops );
+  for( i=0; i<nops; i++ ) {
+    op = mint_ops_get( ops, i );
+    if( mint_op_name_is( op, "gradient" ) )
+      mint_op_set_param( op, running, 1 );
+  }
+
+  /* 'old' stores the current node state. it has to be reinstated
+     during the calculation and at the end. */
+  s = 2 + mint_nodes_states( n );
+  old = malloc( s * sizeof(float) );
+
+  for( i=min; i<max; i++ ) {
+
+    for( j=0; j<s; j++ ) old[j] = n[j][i]; /* record node state */
+
+    x[i] = old[ (int)p[1] ] - step; /* calculate (x-h,y) */
+    mint_nodes_update( n, i, i+1 );
+    y1 = y[i];
+
+    for( j=0; j<s; j++ ) n[j][i] = old[j]; /* restore node state */
+
+    x[i] = old[ (int)p[1] ] + step; /* calculate (x+h,y) */
+    mint_nodes_update( n, i, i+1 );
+    y2 = y[i];
+  
+    for( j=0; j<s; j++ ) n[j][i] = old[j]; /* restore node state */
+
+    g[i] = ( y2 - y1 ) / (2*step); /* store gradient */
+  }
+
+  free( old );
+
+  /* once we are done we reset p[3] for all gradient ops */
+  for( i=0; i<nops; i++ ) {
+    op = mint_ops_get( ops, i );
+    if( mint_op_name_is( op, "gradient" ) )
+      mint_op_set_param( op, running, 0 );
+  }
+}
 
 #undef SET_VAR

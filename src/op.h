@@ -77,6 +77,9 @@ int mint_op_exists( const char *name, int type );
 /** Return op name. */
 const char *mint_op_name( const struct mint_op *h );
 
+/** Check whether name is 'name' */
+int mint_op_name_is( const struct mint_op *, const char *name );
+
 /** Return op type. */
 int mint_op_type( const struct mint_op *h );
 
@@ -106,6 +109,12 @@ void mint_op_add( const char *name, int type, void *f,  int nparam,
     op, w, rmin, rmax ), where w is a weight matrix and rmin and rmax
     the range of rows to initialize according to the op. */
 void mint_op_run( struct mint_op *op, ... );
+
+/** If freeze>0, freeze this op. It will not run even if mint_op_run
+    is called on it. If freeze==0, unfreeze. If freeze<0, do nothing
+    (for querying). In all cases, 1 is return if, after the call, the
+    op is frozen, and 0 if the op is unfrozen.  */
+int mint_op_freeze( struct mint_op *op, int freeze );
 
 /** Create a list of ops, initially empty. */
 struct mint_ops *mint_ops_new( void );
@@ -144,7 +153,6 @@ int mint_ops_del_type( struct mint_ops *ops, int type );
     number of ops deleted. The ops removed from the list are deleted
     with mint_op_del. */
 int mint_ops_del_name( struct mint_ops *ops, const char *name );
-
 
 /** Retrieve the (first) op with a given name and type, or 0 if no
     such op. */

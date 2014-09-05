@@ -1,0 +1,8 @@
+d <- data.frame(read.table("gradient.dat"))
+names(d) <- c("input","output","gradient")
+attach(d)
+pdf( "gradient.pdf", height=5, width=5 )
+plot( input, output, type="l", xlab="input", ylab="", ylim=c(0,1) )
+lines( input, gradient, col=2 )
+grid( col="black" )
+dev.off()

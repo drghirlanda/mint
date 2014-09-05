@@ -25,6 +25,7 @@ struct mint_ops {
 
 /* default parameter values for ops that need them */
 static float node_logistic_param[] = { 0.1, 1, 0, 1 };
+static float node_fastlogistic_param[] = { 0.1, 1, 0, 1 };
 static float node_integrator_param[] = { 1., 0., 0, 1 };
 static float node_izzy_param[] = { 0.02, 0.2, -65., 8., 0, 1, 2, 3};
 static float node_noise_param[] = { 0, 0.01, 0 };
@@ -36,6 +37,7 @@ static float node_rows_param[] = { -1 };
 static float node_states_param[] = { 0 };
 static float node_color_param[] = { 1, 1 };
 static float node_habituation_param[] = { 1, 0, 2, 1 };
+static float node_gradient_param[] = { 1, 0, 2, 0.01, 0 };
 
 static float weights_hebbian_param[] = { 0., 0., 0., 0. };
 static float weights_delta_param[] = { 0.05, 2 };
@@ -61,7 +63,7 @@ static float network_clocked_param[] = { 25, 0 };
 
     NOTE: change this whenever adding or removing from the table
     above, otherwise crashes can occur when adding ops! */
-#define mint_nop_builtin 36
+#define mint_nop_builtin 38
 
 /* built-in ops */
 static struct mint_op mint_op_static_table[] = {
@@ -70,6 +72,9 @@ static struct mint_op mint_op_static_table[] = {
 
   { "logistic",mint_op_nodes_update,mint_node_logistic,4,
     node_logistic_param },
+
+  { "fastlogistic",mint_op_nodes_update,mint_node_fastlogistic,4,
+    node_fastlogistic_param },
 
   { "integrator",mint_op_nodes_update,mint_node_integrator,4,
     node_integrator_param },
@@ -92,6 +97,9 @@ static struct mint_op mint_op_static_table[] = {
     4,node_habituation_param },
 
   { "identity", mint_op_nodes_update,mint_node_identity,0,0 },
+
+  { "gradient", mint_op_nodes_update,mint_node_gradient,5,
+    node_gradient_param },
 
   /* nodes init */
 
@@ -304,6 +312,10 @@ struct mint_op *mint_op_load( FILE *file, int type ) {
 
 const char *mint_op_name( const struct mint_op *h ) {
   return h->name;
+}
+
+int mint_op_name_is( const struct mint_op *self, const char *name ) {
+  return strncmp( self->name, name, strlen(self->name) ) == 0;
 }
 
 int mint_op_type( const struct mint_op *h ) {

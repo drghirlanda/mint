@@ -118,4 +118,48 @@ void mint_weights_init_normalize( mint_weights w, int rmin, int rmax,
 void mint_weights_lateral( mint_weights w, mint_nodes nfrom, mint_nodes nto, 
 			   int rmin, int rmax, float *p );
 
+
+/** This macro must be inserted at the top of any function that uses
+    the MINT_WEIGHTS_LOOP macro */
+#define MINT_WEIGHTS_LOOP_INIT int i, j, k, jmax, *colind
+
+/** This macro allows to loop over bith sparse and dense weight
+   matrices without caring of the differene, provided the code
+   fragment 'code' uses these conventions for indexing: index i is
+   used for i-th matrix row and the i-th post-synpatic node, index j
+   is the j-th pre-synaptic node, index k is the k-th element of the
+   i-th matrix row. For instance, the inner loop of matrix-vector
+   multiplication is written like this:
+
+   post[0][i] += w[0][i][k] * pre[1][j];
+
+   The macro sets k = j for dense matrices, while for sparse matrices
+   k and j are set to approproate values to loop only over existing
+   elements. The following variables must have been declared:
+
+   int i, j, k, jmax;
+   int *colind;
+
+*/
+#define MINT_WEIGHTS_LOOP( w, code )	    \
+  if( mint_weights_is_sparse( w ) ) {	    \
+    for( i=rmin; i<rmax; i++ ) {	    \
+      colind = mint_weights_colind( w, i ); \
+      jmax = mint_weights_rowlen( w, i );   \
+      for( k=0; k<jmax; k++ ) {		    \
+	j = colind[k];			    \
+	code;				    \
+      }					    \
+    }					    \
+  } else {				    \
+    for( i=rmin; i<rmax; i++ ) {            \
+      jmax = mint_weights_cols( w );	    \
+      for( k=0; k<jmax; k++ ) {		    \
+	j = k;				    \
+	code;				    \
+      }                                     \
+    }					    \
+  }					    \
+
+
 #endif
