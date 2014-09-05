@@ -36,8 +36,13 @@
 */
 void mint_node_logistic( mint_nodes n, int min, int max, float *p );
 
+/** A much faster, but approximate version of the logistic
+    function. See 'logistic' for parameters. */
+void mint_node_fastlogistic( mint_nodes n, int min, int max, float *p );
+
 /** Leaky integrator. Given a time constant T and a leak parameter L,
-    the update performed is: `output += ( input - L*old_output) / T`.
+    the update performed is: `T Delta y = x - L y`, where y is output
+    and x is input.
 
     - Name: `integrator`
     - State variables required: none
@@ -223,5 +228,22 @@ void mint_node_color( mint_nodes n, float *p );
 void mint_node_habituation( mint_nodes n, int min, int max, float *p );
  
 void mint_node_identity( mint_nodes n, int min, int max, float *p );
+
+/** Calculate the gradient of a state variable with respect to another
+    state variable, and store the result in a third state variable.
+
+    - Name: `gradient`
+    - State variables required: 1, to store the gradient. 
+    - Parameters:
+      + 0: State variable whose gradient is  calculated (default: 
+        1, i.e., node output)
+      + 1: State variable with respect to which gradient is 
+           calculated (default: 0, i.e., node input)
+      + 2: State variable that stores the gradient (default: 2)
+      + 3: Numerical integration step (default: 0.01)
+      + 4: This variable is reserved for internal use and should not 
+           be modified
+*/
+void mint_node_gradient( mint_nodes, int min, int max, float *p );
 
 #endif

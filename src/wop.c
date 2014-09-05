@@ -66,47 +66,76 @@ void mint_weights_mult( mint_weights w, mint_nodes from, mint_nodes to,
 
 void mint_weights_hebbian( mint_weights w, mint_nodes pre, 
 			   mint_nodes post, int rmin, int rmax, float *p ) {
-  int i, j, k, jmax;
-  int *colind;
+  MINT_WEIGHTS_LOOP_INIT;
 
-  mint_weights_loop( w,	
+  MINT_WEIGHTS_LOOP( w,	
 		     w[0][i][k] += p[0] * ( ( pre[1][j] - p[1] ) * 
 					    ( post[1][i] - p[2] ) )
 		     - p[3] * w[0][i][k] );
 }
 
+
+#include <float.h>
+
+/* the algorithm for numerical differentiation is derived from
+   en.wikipedia.org/wiki/Numerical_differentiation, merging the second
+   two-point method with the 'practical considerations' that
+   follow. */
+
+static 
+float numerical_derivative( mint_nodes n, int i ) {
+  int j, s;
+  float *old;
+  float x1, y1, x2, y2, h;
+  volatile float dx;
+
+  h = sqrt( FLT_MIN ) * n[0][i]; /* finite difference step */
+
+  /* record neuron state to be able to restore it later */
+  s = 2 + mint_nodes_states( n );
+  old = malloc( s * sizeof(float) );
+  for( j=0; j<s; i++ )
+    old[j] = n[j][i];
+
+  x1 = old[0] - h;
+  x2 = old[0] + h;
+  dx = x2 - x1;
+
+  n[0][i] = x1;
+  mint_nodes_update( n, i, i );
+  y1 = n[1][i];
+
+  n[0][i] = x2;
+  mint_nodes_update( n, i, i );
+  y2 = n[1][i];
+  
+  /* restore neuron state */
+  for( j=0; j<s; j++ )
+    n[j][i] = old[j];
+
+  free( old );
+
+  return ( y2 - y1 ) / dx;
+}
+
 void mint_weights_delta( mint_weights w, mint_nodes pre, 
 			 mint_nodes post, int rmin, int rmax, float *p ) {
-  int i, j, desired, jmax;
-  int *colind;
-  float lrate;
+  MINT_WEIGHTS_LOOP_INIT;
+  float d;
 
-  lrate = p[0];
-  desired = (int)p[1]; 
-  
-  if( mint_weights_is_sparse( w ) ) {
-    for( i=rmin; i<rmax; i++ ) {
-      colind = mint_weights_colind( w, i );
-      jmax = mint_weights_rowlen( w, i );
+  int desired = (int)p[1];
+  float lrate = p[0];
 
-      for( j=0; j<jmax; j++ )
-  	w[0][i][j] += lrate *
-  	  ( post[desired][i] -  post[1][i] ) * pre[ 1 ][ colind[j] ];
-    }
-  } else {
-    jmax = mint_weights_cols( w );
-    for( i=rmin; i<rmax; i++ ) {
-      for( j=0; j<jmax; j++ )
-  	w[0][i][j] += lrate * ( post[desired][i] - post[1][i] ) *
-  	  pre[1][j];
-    }
-  }
+  MINT_WEIGHTS_LOOP( w,
+		     d = numerical_derivative( post, i );
+		     w[0][i][k] += lrate * d * 
+		     ( post[desired][i] - post[1][i] ) * pre[1][k] );
 }
 
 void mint_weights_stdp( mint_weights w, mint_nodes pre, 
 			mint_nodes post, int rmin, int rmax, float *p ) {
-  int i, j, jmax, k;
-  int *colind;
+  MINT_WEIGHTS_LOOP_INIT;
+
   float decay = p[0];
   float plus = p[1];
   float minus = p[2];
@@ -127,7 +156,7 @@ void mint_weights_stdp( mint_weights w, mint_nodes pre,
   else
     mint_check( 0, "no counter defined for post-synaptic nodes" );
 
-  mint_weights_loop( w,
+  MINT_WEIGHTS_LOOP( w,
 		     pretime = pre[ precount ][ i ];
 		     posttime = post[ postcount ][ j ];
 		     dt = posttime - pretime;
