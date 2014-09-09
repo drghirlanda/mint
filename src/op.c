@@ -26,6 +26,7 @@ struct mint_ops {
 /* default parameter values for ops that need them */
 static float node_logistic_param[] = { 0.1, 1, 0, 1 };
 static float node_fastlogistic_param[] = { 0.1, 1, 0, 1 };
+static float node_sigmoid_param[] = { 0.1, 1, 0, 1 };
 static float node_integrator_param[] = { 1., 0., 0, 1 };
 static float node_izzy_param[] = { 0.02, 0.2, -65., 8., 0, 1, 2, 3};
 static float node_noise_param[] = { 0, 0.01, 0 };
@@ -63,7 +64,7 @@ static float network_clocked_param[] = { 25, 0 };
 
     NOTE: change this whenever adding or removing from the table
     above, otherwise crashes can occur when adding ops! */
-#define mint_nop_builtin 38
+#define mint_nop_builtin 39
 
 /* built-in ops */
 static struct mint_op mint_op_static_table[] = {
@@ -75,6 +76,9 @@ static struct mint_op mint_op_static_table[] = {
 
   { "fastlogistic",mint_op_nodes_update,mint_node_fastlogistic,4,
     node_fastlogistic_param },
+
+  { "sigmoid",mint_op_nodes_update,mint_node_sigmoid,4,
+    node_sigmoid_param },
 
   { "integrator",mint_op_nodes_update,mint_node_integrator,4,
     node_integrator_param },

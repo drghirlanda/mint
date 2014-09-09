@@ -40,6 +40,9 @@ void mint_node_logistic( mint_nodes n, int min, int max, float *p );
     function. See 'logistic' for parameters. */
 void mint_node_fastlogistic( mint_nodes n, int min, int max, float *p );
 
+/** A sigmoid function. */
+void mint_node_sigmoid( mint_nodes n, int min, int max, float *p );
+
 /** Leaky integrator. Given a time constant T and a leak parameter L,
     the update performed is: `T Delta y = x - L y`, where y is output
     and x is input.
