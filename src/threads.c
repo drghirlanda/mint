@@ -157,7 +157,7 @@ void mint_threads_nodes( struct mint_thread_data tmpl,
 /* this function schedules node reset, matrix-vector multiplications,
    node updates, and weight updates in parallel */
 void mint_threads_spread( struct mint_network *net, float *p ) {
-  int wid, nid, i, nthreads, ifrom, ito, target, groups;
+  int wid, nid, i, nthreads, ifrom, ito, target;
   int threaded_nodes, threaded_weights;
   struct mint_thread_data tmpl;
   struct mint_spread *spread;
@@ -167,7 +167,6 @@ void mint_threads_spread( struct mint_network *net, float *p ) {
   threaded_weights = p[2];
 
   /* reset targets of weight matrices */
-  groups = mint_network_groups(net);
   if( threaded_nodes ) {
     for( i = 0; i < mint_network_matrices( net ); i++ ) {
       tmpl.w = mint_network_get_weights( net, i );
