@@ -1,128 +1,128 @@
-/* #include "op.h" */
-/* #include "wop.h" */
-/* #include "random.h" */
-/* #include "utils.h" */
+#include "op.h"
+#include "wop.h"
+#include "random.h"
+#include "utils.h"
 
-/* #include <math.h> */
-
-
-/* void mint_weights_init_rows( mint_weights w, int rmin, int rmax,  */
-/* 			     float *p ) { */
-/*   MINT_UNUSED( w ); */
-/*   MINT_UNUSED( rmin ); */
-/*   MINT_UNUSED( rmax ); */
-/*   mint_check( p[0] != -1, "rows argument missing (parameter 0)" ); */
-/*   mint_check( p[0] > 0, "rows argument negative" ); */
-/* } */
-
-/* void mint_weights_init_cols( mint_weights w, int rmin, int rmax,  */
-/* 			     float *p ) { */
-/*   MINT_UNUSED( w ); */
-/*   MINT_UNUSED( rmin ); */
-/*   MINT_UNUSED( rmax ); */
-/*   mint_check( p[0] != -1, "cols argument missing (parameter 0)" ); */
-/*   mint_check( p[0] > 0, "cols argument negative" ); */
-/* } */
-
-/* void mint_weights_init_states( mint_weights w, int rmin, int rmax,  */
-/* 			       float *p ) { */
-/*   MINT_UNUSED( w ); */
-/*   MINT_UNUSED( rmin ); */
-/*   MINT_UNUSED( rmax ); */
-/*   mint_check( p[0] != -1, "states argument missing (parameter 0)" ); */
-/*   mint_check( p[0] >= 0, "states argument negative" ); */
-/* } */
-
-/* void mint_weights_init_sparse( mint_weights w, int rmin, int rmax, */
-/* 			       float *p ) { */
-/*   MINT_UNUSED( w ); */
-/*   MINT_UNUSED( rmin ); */
-/*   MINT_UNUSED( rmax ); */
-/*   MINT_UNUSED( p ); */
-/* }; */
-
-/* void mint_weights_mult( mint_weights w, mint_nodes from, mint_nodes to, */
-/* 			int rmin, int rmax, float *p ) { */
-/*   int i, j, cols, target, jmax; */
-/*   int *colind;  */
-/*   MINT_UNUSED( p ); */
-/*   target = mint_weights_get_target(w); */
-/*   cols = mint_weights_cols(w); */
-/*   if( mint_weights_is_sparse( w ) ) { */
-/*     for( i=rmin; i<rmax; i++ ) { */
-/*       colind = mint_weights_colind( w, i ); */
-/*       jmax = mint_weights_rowlen( w, i ); */
-/*       for( j=0; j<jmax; j++ ) */
-/* 	to[ target ][ i ] += w[0][i][j] * from[ 1 ] [ colind[j] ]; */
-/*     } */
-/*   } else { */
-/*     for( i=rmin; i<rmax; i++ ) {  */
-/*       for( j=0; j<cols; j++ ) { */
-/* 	to[target][i] += w[0][i][j] * from[1][j];   */
-/*       } */
-/*     } */
-/*   } */
-/* } */
-
-/* void mint_weights_hebbian( mint_weights w, mint_nodes pre,  */
-/* 			   mint_nodes post, int rmin, int rmax, float *p ) { */
-/*   MINT_WEIGHTS_LOOP_INIT; */
-
-/*   MINT_WEIGHTS_LOOP( w,	 */
-/* 		     w[0][i][k] += p[0] * ( ( pre[1][j] - p[1] ) *  */
-/* 					    ( post[1][i] - p[2] ) ) */
-/* 		     - p[3] * w[0][i][k] ); */
-/* } */
+#include <math.h>
 
 
-/* #include <float.h> */
+void mint_weights_init_rows( mint_weights w, int rmin, int rmax,
+			     float *p ) {
+  MINT_UNUSED( w );
+  MINT_UNUSED( rmin );
+  MINT_UNUSED( rmax );
+  mint_check( p[0] != -1, "rows argument missing (parameter 0)" );
+  mint_check( p[0] > 0, "rows argument negative" );
+}
 
-/* /\* the algorithm for numerical differentiation is derived from */
-/*    en.wikipedia.org/wiki/Numerical_differentiation, merging the second */
-/*    two-point method with the 'practical considerations' that */
-/*    follow. *\/ */
+void mint_weights_init_cols( mint_weights w, int rmin, int rmax,
+			     float *p ) {
+  MINT_UNUSED( w );
+  MINT_UNUSED( rmin );
+  MINT_UNUSED( rmax );
+  mint_check( p[0] != -1, "cols argument missing (parameter 0)" );
+  mint_check( p[0] > 0, "cols argument negative" );
+}
 
-/* static  */
-/* float numerical_derivative( mint_nodes n, int i ) { */
-/*   int j, s; */
-/*   float *old; */
-/*   float x1, y1, x2, y2, h; */
-/*   volatile float dx; */
+void mint_weights_init_states( mint_weights w, int rmin, int rmax,
+			       float *p ) {
+  MINT_UNUSED( w );
+  MINT_UNUSED( rmin );
+  MINT_UNUSED( rmax );
+  mint_check( p[0] != -1, "states argument missing (parameter 0)" );
+  mint_check( p[0] >= 0, "states argument negative" );
+}
 
-/*   h = sqrt( FLT_MIN ) * n[0][i]; /\* finite difference step *\/ */
+void mint_weights_init_sparse( mint_weights w, int rmin, int rmax,
+			       float *p ) {
+  MINT_UNUSED( w );
+  MINT_UNUSED( rmin );
+  MINT_UNUSED( rmax );
+  MINT_UNUSED( p );
+};
 
-/*   /\* record neuron state to be able to restore it later *\/ */
-/*   s = 2 + mint_nodes_states( n ); */
-/*   old = malloc( s * sizeof(float) ); */
-/*   for( j=0; j<s; i++ ) */
-/*     old[j] = n[j][i]; */
+void mint_weights_mult( mint_weights w, mint_nodes from, mint_nodes to,
+			int rmin, int rmax, float *p ) {
+  int i, j, cols, target, jmax;
+  int *colind;
+  MINT_UNUSED( p );
+  target = mint_weights_get_target(w);
+  cols = mint_weights_cols(w);
+  if( mint_weights_is_sparse( w ) ) {
+    for( i=rmin; i<rmax; i++ ) {
+      colind = mint_weights_colind( w, i );
+      jmax = mint_weights_rowlen( w, i );
+      for( j=0; j<jmax; j++ )
+	to[ target ][ i ] += w[0][i][j] * from[ 1 ] [ colind[j] ];
+    }
+  } else {
+    for( i=rmin; i<rmax; i++ ) {
+      for( j=0; j<cols; j++ ) {
+	to[target][i] += w[0][i][j] * from[1][j];
+      }
+    }
+  }
+}
 
-/*   x1 = old[0] - h; */
-/*   x2 = old[0] + h; */
-/*   dx = x2 - x1; */
+void mint_weights_hebbian( mint_weights w, mint_nodes pre,
+			   mint_nodes post, int rmin, int rmax, float *p ) {
+  MINT_WEIGHTS_LOOP_INIT;
 
-/*   n[0][i] = x1; */
-/*   mint_nodes_update( n, i, i ); */
-/*   y1 = n[1][i]; */
+  MINT_WEIGHTS_LOOP( w,
+		     w[0][i][k] += p[0] * ( ( pre[1][j] - p[1] ) *
+					    ( post[1][i] - p[2] ) )
+		     - p[3] * w[0][i][k] );
+}
 
-/*   n[0][i] = x2; */
-/*   mint_nodes_update( n, i, i ); */
-/*   y2 = n[1][i]; */
+
+#include <float.h>
+
+/* the algorithm for numerical differentiation is derived from
+   en.wikipedia.org/wiki/Numerical_differentiation, merging the second
+   two-point method with the 'practical considerations' that
+   follow. */
+
+static
+float numerical_derivative( mint_nodes n, int i ) {
+  int j, s;
+  float *old;
+  float x1, y1, x2, y2, h;
+  volatile float dx;
+
+  h = sqrt( FLT_MIN ) * n[0][i]; /* finite difference step */
+
+  /* record neuron state to be able to restore it later */
+  s = 2 + mint_nodes_states( n );
+  old = malloc( s * sizeof(float) );
+  for( j=0; j<s; i++ )
+    old[j] = n[j][i];
+
+  x1 = old[0] - h;
+  x2 = old[0] + h;
+  dx = x2 - x1;
+
+  n[0][i] = x1;
+  mint_nodes_update( n, i, i );
+  y1 = n[1][i];
+
+  n[0][i] = x2;
+  mint_nodes_update( n, i, i );
+  y2 = n[1][i];
   
-/*   /\* restore neuron state *\/ */
-/*   for( j=0; j<s; j++ ) */
-/*     n[j][i] = old[j]; */
+  /* restore neuron state */
+  for( j=0; j<s; j++ )
+    n[j][i] = old[j];
 
-/*   free( old ); */
+  free( old );
 
-/*   return ( y2 - y1 ) / dx; */
-/* } */
+  return ( y2 - y1 ) / dx;
+}
 
-/* void mint_weights_delta( mint_weights w, mint_nodes pre,  */
-/* 			 mint_nodes post, int rmin, int rmax, float *p ) { */
-/*   MINT_WEIGHTS_LOOP_INIT; */
+void mint_weights_delta( mint_weights w, mint_nodes pre,
+			 mint_nodes post, int rmin, int rmax, float *p ) {
+  MINT_WEIGHTS_LOOP_INIT;
 
-/*   MINT_UNUSED( j ); */
+  MINT_UNUSED( j );
 
   float d;
 
