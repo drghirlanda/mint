@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <time.h>
 #include <math.h>
-#include <FreeImage.h>
 
 /* set input */
 void receive_input( mint_nodes in ) {
@@ -21,9 +20,12 @@ int main( void ) {
 
   mint_random_seed( time(0) );
 
+  printf( "creating network...\n" );
+  fflush( stdout );
   file = fopen( "speed.arc", "r" );
   net = mint_network_load( file );
   fclose( file );
+  printf( "...done\n" );
 
   file = fopen( "speed.dot", "w" );
   mint_network_graph( net, file );
@@ -35,13 +37,15 @@ int main( void ) {
   while(1) {
     t1 = clock();
     for( i=0; i<times; i++ ) {
-      receive_input( mint_network_nodes( net, 0 ) );
+      receive_input( mint_network_get_nodes( net, 0 ) );
       mint_network_operate( net );
     }
     t2 = clock();
     t = (t2 - t1) / CLOCKS_PER_SEC;
     printf( "%f %.0f\n", t, times );
-    if( t<0.95 )
+    if( times<1 )
+      break;
+    else if( t<0.95 )
       times *= 1.25;
     else if( t>1.05 )
       times *= 0.75;
