@@ -63,6 +63,28 @@ void mint_node_logistic( mint_nodes n, int min, int max, float *p ) {
   }
 }
 
+void mint_node_sigmoid( mint_nodes n, int min, int max, float *p ) {
+  int i;
+  float x, zero, slope, *in, *out;
+  float x0 = 6. + 2./3.;
+  
+  zero = p[0];
+  slope = p[1];
+  SET_VAR( n, in, p[2] );
+  SET_VAR( n, out, p[3] );
+  
+  for( i=min; i<max; i++ ) {
+    x = in[i];
+    x *= slope;                       /* scaling */
+    x -= (.5 - zero) / (.075 + zero); /* translation */
+    if( x < -x0 ) 
+      out[i] = 0.;
+    else if( x < x0 ) 
+      out[i] = .5 + .575 * x / ( 1 + fabs(x) );
+    else 
+      out[i] = 1.;
+  }
+}
 
 /* leaky integrator */
 void mint_node_integrator( mint_nodes n, int min, int max, float *p ) {
