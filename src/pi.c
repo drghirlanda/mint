@@ -71,6 +71,9 @@ void mint_pi_servomotor( mint_nodes n, int min, int max, float *p ) {
   int control_pin, init_done, set_mode, enable_pin, output_pin,
     rot_min, rot_max;
 
+  MINT_UNUSED( min );
+  MINT_UNUSED( max );
+
   control_pin = p[0];
   rot_min = p[1];
   rot_max = p[2];
@@ -130,6 +133,9 @@ void mint_pi_dcmotor( mint_nodes n, int min, int max, float *p ) {
   int enable_pin, output_pin1, output_pin2;
   int init_done, set_mode;
   float zero_point, threshold;
+
+  MINT_UNUSED( min );
+  MINT_UNUSED( max );
 
   enable_pin = p[0];
   output_pin1 = p[1];
@@ -215,6 +221,9 @@ void mint_pi_gpiosensor_callback( int gpio, int level,
   struct mint_op *op;
   int i, size, fromvar;
   float increment, *from;
+
+  MINT_UNUSED( gpio );
+  MINT_UNUSED( tick );
 
   /* get nodes object and retrieve increment param from gpiosensor op */
   n = (mint_nodes) userdata;
