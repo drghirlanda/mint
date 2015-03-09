@@ -1,7 +1,14 @@
 network
-nodes exc size 100 integrator
-nodes inh size 10000 integrator 
-nodes output size 1 
-weights exc-inh sparse uniform 0 1 .2
-weights inh-exc sparse uniform -1 0 .2
-weights exc-output
+threads 4 0 1
+nodes n0 size 1000 logistic
+nodes n1 size 1000 logistic 
+nodes n2 size 1000 logistic 
+nodes n3 size 1000 logistic 
+weights n0-n1 uniform 0 1
+weights n1-n0 uniform 0 1
+weights n1-n2 uniform 0 1
+weights n2-n1 uniform 0 1
+weights n2-n3 uniform 0 1
+weights n3-n2 uniform 0 1
+
+
