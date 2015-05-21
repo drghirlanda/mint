@@ -35,16 +35,23 @@ void mint_pi_servomotor( mint_nodes n, int, int, float * );
 
     Parameters: 0: GPIO pin number to enable the motor controller.
 
-               1,2: GPIO pin numbers for the output pins
+               1: GPIO pin to drive motor forward. If -1, the motor
+               is never driven forward (default: -1).
 
-	       3: A value denoting the zero point (node activity above
-                  or below this value will drive the motor in one or
-                  ther other direction, default 0.5)
+               2: GPIO pin to drive motor backward. If -1, the motor
+               is never driven forward (default: -1).
 
-	       4: Activity threshold (departures from the zero point
+	       3: GPIO pin to enable the motor controller, or -1 if
+	       not needed (default: -1).
+
+	       4: A value denoting the zero point. Node activity above
+	        this value will drive the motor forward, and below
+	        this value backward (default: 0.5).
+
+	       5: Activity threshold (departures from the zero point
                   below threshold are ignored, default 0.1). 
 
-	       5: Whether mode of GPIO pins should be set once for all
+	       6: Whether mode of GPIO pins should be set once for all
                   (parameter value of 0), or every time the op is
                   called (parameter value of 1, default 0). Setting
                   the output mode once for all should be safe unless
