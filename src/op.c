@@ -25,6 +25,7 @@ struct mint_ops {
 
 /* default parameter values for ops that need them */
 static float node_logistic_param[] = { 0.1, 1, 0, 1 };
+static float node_identity_param[] = { 0, 1 };
 static float node_fastlogistic_param[] = { 0.1, 1, 0, 1 };
 static float node_sigmoid_param[] = { 0.1, 1, 0, 1 };
 static float node_integrator_param[] = { 1., 0., 0, 1 };
@@ -100,7 +101,8 @@ static struct mint_op mint_op_static_table[] = {
   { "habituation",mint_op_nodes_update,mint_node_habituation,
     4,node_habituation_param },
 
-  { "identity", mint_op_nodes_update,mint_node_identity,0,0 },
+  { "identity", mint_op_nodes_update,mint_node_identity,2,
+    node_identity_param },
 
   { "gradient", mint_op_nodes_update,mint_node_gradient,5,
     node_gradient_param },
