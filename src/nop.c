@@ -240,7 +240,8 @@ void mint_node_identity( mint_nodes n, int min, int max, float *p ) {
   MINT_UNUSED( min );
   MINT_UNUSED( max );
   MINT_UNUSED( p );
-  memcpy( n[1], n[0], mint_nodes_size(n) * sizeof(float) );
+  memcpy( n[ (int)p[1] ], n[ (int)p[0] ], 
+	  mint_nodes_size(n) * sizeof(float) );
 }
 
 
