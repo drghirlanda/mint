@@ -241,7 +241,7 @@ void mint_pi_gpiosensor_callback( int gpio, int level,
 
   size = mint_nodes_size( n );
   for( i=0; i<size; i++ )
-    store[i] += increment * level;
+    store[i] += increment;
 }
 
 /* here we first arrange for pigpio to call the function above, which
@@ -251,11 +251,11 @@ void mint_pi_gpiosensor_callback( int gpio, int level,
    into param 4 of the op). */
 void mint_pi_gpiosensor( mint_nodes n, int min, int max, float *p ) {
   int input_pin, i;
-  float *from, *to;
+  float *store, *to;
 
-  if( !p[4] ) { /* we still have to set things up */
+  if( ! (int)p[4] ) { /* we still have to set things up */
     input_pin = p[0];
-    mint_check( input_pin != -1, "input_pin not set (1st op parameter)" );
+    mint_check( input_pin!=-1, "input_pin not set (1st op parameter)" );
 
     i = gpioSetMode( input_pin, PI_INPUT );
     mint_check( i==0, "cannot set read mode on input_pin" );
@@ -263,16 +263,18 @@ void mint_pi_gpiosensor( mint_nodes n, int min, int max, float *p ) {
     i = gpioSetPullUpDown( input_pin, PI_PUD_DOWN );
     mint_check( i==0, "cannot set pull down resistor on input_pin" );
 
-    gpioSetAlertFuncEx( input_pin, mint_pi_gpiosensor_callback, (void *)n );
+    gpioSetAlertFuncEx( input_pin, mint_pi_gpiosensor_callback, 
+			(void *)n );
 
     p[4] = 1; /* setup done */
   }
 
-  from = n[ (int)p[2] ]; /* the state variable accruing changes */
-  to = n[ (int)p[3] ];   
+  store = n[ (int)p[3] ]; /* the state variable accruing changes */
+  to = n[ (int)p[2] ];   
 
   for( i=min; i<max; i++ ) {
-    to[i] += from[i];
-    from[i] = 0;
+    to[i] += store[i];
+    store[i] = 0;
   }
 }
+
