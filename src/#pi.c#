@@ -183,7 +183,7 @@ void mint_pi_dcmotor( mint_nodes n, int min, int max, float *p ) {
      is above it by the same amount, and we swap the output pins to
      drive the motor in reverse */
   if( activity<zero_point ) {
-    activity = zero_point + (zero_point - activity);
+    activity = 2*zero_point - activity;
     i = output_pin2;
     output_pin2 = output_pin1;
     output_pin1 = i;
