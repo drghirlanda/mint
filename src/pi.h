@@ -15,65 +15,74 @@ void mint_pi_init( void );
    control servo position. An activity of 0 means complete
    anticlockwise, 0.5 means center, and 1 complete clockwise. 
 
-   Parameters: 0: GPIO pin number for the servo motor control
+   Parameters: 
 
-               1: Minimum pulse value (complete anticlockwise)
+   0: GPIO pin number for the servo motor control
 
-	       2: Maximum pulse value (complete clockwise)
+   1: Minimum pulse value (complete anticlockwise)
 
-	       3: Whether to set the GPIO mode once for all (0) or
-	          just once (1, default 0).
+   2: Maximum pulse value (complete clockwise)
 
-	       4,5: GPIO pins to enable a motor controller (parameter
-	            4) and to give power to the servo (parameter
-	            5). These parameters default to -1, which means no
-	            motor controller is being used. */
+   3: Whether to set the GPIO mode once for all (0) or
+   just once (1, default 0).
+
+   4,5: GPIO pins to enable a motor controller (parameter
+   4) and to give power to the servo (parameter
+   5). These parameters default to -1, which means no
+   motor controller is being used. */
 void mint_pi_servomotor( mint_nodes n, int, int, float * );
 
 /** An op to have mint nodes control a dc motor on the Raspberry Pi,
     using a motor controller such as the L293D or SN754410. 
 
-    Parameters: 0: GPIO pin number to enable the motor controller.
+    Parameters: 
 
-               1: GPIO pin to drive motor forward. If -1, the motor
-               is never driven forward (default: -1).
+    0: GPIO pin number to enable the motor controller.
 
-               2: GPIO pin to drive motor backward. If -1, the motor
-               is never driven forward (default: -1).
+    1: GPIO pin to drive motor forward. If -1, the motor is never
+    driven forward (default: -1).
 
-	       3: GPIO pin to enable the motor controller, or -1 if
-	       not needed (default: -1).
+    2: GPIO pin to drive motor backward. If -1, the motor is never
+    driven forward (default: -1).
 
-	       4: A value denoting the zero point. Node activity above
-	        this value will drive the motor forward, and below
-	        this value backward (default: 0.5).
+    3: GPIO pin to enable the motor controller, or -1 if
+    not needed (default: -1).
 
-	       5: Activity threshold (departures from the zero point
-                  below threshold are ignored, default 0.1). 
+    4: A value denoting the zero point. Node activity above
+    this value will drive the motor forward, and below
+    this value backward (default: 0.5).
+    
+    5: Activity threshold (departures from the zero point
+    below threshold are ignored, default 0.1). 
+    
+    6: Whether mode of GPIO pins should be set once for all
+    (parameter value of 0), or every time the op is
+    called (parameter value of 1, default 0). Setting
+    the output mode once for all should be safe unless
+    someoene is also reading from the same pin.
 
-	       6: Whether mode of GPIO pins should be set once for all
-                  (parameter value of 0), or every time the op is
-                  called (parameter value of 1, default 0). Setting
-                  the output mode once for all should be safe unless
-                  someoene is also reading from the same pin.
-
-     NOTES: For exmaple, node activity between 0.6 and 1 will drive
-     the motor in one direction (at increasing speed), activity below
-     0.4 will drive it in the other direction (at increasing speed),
-     and activity between 0.4 and 0.6 will leave the motor off.*/
+    NOTES: For exmaple, node activity between 0.6 and 1 will drive the
+    motor in one direction (at increasing speed), activity below 0.4
+    will drive it in the other direction (at increasing speed), and
+    activity between 0.4 and 0.6 will leave the motor off.*/
 void mint_pi_dcmotor( mint_nodes n, int, int, float * );
 
 /** An op to read from a sensor attached to a GPIO pin. 
 
-    Parameters: 0: GPIO pin number to read from.
+    Parameters: 
 
-                1: Scale factor (default 1). Node input is increment
-                by the value read from the GPIO pin times this scale
-                factor.
+    0: GPIO pin number to read from.
 
-		2: Node state variable to which increments are added
-		(default 0, i.e., the node input variable).
- 
+    1: Scale factor (default 1). Node input is increment
+    by the value read from the GPIO pin times this scale
+    factor.
+
+    2: Node state variable to which increments are added
+    (default 0, i.e., the node input variable).
+    
+    3: Node state variable that stores increments temporarily (default
+    2).
+
     NOTE: A GPIO might change level at a time when the network is not
     being updated. This is taken care of (read pi.c if you want the
     details), so whenever the nodes are updated they will see in input

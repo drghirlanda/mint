@@ -29,14 +29,14 @@ hasfeature() {
 getlibs() {
     LIBS=""
     if hasfeature $1 "threads"; then
-	LIBS="$LIBS -lpthread"
+	LIBS="$LIBS -pthread"
     fi
     if hasfeature $1 "image"; then
 	SDLLIBS=$(sdl-config --libs)
 	LIBS="$LIBS $SDLLIBS -lSDL_image -lSDL_gfx -lSDL_ttf"
     fi
     if hasfeature $1 "pi"; then
-	LIBS="$LIBS -lpigpio -lrt -lpthread"
+	LIBS="$LIBS -lpigpio -lrt -pthread"
     fi
     echo $LIBS
 }

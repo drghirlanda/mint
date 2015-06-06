@@ -29,6 +29,11 @@ DONE  - given that we have moved op-running functions for weights, nodes,
     run threaded or non-threaded spread when a spread exists and no
     other network_operate ops exist. 
 
+  - port to SDL2
+
+  - move interaction with camshot to shared memory. would also make
+    camera support independent of SDL_image
+
   - document the new event system for nodes (see op.c and image.c,
     where the event loop resides)
 
@@ -40,7 +45,12 @@ DONE  - given that we have moved op-running functions for weights, nodes,
   - expand use of WEIGHTS_LOOP macro
 
   - keep track of pointers in spread reset of matrix targets, to avoid
-    potentially resetting twice
+    potentially resetting twice?
+
+  - provide a mechanism to set node variable to a given value; needed
+    for proper resetting of nodes that are not targets of any
+    matrix. perhaps split noise into noise_set and noise_add, or add a
+    flaf to switch between behaviors?
 
   - have MINT save network state and exit cleanly on SIGUSR? it should
     not be hard to write a signal handler and have network_load add
