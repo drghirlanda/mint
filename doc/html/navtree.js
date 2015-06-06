@@ -17,7 +17,7 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "camera_8h.html",
-"weights_8h.html#aa8952ca0ae2b93c3d1792b57b0d563bc"
+"weights_8h.html#a60b20eb5ab9679a8f616f310a8aa4fb1"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
@@ -130,7 +130,7 @@ function createIndent(o,domNode,node,level)
     span.style.display = 'inline-block';
     span.style.width   = 16*(level+1)+'px';
     span.style.height  = '22px';
-    span.innerHTML = '&#160;';
+    span.innerHTML = '&nbsp;';
     domNode.appendChild(span);
   } 
 }

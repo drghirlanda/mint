@@ -1,5 +1,7 @@
 var wop_8h =
 [
+    [ "MINT_WEIGHTS_LOOP", "wop_8h.html#a501a49015b5080381a0ae63677c5bf40", null ],
+    [ "MINT_WEIGHTS_LOOP_INIT", "wop_8h.html#a93da0d9cb3ae108420d0db849e8eb192", null ],
     [ "mint_weights_delta", "wop_8h.html#a5ef3b7a19a6ee4236da8740709054059", null ],
     [ "mint_weights_hebbian", "wop_8h.html#a806b291cd3ccd51d0117f5289cbca1fc", null ],
     [ "mint_weights_init_cols", "wop_8h.html#ac8ebae5c17ad97a9120afaf4fc4abe9a", null ],

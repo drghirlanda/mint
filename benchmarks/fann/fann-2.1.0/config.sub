@@ -1330,7 +1330,7 @@ case $os in
 		os=-linux-dietlibc
 		;;
 	-linux*)
-		os=`echo $os | sed -e 's|linux|linux-gnu|'`
+		os=`echo $os`
 		;;
 	-sunos5*)
 		os=`echo $os | sed -e 's|sunos5|solaris2|'`
