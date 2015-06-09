@@ -163,22 +163,15 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>An op to have mint nodes control a dc motor on the Raspberry Pi, using a motor controller such as the L293D or SN754410. </p>
-<p>Parameters: 0: GPIO pin number to enable the motor controller. </p>
-<pre class="fragment">       1,2: GPIO pin numbers for the output pins
-
-       3: A value denoting the zero point (node activity above
-          or below this value will drive the motor in one or
-          ther other direction, default 0.5)
-
-       4: Activity threshold (departures from the zero point
-          below threshold are ignored, default 0.1). 
-
-       5: Whether mode of GPIO pins should be set once for all
-          (parameter value of 0), or every time the op is
-          called (parameter value of 1, default 0). Setting
-          the output mode once for all should be safe unless
-          someoene is also reading from the same pin.
-</pre><p>NOTES: For exmaple, node activity between 0.6 and 1 will drive the motor in one direction (at increasing speed), activity below 0.4 will drive it in the other direction (at increasing speed), and activity between 0.4 and 0.6 will leave the motor off. </p>
+<p>Parameters:</p>
+<p>0: GPIO pin number to enable the motor controller.</p>
+<p>1: GPIO pin to drive motor forward. If -1, the motor is never driven forward (default: -1).</p>
+<p>2: GPIO pin to drive motor backward. If -1, the motor is never driven forward (default: -1).</p>
+<p>3: GPIO pin to enable the motor controller, or -1 if not needed (default: -1).</p>
+<p>4: A value denoting the zero point. Node activity above this value will drive the motor forward, and below this value backward (default: 0.5).</p>
+<p>5: Activity threshold (departures from the zero point below threshold are ignored, default 0.1).</p>
+<p>6: Whether mode of GPIO pins should be set once for all (parameter value of 0), or every time the op is called (parameter value of 1, default 0). Setting the output mode once for all should be safe unless someoene is also reading from the same pin.</p>
+<p>NOTES: For exmaple, node activity between 0.6 and 1 will drive the motor in one direction (at increasing speed), activity below 0.4 will drive it in the other direction (at increasing speed), and activity between 0.4 and 0.6 will leave the motor off. </p>
 
 </div>
 </div>
@@ -219,14 +212,12 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>An op to read from a sensor attached to a GPIO pin. </p>
-<p>Parameters: 0: GPIO pin number to read from. </p>
-<pre class="fragment">        1: Scale factor (default 1). Node input is increment
-        by the value read from the GPIO pin times this scale
-        factor.
-
-    2: Node state variable to which increments are added
-    (default 0, i.e., the node input variable).
-</pre><p>NOTE: A GPIO might change level at a time when the network is not being updated. This is taken care of (read pi.c if you want the details), so whenever the nodes are updated they will see in input all increments accrued since the last time they have been updated. </p>
+<p>Parameters:</p>
+<p>0: GPIO pin number to read from.</p>
+<p>1: Scale factor (default 1). Node input is increment by the value read from the GPIO pin times this scale factor.</p>
+<p>2: Node state variable to which increments are added (default 0, i.e., the node input variable).</p>
+<p>3: Node state variable that stores increments temporarily (default 2).</p>
+<p>NOTE: A GPIO might change level at a time when the network is not being updated. This is taken care of (read pi.c if you want the details), so whenever the nodes are updated they will see in input all increments accrued since the last time they have been updated. </p>
 
 </div>
 </div>
@@ -287,18 +278,13 @@ Functions</h2></td></tr>
 
 <p>An op to have mint nodes control a servo motor on the Raspberry Pi. </p>
 <p>Average node activity (assumed between 0 and 1) is used to control servo position. An activity of 0 means complete anticlockwise, 0.5 means center, and 1 complete clockwise.</p>
-<p>Parameters: 0: GPIO pin number for the servo motor control </p>
-<pre class="fragment">        1: Minimum pulse value (complete anticlockwise)
+<p>Parameters:</p>
+<p>0: GPIO pin number for the servo motor control</p>
+<p>1: Minimum pulse value (complete anticlockwise)</p>
+<p>2: Maximum pulse value (complete clockwise)</p>
+<p>3: Whether to set the GPIO mode once for all (0) or just once (1, default 0).</p>
+<p>4,5: GPIO pins to enable a motor controller (parameter 4) and to give power to the servo (parameter 5). These parameters default to -1, which means no motor controller is being used. </p>
 
-        2: Maximum pulse value (complete clockwise)
-
-        3: Whether to set the GPIO mode once for all (0) or
-           just once (1, default 0).
-
-        4,5: GPIO pins to enable a motor controller (parameter
-             4) and to give power to the servo (parameter
-             5). These parameters default to -1, which means no
-             motor controller is being used.  </pre> 
 </div>
 </div>
 </div><!-- contents -->
@@ -307,7 +293,7 @@ Functions</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="pi_8h.html">pi.h</a></li>
-    <li class="footer">Generated on Sat May 2 2015 15:34:35 for mint by
+    <li class="footer">Generated on Mon Jun 8 2015 11:38:31 for mint by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.5 </li>
   </ul>

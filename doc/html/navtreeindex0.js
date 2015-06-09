@@ -1,9 +1,8 @@
 var NAVTREEINDEX0 =
 {
 "camera_8h.html":[0,0,0,0],
-"camera_8h.html#aa8189ea3a9e0bc5f3583a7a51ef614c2":[0,0,0,0,2],
-"camera_8h.html#ae502244cbf9e0ddd068eec444d490eb0":[0,0,0,0,1],
-"camera_8h.html#ae592ca53ee128e3aaa2ed09e38ec5e67":[0,0,0,0,0],
+"camera_8h.html#aa8189ea3a9e0bc5f3583a7a51ef614c2":[0,0,0,0,1],
+"camera_8h.html#ae502244cbf9e0ddd068eec444d490eb0":[0,0,0,0,0],
 "camera_8h_source.html":[0,0,0,0],
 "dir_68267d1309a1af8e8297ef4c3efbcdba.html":[0,0,0],
 "files.html":[0,0],
@@ -22,8 +21,8 @@ var NAVTREEINDEX0 =
 "globals_0x77.html":[0,1,0,11],
 "globals_defs.html":[0,1,4],
 "globals_eval.html":[0,1,3],
-"globals_func.html":[0,1,1,0],
 "globals_func.html":[0,1,1],
+"globals_func.html":[0,1,1,0],
 "globals_func_0x64.html":[0,1,1,1],
 "globals_func_0x69.html":[0,1,1,2],
 "globals_func_0x6b.html":[0,1,1,3],
@@ -249,5 +248,6 @@ var NAVTREEINDEX0 =
 "weights_8h.html#a3b973ed77ed2e0b337a266f1555b8179":[0,0,0,13,30],
 "weights_8h.html#a3dedb6b8910d1d3412a3185f0370e77b":[0,0,0,13,24],
 "weights_8h.html#a4f7fbffa7cf6c8d39dd49fd45bac1ee0":[0,0,0,13,7],
-"weights_8h.html#a5aab812cf9911b2ee3c5026cd86d6b38":[0,0,0,13,23]
+"weights_8h.html#a5aab812cf9911b2ee3c5026cd86d6b38":[0,0,0,13,23],
+"weights_8h.html#a60b20eb5ab9679a8f616f310a8aa4fb1":[0,0,0,13,26]
 };

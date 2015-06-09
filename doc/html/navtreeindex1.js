@@ -1,6 +1,5 @@
 var NAVTREEINDEX1 =
 {
-"weights_8h.html#a60b20eb5ab9679a8f616f310a8aa4fb1":[0,0,0,13,26],
 "weights_8h.html#a62fb825427596c31a12c14ad46c7a089":[0,0,0,13,35],
 "weights_8h.html#a6e65bf28b95d51a531840972aadf30a7":[0,0,0,13,33],
 "weights_8h.html#a7555e68f164693dfacf8f9d2a9657656":[0,0,0,13,6],
