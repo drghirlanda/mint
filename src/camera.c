@@ -112,7 +112,6 @@ void mint_network_camera( struct mint_network *net, float *p ) {
   struct mint_ops *node_ops;
   struct mint_op *op;
   float r, g, b;
-  float bounds[] = {0, 1, -1};
   uint8_t *img, *pixel;
   struct timespec t1, t2;
 
@@ -189,9 +188,6 @@ void mint_network_camera( struct mint_network *net, float *p ) {
 	  pixel += 3;
 	}
       }
-
-      bounds[2] = var;
-      mint_node_bounded( n, 0, rows*cols, bounds );
     }
   }
   sem_up( &semaphore );
