@@ -37,7 +37,7 @@ static float node_spikes_param[] = { 5 };
 static float node_size_param[] = { -1 };
 static float node_rows_param[] = { -1 };
 static float node_states_param[] = { 0 };
-static float node_color_param[] = { 1, 1 };
+static float node_color_param[] = { 1, 1, 1, 1 };
 static float node_habituation_param[] = { 1, 0, 2, 1 };
 static float node_gradient_param[] = { 1, 0, 2, 0.01, 0 };
 
@@ -65,7 +65,7 @@ static float network_clocked_param[] = { 25, 0 };
 
     NOTE: change this whenever adding or removing from the table
     above, otherwise crashes can occur when adding ops! */
-#define mint_nop_builtin 39
+#define mint_nop_builtin 37
 
 /* built-in ops */
 static struct mint_op mint_op_static_table[] = {
@@ -116,11 +116,7 @@ static struct mint_op mint_op_static_table[] = {
   { "states", mint_op_nodes_init, mint_node_states, 1, 
     node_states_param },
 
-  { "red", mint_op_nodes_init, mint_node_color, 2, node_color_param },
-
-  { "green", mint_op_nodes_init, mint_node_color, 2, node_color_param },
-
-  { "blue", mint_op_nodes_init, mint_node_color, 2, node_color_param },
+  { "color", mint_op_nodes_init, mint_node_color, 4, node_color_param },
 
   /* weights operate */
 

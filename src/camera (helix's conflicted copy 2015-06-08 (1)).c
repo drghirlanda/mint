@@ -105,8 +105,8 @@ void mint_camera_start( int width, int height ) {
 void mint_network_camera( struct mint_network *net, float *p ) {
   int groups, shared_memory_id, semaphore;
   int width, height, rows, cols, var; 
-  int i, k;
-  int xorig, yorig;
+  int i, j, k, *counts;
+  /* int xorig, yorig; */
   int x, y;
   mint_nodes n;
   struct mint_ops *node_ops;
@@ -174,25 +174,44 @@ void mint_network_camera( struct mint_network *net, float *p ) {
       mint_check( cols <= width, 
 		  "node array has more columns than camera image" );
 
+      /* in the loop below, we need to keep track of how many times a
+	 node is updated to ensure image normalization when scaling
+	 down in size. the counts array stores this information. */
+      counts = malloc( rows * cols * sizeof(int) ); 
+      for( k=0; k<rows*cols; k++ ) 
+	counts[k] = 0;
+
       mint_nodes_set( n, var, 0 ); /* set node variable to zero */
 
-      for( yorig=0; yorig<height; yorig++ ) {
-	for( xorig=0; xorig<width; xorig++ ) {
-	  x = xorig * ((float)cols / width);
-	  y = yorig * ((float)rows / height);
-	  k = x + y * cols;
-	  n[var][k] += r * img[0];
-	  n[var][k] += g * img[1];
-	  n[var][k] += b * img[2];
-	  n[var][k] /= 3*256;
-	  img += 3;
-	}
+      for( j=0; j<3*width*height; j+=3 ) {
+	x = ( (j/3) % cols ) * ((float)cols/width);
+	y = ( (j/3) / cols ) * ((float)rows/height);
+	k = x + y * cols;
+	printf( "%d -> (%d,%d) -> %d\n",
+		j, x, y, k );
+	n[var][k] += r * img[ j     ];
+	n[var][k] += g * img[ j + 1 ];
+	n[var][k] += b * img[ j + 2 ];
+	n[var][k] /= 3*256;
+	counts[k]++;
+	
+	/* if( x>cols/2 || y>rows/2 ) */
+	/*   n[var][k] = counts[k]; */
+	/* else */
+	/*   n[var][k] = 0; */
       }
 
+      for( k=0; k<rows*cols; k++ ) {
+	/* printf( "%d ", counts[k] ); */
+	n[var][k] /= counts[k];
+      }
+      /* printf( "\n" ); */
+
       bounds[2] = var;
-      mint_node_bounded( n, 0, rows*cols, bounds );
+      mint_node_bounded( n, 0, mint_nodes_size(n), bounds );
     }
   }
   sem_up( &semaphore );
   mint_camera_lock = 0;
+  free( counts );
 }
