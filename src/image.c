@@ -292,7 +292,6 @@ void mint_image_paste( const struct mint_image *image, mint_nodes n,
   Uint32 pixel, mask, shift, loss;
   struct mint_ops *ops;
   struct mint_op *op;
-  const char *name;
 
   surf = 0;
 
@@ -308,65 +307,59 @@ void mint_image_paste( const struct mint_image *image, mint_nodes n,
 
   /* go through all ops and process red, green, and blue ops only */
   ops = mint_nodes_get_ops( n );
-  for( i=0; i < mint_ops_size( ops ); i++ ) {
-    op = mint_ops_get( ops, i );
-    name = mint_op_name( op );
-    if( strcmp( name, "red" ) == 0 ) {
-      mask = image->surf->format->Rmask;
-      shift = image->surf->format->Rshift;
-      loss =  image->surf->format->Rloss;
-    } else if( strcmp( name, "green" ) == 0 ) {
-      mask = image->surf->format->Gmask;
-      shift = image->surf->format->Gshift;
-      loss =  image->surf->format->Gloss;
-    } else if( strcmp( name, "blue" ) == 0 ) {
-      mask = image->surf->format->Bmask;
-      shift = image->surf->format->Bshift;
-      loss =  image->surf->format->Bloss;
-    } else 
-      continue;
+  op = mint_ops_get_name( ops, "color", mint_op_nodes_init );
+  if( op ) {
+    var = mint_op_get_param( op, 3 );
+    mint_nodes_set( n, var, 0 );
+    for( i=0; i<3; i++ ) {
+      switch( i ) {
+      case 0:
+	mask = image->surf->format->Rmask;
+	shift = image->surf->format->Rshift;
+	loss =  image->surf->format->Rloss;
+	break;
+      case 1:
+	mask = image->surf->format->Gmask;
+	shift = image->surf->format->Gshift;
+	loss =  image->surf->format->Gloss;
+	break;
+      case 2:
+	mask = image->surf->format->Bmask;
+	shift = image->surf->format->Bshift;
+	loss =  image->surf->format->Bloss;
+      }
       
-    j = mint_ops_find( ops, "rows", mint_op_nodes_init );
-    if( j == -1 ) nrows = 1; 
-    else nrows = mint_op_get_param( mint_ops_get(ops, j), 0 );
-    size = mint_nodes_size( n );
-    ncols = size / nrows;
+      j = mint_ops_find( ops, "rows", mint_op_nodes_init );
+      if( j == -1 ) nrows = 1; 
+      else nrows = mint_op_get_param( mint_ops_get(ops, j), 0 );
+      size = mint_nodes_size( n );
+      ncols = size / nrows;
 
-    /* we set surf only here to potentially save us an image rescale
-       if there are no image ops for this node group. if surf is
-       already nonzero, the job has already been done erlier in the
-       loop, and we can just continue  */
-    if( !surf ) {
-      if( scale && (nrows != irows || ncols != icols) )
-	surf = zoomSurface( image->surf, 
-			    ((float)ncols)/icols, 
-			    ((float)nrows)/irows, SMOOTHING_OFF );
-      else
-	surf = image->surf;
-    }
+      if( !surf ) {
+	if( scale && (nrows != irows || ncols != icols) )
+	  surf = zoomSurface( image->surf, 
+			      ((float)ncols)/icols, 
+			      ((float)nrows)/irows, SMOOTHING_OFF );
+	else
+	  surf = image->surf;
+      }
       
-    var = mint_op_get_param( op, 1 );
-    weight = mint_op_get_param( op, 0 );
+      weight = mint_op_get_param( op, i );
 
-    if( !init[var] ) {
-      mint_nodes_set( n, var, 0 );
-      init[var] = 1;
-    }
-    
-    for ( y=0; y<irows; y++ ) {
-      for ( x=0; x<icols; x++ ) {
-	idx = y+ypos + nrows*(x+xpos);
-	if( idx>=0 && idx<size ) {
-	  pixel = getpixel( surf, x, y );
-	  pixel = pixel & mask;
-	  pixel = pixel >> shift;
-	  intensity = (Uint8)( pixel << loss );
-	  n[ var ][ idx ] += weight * intensity / 255;
+      for ( y=0; y<irows; y++ ) {
+	for ( x=0; x<icols; x++ ) {
+	  idx = y+ypos + nrows*(x+xpos);
+	  if( idx>=0 && idx<size ) {
+	    pixel = getpixel( surf, x, y );
+	    pixel = pixel & mask;
+	    pixel = pixel >> shift;
+	    intensity = (Uint8)( pixel << loss );
+	    n[ var ][ idx ] += weight * intensity / 255;
+	  }
 	}
       }
     }
   }
-
   if( surf != image->surf )
     SDL_FreeSurface( surf );
   free( init );
