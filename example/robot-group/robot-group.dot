@@ -1,9 +1,0 @@
-digraph network {
-rankdir=LR
-node [fixedsize=true height=1 shape=circle fontname=Helvetica]
-edge [fontsize=10 fontname=Helvetica]
-n0 [label="lr\n3"]
-n1 [label="motors\n2"]
-n0 -> n0 [label="6"]
-n0 -> n1 [label="4"]
-}
