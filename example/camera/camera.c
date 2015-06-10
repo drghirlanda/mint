@@ -8,7 +8,8 @@
 int main( void ) {
   struct mint_network *net;
   FILE *file;
-  
+  int i=0;
+
   mint_image_init();
   mint_camera_init();
 
@@ -16,7 +17,7 @@ int main( void ) {
   net = mint_network_load( file );
   fclose( file );
 
-  for( ;; ) {
+  for( i=0; i<1000; i++ ) {
     mint_network_operate( net );
   }
 
