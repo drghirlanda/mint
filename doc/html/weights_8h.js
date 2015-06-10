@@ -1,6 +1,5 @@
 var weights_8h =
 [
-    [ "mint_weights_loop", "weights_8h.html#a1c4dd4d8df9cdac5d35216d4a6afb9ba", null ],
     [ "mint_weights", "weights_8h.html#ae961a182200b888668d2767344824741", null ],
     [ "mint_weights_colind", "weights_8h.html#ad9c0393f7787886f00822ac1f5c89986", null ],
     [ "mint_weights_cols", "weights_8h.html#ab734c663b28688e1a14ded98aa8dd5e5", null ],
@@ -11,7 +10,7 @@ var weights_8h =
     [ "mint_weights_freeze", "weights_8h.html#a4f7fbffa7cf6c8d39dd49fd45bac1ee0", null ],
     [ "mint_weights_frozen", "weights_8h.html#a7d5b7b43789b78764ce7e854cc9e4b83", null ],
     [ "mint_weights_get_from", "weights_8h.html#a177ffe08b97f1d698c906b3726503f68", null ],
-    [ "mint_weights_get_name", "weights_8h.html#aa8952ca0ae2b93c3d1792b57b0d563bc", null ],
+    [ "mint_weights_get_name", "weights_8h.html#a265885d54acdb45c5d263cd4c6946e63", null ],
     [ "mint_weights_get_ops", "weights_8h.html#aa90740fb512226e40324ffffb25c05b4", null ],
     [ "mint_weights_get_property", "weights_8h.html#a263ae2185f5e5bdb218859ebccead120", null ],
     [ "mint_weights_get_target", "weights_8h.html#ae2fb1a0d9c24668d9226c259dfc34f8b", null ],
@@ -28,6 +27,7 @@ var weights_8h =
     [ "mint_weights_prune", "weights_8h.html#a3dedb6b8910d1d3412a3185f0370e77b", null ],
     [ "mint_weights_rowlen", "weights_8h.html#adec9b0c1041def699cd258f419ccf07b", null ],
     [ "mint_weights_rows", "weights_8h.html#a60b20eb5ab9679a8f616f310a8aa4fb1", null ],
+    [ "mint_weights_run", "weights_8h.html#a1ea434694ab77eba8b6b0602b4b05151", null ],
     [ "mint_weights_save", "weights_8h.html#ac2501fdfd2f20d28415403267ef97409", null ],
     [ "mint_weights_set", "weights_8h.html#aa602de02734adc7dfaf6762da440257a", null ],
     [ "mint_weights_set_from", "weights_8h.html#a3b973ed77ed2e0b337a266f1555b8179", null ],

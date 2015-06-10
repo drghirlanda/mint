@@ -5,7 +5,7 @@ TARGETS = _libfann.so
 
 PYTHON=python2.3
 FANN_DIR="../.."
-LIBS=-L. -L/usr/local/lib -L/usr/bin -l$(PYTHON) $(FANN_DIR)/src/fann*.o
+LIBS=-L. -L/usr/lib -L/usr/bin -l$(PYTHON) $(FANN_DIR)/src/fann*.o
 
 all: $(TARGETS)
 	

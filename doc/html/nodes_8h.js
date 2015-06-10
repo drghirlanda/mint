@@ -6,7 +6,7 @@ var nodes_8h =
     [ "mint_nodes_cpy", "nodes_8h.html#a9d7c0ebbf15a4034e1a2b14d67dd1eac", null ],
     [ "mint_nodes_del", "nodes_8h.html#aa7748e90307b2cf671c654494497e64d", null ],
     [ "mint_nodes_dup", "nodes_8h.html#ae7efd6c59201006df0f54bc2e92f26d2", null ],
-    [ "mint_nodes_get_name", "nodes_8h.html#add804bae131c1ed114f98ecfc454b1ea", null ],
+    [ "mint_nodes_get_name", "nodes_8h.html#ac3486cfe4aa2476dc1a46b9a08f9cdcc", null ],
     [ "mint_nodes_get_ops", "nodes_8h.html#a47cfe27bf6b6eb779cca3d9d0aaf8fe5", null ],
     [ "mint_nodes_get_property", "nodes_8h.html#a006bcb0382118ca41b0700352c96e8a7", null ],
     [ "mint_nodes_index2coord", "nodes_8h.html#a0a1af9deeb7f4a5f3cd7236287229d76", null ],

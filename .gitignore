@@ -7,6 +7,7 @@
 *.blg
 *.jpg
 *.bmp
+*.dot
 camshot/camshot
 example/dcmotor/dcmotor
 example/servomotor/servomotor
@@ -22,5 +23,5 @@ example/speed/speed
 example/camera/camera
 example/camera+lateral/camera+lateral
 mint-*.zip
-
+doc/html
 gh-pages/
