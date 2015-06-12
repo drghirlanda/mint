@@ -103,8 +103,9 @@ void mint_camera_start( int width, int height ) {
 } 
 
 void mint_network_camera( struct mint_network *net, float *p ) {
-  int groups, shared_memory_id, semaphore;
-  int width, height, rows, cols, var; 
+  int groups, shared_memory_id;
+  int semaphore;
+  int width, height, rows, cols, var;
   int i, k;
   int xorig, yorig;
   int x, y;
