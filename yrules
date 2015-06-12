@@ -70,6 +70,7 @@ for FEATURE in camera image threads pi; do
 	    "camera")
 		CFLAGS="$CFLAGS -DCAMSHOT=\"$INSTALL/bin/camshot\""
 		DEPS="$DEPS camshot"
+		FILES="$FILES"
 		image=1 # enable image here
 		;;
 	    "image")
@@ -89,7 +90,7 @@ for FEATURE in camera image threads pi; do
     fi
 done
 
-#echo -e "compilation options:\n$CFLAGS"
+echo -e "compilation options:\n$CFLAGS"
 
 # make sure build directory exists
 mkdir -p $BUILD
@@ -131,6 +132,9 @@ cmd_mint() {
     for F in $FILES; do
 	ar crs $LIBRARY $BUILD/$F.o
     done 
+    if hasfeature $LIBRARY "camera"; then
+	ar crs $LIBRARY camshot/shmem.o
+    fi
     if [[ $LIBRARY == "libmint.a" ]]; then
     	strip --strip-unneeded $LIBRARY
     fi
