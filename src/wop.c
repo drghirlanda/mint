@@ -188,7 +188,7 @@ void mint_weights_init_random_sparse( mint_weights w, int rmin,
       for( i=0; i<len; i++ )
 	val[i] = rnd( p[0], p[1] );
       ind = malloc( len*sizeof(ind) );
-      mint_random_subset( ind, len, 0, cols, 1 );
+      mint_random_subset( ind, len, 0, cols );
       mint_weights_set_row( w, r, len, val, ind, 0 );
       free( val );
       free( ind );

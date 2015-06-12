@@ -63,11 +63,8 @@ int mint_random_int( int min, int max )
   return (int)( mint_random_uniform( min, max ) );
 }
 
-void mint_random_permutation( int *perm, int min, int max ) {
-  int i, j, m, n = max - min;
-  mint_check( min<max, "min is larger than max" );
-  for( i=0; i<n; i++ ) 
-    perm[i] = min + i;
+void mint_random_permutation( int *perm, int n ) {
+  int i, j, m;
   for( i=n-1; i>0; i-- ) {
     j = mint_random_int( 0, i+1 );
     m = perm[j];
@@ -111,26 +108,16 @@ void mint_random_multinomial( float *p, int *r, int len, int n ) {
 
 }
 
-int mint_intcmp( const void *x, const void *y ) {
-  int a = *(int *)x;
-  int b = *(int *)y;
-  return a - b;
-}
-
-int mint_uintcmp( const void *x, const void *y ) {
-  int a = *(int *)x;
-  int b = *(int *)y;
-  return a - b;
-}
-
 void mint_random_subset( int *subset, int n, 
-			 int min, int max, 
-			 int sort ) {
-  int *perm;
-  perm = malloc( (max-min)*sizeof(int) );
-  mint_random_permutation( perm, min, max );
-  memcpy( subset, perm, n*sizeof(int) );
-  if( sort==1 ) qsort( subset, n, sizeof(int), mint_intcmp );
-  free( perm );
+			 int min, int max ) {
+  int i, picked;
+  float prob;
+  picked = 0;
+  for( i=min; i<max && picked<n; i++ ) {
+    prob = ( (float)n - picked ) / (max-i);
+    if( mint_random() < prob ) {
+      subset[ picked++ ] = i;
+    }
+  }
 }
 
