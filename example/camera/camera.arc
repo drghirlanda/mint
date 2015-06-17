@@ -2,21 +2,29 @@ network
   camera 320 240
   display
 #  threads 4 0 1
-#  clocked 10
+  clocked 10
 
 nodes eye
-  size 3072
+  size 76800
   color 1 1 1 1
-  rows 48
+  rows 240
+
+nodes phototaxis
+  size 200
+  rows 2
+  color 1 1 1 1
 
 nodes brain
-  size 3072
-  states 1
-  rows 48
-  integrator 2 .5
-  habituation 25 1 2 0
-  bounded 0 1 1
+  size 49
+  rows 7
+  fastlogistic
 
 weights eye-brain
-diagonal 1
+  sparse
+  normal 0 .1 .1
 
+weights brain-brain
+  sparse
+  normal 0 .1 .1
+
+  
