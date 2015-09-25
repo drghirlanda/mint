@@ -156,6 +156,10 @@ Functions</h2></td></tr>
 <tr class="memitem:a036315ec032e03bd75fe17d62e21ce00"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wop_8h.html#a036315ec032e03bd75fe17d62e21ce00">mint_weights_init_target</a> (<a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a> w, int rmin, int rmax, float *p)</td></tr>
 <tr class="memdesc:a036315ec032e03bd75fe17d62e21ce00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the target variable for a weight matrix operation.  <a href="#a036315ec032e03bd75fe17d62e21ce00">More...</a><br/></td></tr>
 <tr class="separator:a036315ec032e03bd75fe17d62e21ce00"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a795a238004b2f5a9625b4c2082e4ed"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wop_8h.html#a6a795a238004b2f5a9625b4c2082e4ed">mint_weights_init_normalize</a> (<a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a> w, int rmin, int rmax, float *p)</td></tr>
+<tr class="separator:a6a795a238004b2f5a9625b4c2082e4ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b9326c1690fb802ce3a66c4de4dea0a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wop_8h.html#a8b9326c1690fb802ce3a66c4de4dea0a">mint_weights_lateral</a> (<a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a> w, <a class="el" href="nodes_8h.html#a9ca90268f857a6c354034d1a34cecdee">mint_nodes</a> nfrom, <a class="el" href="nodes_8h.html#a9ca90268f857a6c354034d1a34cecdee">mint_nodes</a> nto, int rmin, int rmax, float *p)</td></tr>
+<tr class="separator:a8b9326c1690fb802ce3a66c4de4dea0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a class="anchor" id="a501a49015b5080381a0ae63677c5bf40"></a>
@@ -210,7 +214,7 @@ Functions</h2></td></tr>
 <p>The macro sets k = j for dense matrices, while for sparse matrices k and j are set to approproate values to loop only over existing elements. The following variables must have been declared:</p>
 <p>int i, j, k, jmax; int *colind; </p>
 
-<p>Definition at line <a class="el" href="wop_8h_source.html#l00107">107</a> of file <a class="el" href="wop_8h_source.html">wop.h</a>.</p>
+<p>Definition at line <a class="el" href="wop_8h_source.html#l00144">144</a> of file <a class="el" href="wop_8h_source.html">wop.h</a>.</p>
 
 </div>
 </div>
@@ -226,7 +230,7 @@ Functions</h2></td></tr>
 
 <p>This macro must be inserted at the top of any function that uses the MINT_WEIGHTS_LOOP macro. </p>
 
-<p>Definition at line <a class="el" href="wop_8h_source.html#l00087">87</a> of file <a class="el" href="wop_8h_source.html">wop.h</a>.</p>
+<p>Definition at line <a class="el" href="wop_8h_source.html#l00124">124</a> of file <a class="el" href="wop_8h_source.html">wop.h</a>.</p>
 
 </div>
 </div>
@@ -453,6 +457,44 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a6a795a238004b2f5a9625b4c2082e4ed"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void mint_weights_init_normalize </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a>&#160;</td>
+          <td class="paramname"><em>w</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>rmin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>rmax</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float *&#160;</td>
+          <td class="paramname"><em>p</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="af5c16bddcd8413989ae6d6d3ad619f3b"></a>
 <div class="memitem">
 <div class="memproto">
@@ -649,6 +691,56 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a8b9326c1690fb802ce3a66c4de4dea0a"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void mint_weights_lateral </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a>&#160;</td>
+          <td class="paramname"><em>w</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="nodes_8h.html#a9ca90268f857a6c354034d1a34cecdee">mint_nodes</a>&#160;</td>
+          <td class="paramname"><em>nfrom</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="nodes_8h.html#a9ca90268f857a6c354034d1a34cecdee">mint_nodes</a>&#160;</td>
+          <td class="paramname"><em>nto</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>rmin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>rmax</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float *&#160;</td>
+          <td class="paramname"><em>p</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="a70586c1348cca9aed7a1db9b81a2f046"></a>
 <div class="memitem">
 <div class="memproto">
@@ -811,7 +903,7 @@ Functions</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="wop_8h.html">wop.h</a></li>
-    <li class="footer">Generated on Tue Jun 16 2015 09:55:55 for mint by
+    <li class="footer">Generated on Fri Sep 25 2015 11:52:18 for mint by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.5 </li>
   </ul>

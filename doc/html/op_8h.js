@@ -1,8 +1,8 @@
 var op_8h =
 [
-    [ "mint_motif_t", "op_8h.html#aadf9d8d4571c6c005ee5e6bf8301ac97", null ],
     [ "mint_netop_t", "op_8h.html#ab75a17a119081730d1c5fda8326e2780", null ],
     [ "mint_nop_t", "op_8h.html#a3aeab73db2672d77f2c160e165cb1af6", null ],
+    [ "mint_winit_t", "op_8h.html#a65cfe69be53e94784715312cb51d0385", null ],
     [ "mint_wop_t", "op_8h.html#abe9a152ea744f89a2a5ba7ec03a18063", null ],
     [ "mint_op_nodes_update", "op_8h.html#a06fc87d81c62e9abb8790b6e5713c55ba1b9046501eb7fcbfb0b3f371dfe73cde", null ],
     [ "mint_op_nodes_init", "op_8h.html#a06fc87d81c62e9abb8790b6e5713c55ba6b6bfc15e4892e69f0e97ac09a6420b7", null ],
@@ -10,8 +10,8 @@ var op_8h =
     [ "mint_op_nodes_any", "op_8h.html#a06fc87d81c62e9abb8790b6e5713c55bab58ab6ca8967317ec4b375d48a58e477", null ],
     [ "mint_op_weights_update", "op_8h.html#a06fc87d81c62e9abb8790b6e5713c55ba68bf7c06b29a115b3a91b9ad25aa78ca", null ],
     [ "mint_op_weights_init", "op_8h.html#a06fc87d81c62e9abb8790b6e5713c55ba8c335856a330960c71d56220931e9f56", null ],
-    [ "mint_op_weights_motif", "op_8h.html#a06fc87d81c62e9abb8790b6e5713c55ba5717ad984a2e601337cc3c70aa58a85d", null ],
     [ "mint_op_weights_operate", "op_8h.html#a06fc87d81c62e9abb8790b6e5713c55bad4b0eae60221bcae7facfac3fa44167b", null ],
+    [ "mint_op_weights_connect", "op_8h.html#a06fc87d81c62e9abb8790b6e5713c55ba6dad3aa5c3ba9172d7b7a131e7c7dce4", null ],
     [ "mint_op_weights_any", "op_8h.html#a06fc87d81c62e9abb8790b6e5713c55ba7022890736e910b195aa04e30f5c16c1", null ],
     [ "mint_op_network_init", "op_8h.html#a06fc87d81c62e9abb8790b6e5713c55bae45fba04fb2212f34a197fb292c96ed5", null ],
     [ "mint_op_network_operate", "op_8h.html#a06fc87d81c62e9abb8790b6e5713c55bad88328c1798474a27ff2a2b0e71797d1", null ],

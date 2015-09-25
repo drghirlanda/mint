@@ -120,11 +120,11 @@ Typedefs</h2></td></tr>
 <tr class="memdesc:a3aeab73db2672d77f2c160e165cb1af6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function prototpye for node update and init ops.  <a href="#a3aeab73db2672d77f2c160e165cb1af6">More...</a><br/></td></tr>
 <tr class="separator:a3aeab73db2672d77f2c160e165cb1af6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abe9a152ea744f89a2a5ba7ec03a18063"><td class="memItemLeft" align="right" valign="top">typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="op_8h.html#abe9a152ea744f89a2a5ba7ec03a18063">mint_wop_t</a> )(<a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a>, <a class="el" href="nodes_8h.html#a9ca90268f857a6c354034d1a34cecdee">mint_nodes</a>, <a class="el" href="nodes_8h.html#a9ca90268f857a6c354034d1a34cecdee">mint_nodes</a>, int, int, float *)</td></tr>
-<tr class="memdesc:abe9a152ea744f89a2a5ba7ec03a18063"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function prototpye for weight ops.  <a href="#abe9a152ea744f89a2a5ba7ec03a18063">More...</a><br/></td></tr>
+<tr class="memdesc:abe9a152ea744f89a2a5ba7ec03a18063"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function prototpye for weight update, operate, and connect ops.  <a href="#abe9a152ea744f89a2a5ba7ec03a18063">More...</a><br/></td></tr>
 <tr class="separator:abe9a152ea744f89a2a5ba7ec03a18063"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aadf9d8d4571c6c005ee5e6bf8301ac97"><td class="memItemLeft" align="right" valign="top">typedef int(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="op_8h.html#aadf9d8d4571c6c005ee5e6bf8301ac97">mint_motif_t</a> )(float *, float, float, float, float, float *)</td></tr>
-<tr class="memdesc:aadf9d8d4571c6c005ee5e6bf8301ac97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function prototype for motif ops.  <a href="#aadf9d8d4571c6c005ee5e6bf8301ac97">More...</a><br/></td></tr>
-<tr class="separator:aadf9d8d4571c6c005ee5e6bf8301ac97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a65cfe69be53e94784715312cb51d0385"><td class="memItemLeft" align="right" valign="top">typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="op_8h.html#a65cfe69be53e94784715312cb51d0385">mint_winit_t</a> )(<a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a>, int, int, float *)</td></tr>
+<tr class="memdesc:a65cfe69be53e94784715312cb51d0385"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function prototpye for weight init ops.  <a href="#a65cfe69be53e94784715312cb51d0385">More...</a><br/></td></tr>
+<tr class="separator:a65cfe69be53e94784715312cb51d0385"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab75a17a119081730d1c5fda8326e2780"><td class="memItemLeft" align="right" valign="top">typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="op_8h.html#ab75a17a119081730d1c5fda8326e2780">mint_netop_t</a> )(struct mint_network *, float *)</td></tr>
 <tr class="memdesc:ab75a17a119081730d1c5fda8326e2780"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function prototype for network ops.  <a href="#ab75a17a119081730d1c5fda8326e2780">More...</a><br/></td></tr>
 <tr class="separator:ab75a17a119081730d1c5fda8326e2780"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -139,8 +139,8 @@ Enumerations</h2></td></tr>
 <br/>
 &#160;&#160;<a class="el" href="op_8h.html#a06fc87d81c62e9abb8790b6e5713c55ba68bf7c06b29a115b3a91b9ad25aa78ca">mint_op_weights_update</a> = 8, 
 <a class="el" href="op_8h.html#a06fc87d81c62e9abb8790b6e5713c55ba8c335856a330960c71d56220931e9f56">mint_op_weights_init</a> = 16, 
-<a class="el" href="op_8h.html#a06fc87d81c62e9abb8790b6e5713c55ba5717ad984a2e601337cc3c70aa58a85d">mint_op_weights_motif</a> = 32, 
-<a class="el" href="op_8h.html#a06fc87d81c62e9abb8790b6e5713c55bad4b0eae60221bcae7facfac3fa44167b">mint_op_weights_operate</a> = 64, 
+<a class="el" href="op_8h.html#a06fc87d81c62e9abb8790b6e5713c55bad4b0eae60221bcae7facfac3fa44167b">mint_op_weights_operate</a> = 32, 
+<a class="el" href="op_8h.html#a06fc87d81c62e9abb8790b6e5713c55ba6dad3aa5c3ba9172d7b7a131e7c7dce4">mint_op_weights_connect</a> = 64, 
 <br/>
 &#160;&#160;<a class="el" href="op_8h.html#a06fc87d81c62e9abb8790b6e5713c55ba7022890736e910b195aa04e30f5c16c1">mint_op_weights_any</a> = 8+16+32+64, 
 <a class="el" href="op_8h.html#a06fc87d81c62e9abb8790b6e5713c55bae45fba04fb2212f34a197fb292c96ed5">mint_op_network_init</a> = 128, 
@@ -245,22 +245,6 @@ Functions</h2></td></tr>
 <tr class="separator:a4b7fb9a865d3640bff38d9e77a062c74"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Typedef Documentation</h2>
-<a class="anchor" id="aadf9d8d4571c6c005ee5e6bf8301ac97"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef int(* mint_motif_t)(float *, float, float, float, float, float *)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Function prototype for motif ops. </p>
-
-<p>Definition at line <a class="el" href="op_8h_source.html#l00052">52</a> of file <a class="el" href="op_8h_source.html">op.h</a>.</p>
-
-</div>
-</div>
 <a class="anchor" id="ab75a17a119081730d1c5fda8326e2780"></a>
 <div class="memitem">
 <div class="memproto">
@@ -273,7 +257,7 @@ Functions</h2></td></tr>
 
 <p>Function prototype for network ops. </p>
 
-<p>Definition at line <a class="el" href="op_8h_source.html#l00056">56</a> of file <a class="el" href="op_8h_source.html">op.h</a>.</p>
+<p>Definition at line <a class="el" href="op_8h_source.html#l00055">55</a> of file <a class="el" href="op_8h_source.html">op.h</a>.</p>
 
 </div>
 </div>
@@ -293,6 +277,22 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a65cfe69be53e94784715312cb51d0385"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef void(* mint_winit_t)(<a class="el" href="weights_8h.html#ae961a182200b888668d2767344824741">mint_weights</a>, int, int, float *)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Function prototpye for weight init ops. </p>
+
+<p>Definition at line <a class="el" href="op_8h_source.html#l00052">52</a> of file <a class="el" href="op_8h_source.html">op.h</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="abe9a152ea744f89a2a5ba7ec03a18063"></a>
 <div class="memitem">
 <div class="memproto">
@@ -303,7 +303,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Function prototpye for weight ops. </p>
+<p>Function prototpye for weight update, operate, and connect ops. </p>
 
 <p>Definition at line <a class="el" href="op_8h_source.html#l00048">48</a> of file <a class="el" href="op_8h_source.html">op.h</a>.</p>
 
@@ -335,9 +335,9 @@ Functions</h2></td></tr>
 </td></tr>
 <tr><td class="fieldname"><em><a class="anchor" id="a06fc87d81c62e9abb8790b6e5713c55ba8c335856a330960c71d56220931e9f56"></a>mint_op_weights_init</em>&nbsp;</td><td class="fielddoc">
 </td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="a06fc87d81c62e9abb8790b6e5713c55ba5717ad984a2e601337cc3c70aa58a85d"></a>mint_op_weights_motif</em>&nbsp;</td><td class="fielddoc">
-</td></tr>
 <tr><td class="fieldname"><em><a class="anchor" id="a06fc87d81c62e9abb8790b6e5713c55bad4b0eae60221bcae7facfac3fa44167b"></a>mint_op_weights_operate</em>&nbsp;</td><td class="fielddoc">
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="a06fc87d81c62e9abb8790b6e5713c55ba6dad3aa5c3ba9172d7b7a131e7c7dce4"></a>mint_op_weights_connect</em>&nbsp;</td><td class="fielddoc">
 </td></tr>
 <tr><td class="fieldname"><em><a class="anchor" id="a06fc87d81c62e9abb8790b6e5713c55ba7022890736e910b195aa04e30f5c16c1"></a>mint_op_weights_any</em>&nbsp;</td><td class="fielddoc">
 </td></tr>
@@ -1150,7 +1150,7 @@ Functions</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="op_8h.html">op.h</a></li>
-    <li class="footer">Generated on Tue Jun 16 2015 09:55:55 for mint by
+    <li class="footer">Generated on Fri Sep 25 2015 11:52:18 for mint by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.5 </li>
   </ul>

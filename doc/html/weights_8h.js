@@ -3,6 +3,7 @@ var weights_8h =
     [ "mint_weights", "weights_8h.html#ae961a182200b888668d2767344824741", null ],
     [ "mint_weights_colind", "weights_8h.html#ad9c0393f7787886f00822ac1f5c89986", null ],
     [ "mint_weights_cols", "weights_8h.html#ab734c663b28688e1a14ded98aa8dd5e5", null ],
+    [ "mint_weights_connect", "weights_8h.html#a02844cca37c76c2350c34e55c45973d6", null ],
     [ "mint_weights_cpy", "weights_8h.html#a33bd534b0d70dbab083ce49d97dec507", null ],
     [ "mint_weights_del", "weights_8h.html#af128b117c9e5e78632f709cf9b77bcfc", null ],
     [ "mint_weights_dup", "weights_8h.html#a7555e68f164693dfacf8f9d2a9657656", null ],
