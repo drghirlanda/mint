@@ -76,7 +76,8 @@ int mint_network_size( struct mint_network *net );
 /** Access to node group i of the network */
 mint_nodes mint_network_get_nodes( struct mint_network *, int i );
 
-/** Access to network nodes by name */
+/** Access to network nodes by name. If no nodes are found with the
+    given name, 0 is returned. */
 mint_nodes mint_network_find_nodes( struct mint_network *, char *name );
 
 /** Return index of nodes with given name, or -1 if no such name. */
