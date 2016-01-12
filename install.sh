@@ -117,7 +117,7 @@ else
 fi
 
 
-echo -e "* Building libmint.a and MINT documentation ***\n"
+echo -e "* Building libmint.a ***\n"
 camera=$camera threads=$threads image=$image ./yruba mint 
 if [[ $? ]]; then
     echo "* Build successful ***"
@@ -151,5 +151,5 @@ if [[ $PROFILE -eq 1 ]]; then
     fi
 fi
 
-echo "* Building documentation under doc/"
-./yruba doc
+#echo "* Building documentation under doc/"
+#./yruba doc

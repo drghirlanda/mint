@@ -19,9 +19,10 @@ void mint_pi_init( void );
 
    0: GPIO pin number for the servo motor control
 
-   1: Minimum pulse value (complete anticlockwise)
+   1: Servomotor pulse value corresponding to center position
 
-   2: Maximum pulse value (complete clockwise)
+   2: Servotor pulse range. Pulse will be limited in a range around
+   the center value (previous parameter) given by this parameter.
 
    3: Whether to set the GPIO mode once for all (0) or
    just once (1, default 0).

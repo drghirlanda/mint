@@ -11,7 +11,7 @@
 
 /* the second and third defaults ensure that the servo is not damaged
    by excessive rotation. the user is expected to set them */
-static float mint_pi_servomotor_default[] = {-1, 1500, 1500, 0, -1, -1, 0};
+static float mint_pi_servomotor_default[] = {-1, 1500, 100, 0, -1, -1, 0};
 
 /* the last parameter (undocumented in the user interface) is for
    storing the init status */
@@ -75,8 +75,8 @@ void mint_pi_servomotor( mint_nodes n, int min, int max, float *p ) {
   MINT_UNUSED( max );
 
   control_pin = p[0];
-  rot_min = p[1];
-  rot_max = p[2];
+  rot_min = p[1] - p[2];
+  rot_max = p[1] + p[2];
   set_mode = p[3];
   enable_pin = p[4];
   output_pin = p[5];
