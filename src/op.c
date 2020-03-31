@@ -40,6 +40,7 @@ static float node_states_param[] = { 0 };
 static float node_color_param[] = { 1, 1, 1, 1 };
 static float node_habituation_param[] = { 1, 0, 2, 1 };
 static float node_gradient_param[] = { 1, 0, 2, 0.01, 0 };
+static float node_softmax_param[] = { 0, 1, 2, 1, 1 };
 
 static float weights_hebbian_param[] = { 0., 0., 0., 0. };
 static float weights_delta_param[] = { 0.05, 2 };
@@ -65,7 +66,7 @@ static float network_clocked_param[] = { 25, 0 };
 
     NOTE: change this whenever adding or removing from the table
     above, otherwise crashes can occur when adding ops! */
-#define mint_nop_builtin 37
+#define mint_nop_builtin 38
 
 /* built-in ops */
 static struct mint_op mint_op_static_table[] = {
@@ -106,6 +107,9 @@ static struct mint_op mint_op_static_table[] = {
 
   { "gradient", mint_op_nodes_update,mint_node_gradient,5,
     node_gradient_param },
+
+  { "softmax", mint_op_nodes_update,mint_node_softmax,5,
+    node_softmax_param },
 
   /* nodes init */
 

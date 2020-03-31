@@ -316,4 +316,55 @@ void mint_node_gradient( mint_nodes n, int min, int max, float *p  ) {
   }
 }
 
+void mint_node_softmax( mint_nodes n, int min, int max, float *p ) {
+  int i, *out_int;
+  float slope, *in, *out, *prob, min_in;
+
+  mint_check( p[0]>0 && p[0]<mint_nodes_states(n), 
+	      "parameter 0 out of range; must be a node state index, but is %f", p[0] );
+
+  mint_check( p[1]>0 && p[1]<mint_nodes_states(n), 
+	      "parameter 1 out of range; must be a node state index, but is %f", p[1] );
+
+  mint_check( p[2]>0 && p[2]<mint_nodes_states(n), 
+	      "parameter 2 out of range; must be a node state index, but is %f", p[2] );
+
+  mint_check( p[0] != p[1],
+	      "parameters 0 and 1 cannot be the same" );
+
+  mint_check( p[3]>0, "parameter 3 must be >0, but is %f", p[3] );
+
+  slope = p[3];
+
+  in   = n[ (int)p[0] ];
+  out  = n[ (int)p[1] ];
+  prob = n[ (int)p[2] ];
+  
+  /* calculating the minimum beforehand helps avoiding overflow in the
+     exponential */
+  min_in = 0;
+  if( p[4] == 1 ) {
+    for( i=min; i<max; i++ ) {
+      if( in[i] < min_in )
+	min_in = in[i];
+    }
+  }
+
+  /* calculate relative probabilities */
+  for( i=min; i<max; i++ ) {
+    prob[i] = exp( slope * ( in[i] - min_in ) );
+  }
+
+  /* using the multinomial distribution with 1 attempt only will set
+     to 1 only one of the components of out, and set the others to
+     0 */
+  out_int = malloc( (max-min) * sizeof(int) );
+  mint_random_multinomial( prob, out_int, 1, max-min );
+  for( i=min; i<max; i++ ) {
+    out[i] = out_int[i];
+  }
+  free( out_int );
+  
+}
+
 #undef SET_VAR

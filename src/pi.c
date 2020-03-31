@@ -2,7 +2,12 @@
 #include "utils.h"
 #include "op.h"
 
+#ifdef MINT_PI
 #include <pigpio.h>
+#else
+#include <stdint.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -30,12 +35,17 @@ void mint_pi_close( void ) {
   if( !mint_pi ) 
     return;
 
+#ifdef MINT_PI
   /* set all GPIOs used as output to 0 to avoid leaving stuff running */
   for( i = 0; i<31; i++ ) {
     if( mint_pi_gpio_used & (1 << i) )
       gpioWrite( i, 0 );
   }
   gpioTerminate();
+#else
+  MINT_UNUSED( i );
+#endif
+
   mint_pi = 0;
   mint_pi_gpio_used = 0;
 }
@@ -46,8 +56,12 @@ void mint_pi_init( void ) {
   if( mint_pi ) 
     return;
 
+#ifdef MINT_PI
   i = gpioInitialise();
   mint_check( i>=0, "cannot initialise pigpio library" );
+#else
+  MINT_UNUSED( i );
+#endif
 
   mint_pi = 1;
   atexit( mint_pi_close );
@@ -85,17 +99,25 @@ void mint_pi_servomotor( mint_nodes n, int min, int max, float *p ) {
   mint_check( control_pin != -1, "enable pin not set (1st op parameter)" );
 
   if( !init_done || set_mode ) {
+#ifdef MINT_PI
     /* make sure pin mode is output */
     i = gpioSetMode( control_pin, PI_OUTPUT );
     mint_check( i==0, "cannot set enable pin mode to output" );
+#else
+    i = 0;
+#endif
 
     if( enable_pin != -1 && output_pin != -1 ) {
       mint_pi_gpio_used |= 1 << enable_pin;
       mint_pi_gpio_used |= 1 << output_pin;
+#ifdef MINT_PI
       i = gpioSetMode( enable_pin, PI_OUTPUT );
       mint_check( i==0, "cannot set enable pin mode to output" );
       i = gpioSetMode( output_pin, PI_OUTPUT );
       mint_check( i==0, "cannot set output pin mode to output" );
+#else
+      i = 0;
+#endif
     }
 
     p[6] = 1; /* init_done */
@@ -116,15 +138,23 @@ void mint_pi_servomotor( mint_nodes n, int min, int max, float *p ) {
 
   /* enable motor output */ 
   if( enable_pin != -1 && output_pin != -1 ) {
+#ifdef MINT_PI
     i = gpioWrite( enable_pin, 1 );
     mint_check( i==0, "cannot set enable pin" ); 
     i = gpioWrite( output_pin, 1 );
     mint_check( i==0, "cannot set output pin" ); 
+#else
+    MINT_UNUSED( i );
+#endif
   }
 
   /* send  servo pulses */ 
+#ifdef MINT_PI
   i = gpioServo( control_pin, activity );
   mint_check( i==0, "cannot set control pin" ); 
+#else
+  MINT_UNUSED( i );
+#endif
 }
 
 void mint_pi_dcmotor( mint_nodes n, int min, int max, float *p ) {
@@ -158,6 +188,7 @@ void mint_pi_dcmotor( mint_nodes n, int min, int max, float *p ) {
     mint_pi_gpio_used |= 1 << output_pin1;
     mint_pi_gpio_used |= 1 << output_pin2;
 
+#ifdef MINT_PI
     /* make sure pin mode is output */
     i = gpioSetMode( enable_pin, PI_OUTPUT );
     mint_check( i==0, "cannot set enable pin to output" );
@@ -165,6 +196,9 @@ void mint_pi_dcmotor( mint_nodes n, int min, int max, float *p ) {
     mint_check( i==0, "cannot set output pin 1 mode to output" );
     i = gpioSetMode( output_pin2, PI_OUTPUT );
     mint_check( i==0, "cannot set output pin 2 mode to output" );
+#else
+    i = 0;
+#endif
 
     p[5] = 1; /* initialization done */
   }
@@ -194,10 +228,15 @@ void mint_pi_dcmotor( mint_nodes n, int min, int max, float *p ) {
   activity /= 1 - zero_point - threshold;
 
   /* scale activity from [0, 1] to the pin range */
+#ifdef MINT_PI
   i = gpioGetPWMrange( output_pin1 );
   mint_check( i != PI_BAD_USER_GPIO, "cannot get output pin range" );
+#else
+  i = 1;
+#endif
   activity *= i; 
 
+#ifdef MINT_PI
   /* turn off one pin, enable motor output, turn on the other pin */
   i = gpioWrite( output_pin2, 0 );
   mint_check( i==0, "cannot turn off output pin" );
@@ -205,6 +244,9 @@ void mint_pi_dcmotor( mint_nodes n, int min, int max, float *p ) {
   mint_check( i==0, "cannot turn on enable pin" );
   i = gpioPWM( output_pin1, activity );
   mint_check( i==0, "cannot turn on output pin" );
+#else
+  i = 0;
+#endif
 }
 
 /* getting input from GPIOs is a bit harder because they can be
@@ -257,6 +299,7 @@ void mint_pi_gpiosensor( mint_nodes n, int min, int max, float *p ) {
     input_pin = p[0];
     mint_check( input_pin!=-1, "input_pin not set (1st op parameter)" );
 
+#ifdef MINT_PI
     i = gpioSetMode( input_pin, PI_INPUT );
     mint_check( i==0, "cannot set read mode on input_pin" );
 
@@ -265,6 +308,9 @@ void mint_pi_gpiosensor( mint_nodes n, int min, int max, float *p ) {
 
     gpioSetAlertFuncEx( input_pin, mint_pi_gpiosensor_callback, 
 			(void *)n );
+#else
+    i = 0;
+#endif
 
     p[4] = 1; /* setup done */
   }

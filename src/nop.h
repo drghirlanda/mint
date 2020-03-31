@@ -244,4 +244,20 @@ void mint_node_identity( mint_nodes n, int min, int max, float *p );
 */
 void mint_node_gradient( mint_nodes, int min, int max, float *p );
 
+/** Softmax activation.
+
+    - Name: `softmax`
+    - State variables required: 1, to store activation probabilities. 
+    - Parameters:
+      + 0: State variable on which to calculate softmax (default: 
+           0, i.e., node input)
+      + 1: State variable storing the result (default: 1, i.e., node 
+           output)
+      + 2: State variable that stores probabilities (default: 2)
+      + 3: Steepness of softmax function (default: 1)
+      + 4: If 1, a safer bit slightly slower calculation 
+           is performed (default: 1 )
+*/
+void mint_node_softmax( mint_nodes, int min, int max, float *p );
+
 #endif
