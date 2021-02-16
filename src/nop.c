@@ -135,17 +135,20 @@ void mint_node_noise( mint_nodes n, int min, int max, float *p ) {
 
 void mint_node_bounded( mint_nodes n, int min, int max, float *p ) {
   int i;
-  float vmin, vmax, *state;
+  float vmin, vmax, *from, *to;
 
   vmin = p[0];
   vmax = p[1];
-  SET_VAR( n, state, p[2] );
+  SET_VAR( n, from, p[2] );
+  SET_VAR( n, to,   p[3] );
 
   for( i=min; i<max; i++ ) {
-    if( state[i] < vmin )
-      state[i] = vmin;
-    else if( state[i] > vmax )
-      state[i] = vmax;
+    if( from[i] < vmin )
+      to[i] = vmin;
+    else if( from[i] > vmax )
+      to[i] = vmax;
+    else
+      to[i] = from[i];
   }
 }
 

@@ -31,7 +31,7 @@ static float node_sigmoid_param[] = { 0.1, 1, 0, 1 };
 static float node_integrator_param[] = { 1., 0., 0, 1 };
 static float node_izzy_param[] = { 0.02, 0.2, -65., 8., 0, 1, 2, 3};
 static float node_noise_param[] = { 0, 0.01, 0 };
-static float node_bounded_param[] = { 0, 1, 1 };
+static float node_bounded_param[] = { 0, 1, 0, 1 };
 static float node_counter_param[] = { 1, 1, 2 };
 static float node_spikes_param[] = { 5 };
 static float node_size_param[] = { -1 };
@@ -91,7 +91,7 @@ static struct mint_op mint_op_static_table[] = {
     3,node_noise_param },
 
   { "bounded",mint_op_nodes_update,mint_node_bounded,
-    3,node_bounded_param },
+    4,node_bounded_param },
 
   { "counter",mint_op_nodes_update,mint_node_counter,
     3,node_counter_param },
@@ -363,7 +363,7 @@ void mint_op_add( const char *name, int type, void *f,
   h = mint_op_table + mint_nop;
   len = strlen(name);
   h->name = malloc( len+1 ); /* +1 for terminating null */
-  strncpy( h->name, name, len );
+  strncpy( h->name, name, len+1 );
   h->name[len]=0;
   h->type = type;
   h->op = f;

@@ -107,15 +107,18 @@ void mint_node_izzy( mint_nodes n, int min, int max, float *p );
      standard deviation (0 works). */
 void mint_node_noise( mint_nodes n, int min, int max, float *p );
 
-/** Restrict a node state variable to a given range. The default
-    behavior is to restrict node output between 0 and 1. 
+/** Copy a node state variable to another one while restricting in a
+    given range. The default behavior is to copy node input to node
+    output and restrict between 0 and 1. NOTE: Can implement RELU by
+    setting the lower bound at 0 and the upper one high enough.
 
     - Name: `bounded`
     - State variables required: none
     - Parameters: 
       + 0: Minimum value (default 0)
       + 1: Maximum value (default 1)
-      + 2: State variable to bound (default 1, i.e., node output)
+      + 2: Source state variable (default 0, i.e., node input)
+      + 2: Destination state variable (default 1, i.e., node output)
 */
 void mint_node_bounded( mint_nodes n, int min, int max, float *p );
 
