@@ -1,6 +1,6 @@
 # list of c files 
 FILES="netop network nodes nop op random random_search spread string 
-threads utils weights wop"
+threads utils weights wop pi"
 
 # list of dependencies of the libmint task (updated in several places)
 DEPS=""
@@ -65,19 +65,25 @@ for FEATURE in camera image threads pi; do
     VARIABLE=${!FEATURE}
     if [[ $VARIABLE -eq 1 ]]; then
 	BUILD="${BUILD}1"
-	FILES="$FILES $FEATURE"
 	case $FEATURE in
 	    "camera")
 		CFLAGS="$CFLAGS -DCAMSHOT=\"$INSTALL/bin/camshot\""
 		DEPS="$DEPS camshot"
-		FILES="$FILES"
+		FILES="$FILES camera"
 		image=1 # enable image here
 		;;
 	    "image")
 		CFLAGS="$CFLAGS -DMINT_DIR=\"$INSTALL\" -DMINT_IMAGE"
+		FILES="$FILES image"
 		;;
 	    "threads")
 		CFLAGS="$CFLAGS -DMINT_USE_THREADS"
+		FILES="$FILES threads"
+		;;
+	    "pi")
+		CFLAGS="$CFLAGS -DMINT_PI"
+		## NOTE: pi is always in FILES to enable testing of
+		## Raspberry Pi code on non-Pi machines
 		;;
 	esac
     else

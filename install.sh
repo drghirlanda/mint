@@ -59,7 +59,8 @@ if [[ -e /usr/local/lib/libpigpio.a || -e /usr/lib/libpigpio.a ]]; then
 else
     export pi=0
     echo "* PiGPIO library not found"
-    echo "* Raspberry Pi support DISABLED"
+    echo "* Including DUMMY version of Raspberry Pi functions"
+    echo "* (Code should compile, but using GPIOs won't do anything)" 
 fi
 
 echo
@@ -118,7 +119,7 @@ fi
 
 
 echo -e "* Building libmint.a ***\n"
-camera=$camera threads=$threads image=$image ./yruba mint 
+pi=$pi camera=$camera threads=$threads image=$image ./yruba mint 
 if [[ $? ]]; then
     echo "* Build successful ***"
     install=$INSTALL ./yruba install || exit
