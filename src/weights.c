@@ -189,7 +189,7 @@ void mint_weights_cpy( mint_weights dst, const mint_weights src ) {
 
 void mint_weights_load_values( mint_weights w, FILE *f ) {
   struct mint_weights_str *wstr;
-  int i, r, c, s, nval = 0;
+  int i, r, c, s, nval;
 
   if( !mint_values_waiting(f) )
     return;
@@ -201,6 +201,7 @@ void mint_weights_load_values( mint_weights w, FILE *f ) {
     if( mint_weights_is_sparse(w) ) { 
 
       i = fscanf( f, " %d", wstr->rlen + r );
+      nval = wstr->rlen[r];
       mint_check( i==1, "cannot read row length" );
       for( s=0; s<1+wstr->states; s++)
 	w[s][r] = malloc( nval*sizeof(float) );
@@ -209,7 +210,6 @@ void mint_weights_load_values( mint_weights w, FILE *f ) {
 	i = fscanf( f, " %d", wstr->cind[r]+c );
 	mint_check( i==1, "cannot read column indices" );
       }
-      nval = wstr->rlen[r];
 
     } else
       nval = wstr->cols;

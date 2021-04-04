@@ -181,8 +181,8 @@ struct mint_image *mint_image_nodes( const mint_nodes nred,
   if( SDL_MUSTLOCK( image->surf )  )
     SDL_LockSurface( image->surf );
 
-    for ( x=0; x<cols; x++ ) {
-  for ( y=0; y<rows; y++ ) {
+  for ( x=0; x<cols; x++ ) {
+    for ( y=0; y<rows; y++ ) {
       if( !ngreen ) {
 	R = G = B =  255 * nred[var][ x + y*cols ];
       } else {

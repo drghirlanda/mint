@@ -321,11 +321,13 @@ mint_nodes mint_network_find_nodes( struct mint_network *net,
 int mint_network_nodes_index( struct mint_network *net, 
 			      char *name ) {
   int i;
+  char *iname;
   for( i=0; i<net->groups; i++ ) {
-    if( strcmp( mint_nodes_get_name( net->n[i] ), name ) == 0 )
+    iname = mint_nodes_get_name( net->n[i] );
+    if( strcmp( iname, name ) == 0 )
       return i;
   }
-  return 0;
+  return -1;
 }
 
 mint_weights mint_network_get_weights( struct mint_network *net, 
@@ -338,10 +340,11 @@ mint_weights mint_network_get_weights( struct mint_network *net,
 int mint_network_weights_index( struct mint_network *net, char *name ) {
   int i;
   mint_weights w;
-
+  char *iname;
   for( i=0; i<net->matrices; i++ ) {
     w = mint_network_get_weights( net, i );
-    if( strcmp( mint_weights_get_name( w ), name ) == 0 )
+    iname = mint_weights_get_name( w );
+    if( strcmp( iname, name ) == 0 )
       return i;
   }
   return -1;
