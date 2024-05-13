@@ -187,12 +187,12 @@ void mint_weights_cpy( mint_weights dst, const mint_weights src ) {
     memcpy( &dst[0][0][0], &src[0][0][0], (1+states)*rows*cols*sizeof(float) );
 }
 
-void mint_weights_load_values( mint_weights w, FILE *f ) {
+int mint_weights_load_values( mint_weights w, FILE *f ) {
   struct mint_weights_str *wstr;
   int i, r, c, s, nval;
 
   if( !mint_values_waiting(f) )
-    return;
+    return 0;
 
   wstr = _STR(w);
 
@@ -223,6 +223,7 @@ void mint_weights_load_values( mint_weights w, FILE *f ) {
 
   }
 
+  return 1;
 }
 
 mint_weights mint_weights_load( FILE *file, struct mint_network *net ) {
@@ -385,9 +386,9 @@ mint_weights mint_weights_load( FILE *file, struct mint_network *net ) {
     mint_op_del( op );
   }
 
-  mint_weights_init( w, 0, wstr->rows );
-
-  mint_weights_load_values( w, file );
+  /* run init only if weight values cannot be loaded */
+  if( ! mint_weights_load_values( w, file ) )
+    mint_weights_init( w, 0, wstr->rows );
 
   mint_string_del( fromname );
   mint_string_del( toname );

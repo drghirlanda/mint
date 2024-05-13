@@ -67,10 +67,11 @@ void mint_weights_cpy( mint_weights dst, mint_weights src );
 
    Thus this sequence is first used to save all weight values, then
    repeated to save the first state variable, if it exists, and so
-   on. If values are given, initialization ops are not run. */
+   on. If values are given, initialization ops are not run. Returns 1
+   if weights have been found on file, 0 if not. */
 mint_weights mint_weights_load( FILE *, struct mint_network *net );
 
-void mint_weights_load_values( mint_weights w, FILE *f );
+int mint_weights_load_values( mint_weights w, FILE *f );
 
 /** Save a weight matrix to file. */
 void mint_weights_save( mint_weights , FILE *,

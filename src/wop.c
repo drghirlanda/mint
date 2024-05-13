@@ -94,6 +94,7 @@ float numerical_derivative( mint_nodes n, int i ) {
   /* record neuron state to be able to restore it later */
   s = 2 + mint_nodes_states( n );
   old = malloc( s * sizeof(float) );
+  old[0] = 0; /* avoids uninitialized warning later on */
   for( j=0; j<s; i++ )
     old[j] = n[j][i];
 
